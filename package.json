@@ -1,0 +1,17 @@
+{
+  "name": "tubi-crawler",
+  "version": "1.0.0",
+  "description": "An Electron + Node.js desktop app that crawls Tubi TV series pages to extract episode data and export it as a text file.",
+  "main": "app/main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "electron": "^39.1.1",
+    "puppeteer": "^24.29.1"
+  }
+}
