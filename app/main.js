@@ -6,6 +6,18 @@ ipcMain.on('get-system-theme', (event) => {
   event.reply('system-theme', nativeTheme.shouldUseDarkColors ? 'dark' : 'light');
 });
 
+ipcMain.on('restart-app', () => {
+  app.relaunch();
+  app.quit();
+});
+
+ipcMain.on('open-dev-tools', () => {
+  const window = BrowserWindow.getFocusedWindow();
+  if (window) {
+    window.webContents.openDevTools();
+  }
+});
+
 function createWindow () {
   const win = new BrowserWindow({
     width: 1024,
@@ -100,6 +112,29 @@ ipcMain.handle('save-file', async (event, content) => {
     return { filePath };
   }
   return { filePath: null };
+});
+
+ipcMain.handle('open-file', async () => {
+  const window = BrowserWindow.getFocusedWindow();
+  const { filePaths } = await dialog.showOpenDialog(window, {
+    title: 'Open Text File',
+    properties: ['openFile'],
+    filters: [
+      { name: 'Text Files', extensions: ['txt'] },
+      { name: 'All Files', extensions: ['*'] }
+    ]
+  });
+
+  if (filePaths && filePaths.length > 0) {
+    try {
+      const content = fs.readFileSync(filePaths[0], 'utf-8');
+      return content;
+    } catch (error) {
+      console.error('Failed to read file:', error);
+      return null;
+    }
+  }
+  return null;
 });
 
 ipcMain.handle('minimize-window', (event) => {

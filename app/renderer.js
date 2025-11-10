@@ -5,11 +5,35 @@ const urlInput = document.getElementById('url');
 const log = document.getElementById('log');
 const outputUrls = document.getElementById('outputUrls');
 
+// Load content from localStorage on startup
+if (localStorage.getItem('savedContent')) {
+  outputUrls.value = localStorage.getItem('savedContent');
+}
+
+// Save content to localStorage whenever it changes
+outputUrls.addEventListener('input', () => {
+  if (outputUrls.value) {
+    localStorage.setItem('savedContent', outputUrls.value);
+  } else {
+    localStorage.removeItem('savedContent');
+  }
+});
+
 // Get references to the new toolbar buttons
 const saveAsBtn = document.getElementById('saveAsBtn');
 const copyBtn = document.getElementById('copyBtn');
 const pasteBtn = document.getElementById('pasteBtn');
 const deleteBtn = document.getElementById('deleteBtn');
+const openBtn = document.getElementById('openBtn');
+
+openBtn.addEventListener('click', async () => {
+  const content = await ipcRenderer.invoke('open-file');
+  if (content !== null) {
+    outputUrls.value = content;
+    localStorage.setItem('savedContent', content);
+    log.textContent = 'File opened successfully.';
+  }
+});
 
 // Get references to the window control buttons
 const minimizeBtn = document.getElementById('minimizeBtn');
@@ -44,6 +68,12 @@ ipcRenderer.on('window-maximized', () => updateMaximizeRestoreIcon(true));
 ipcRenderer.on('window-unmaximized', () => updateMaximizeRestoreIcon(false));
 
 
+urlInput.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
+    crawlBtn.click();
+  }
+});
+
 crawlBtn.addEventListener('click', async () => {
   const url = urlInput.value;
   if (!url) {
@@ -54,8 +84,8 @@ crawlBtn.addEventListener('click', async () => {
 `;
   try {
     const urls = await ipcRenderer.invoke('crawl', url);
-    if (outputUrls.value) {
-      outputUrls.value += ' '; // Add a space if there's existing content
+    if (outputUrls.value && !outputUrls.value.endsWith(' ')) {
+      outputUrls.value += ' '; // Add a space if there's existing content and it doesn't end with a space
     }
     outputUrls.value += urls.join(' '); // Append new URLs, space-separated
     log.textContent += 'Crawling complete. URLs appended to the text control.';
@@ -91,6 +121,7 @@ pasteBtn.addEventListener('click', async () => {
 
 deleteBtn.addEventListener('click', () => {
   outputUrls.value = '';
+  localStorage.removeItem('savedContent');
   log.textContent = 'Content cleared.';
 });
 
@@ -133,29 +164,53 @@ const moreMenu = document.getElementById('moreMenu');
 const lightThemeBtn = document.getElementById('lightThemeBtn');
 const darkThemeBtn = document.getElementById('darkThemeBtn');
 const systemThemeBtn = document.getElementById('systemThemeBtn');
+const restartBtn = document.getElementById('restartBtn');
+const devToolsBtn = document.getElementById('devToolsBtn');
 
 moreBtn.addEventListener('click', () => {
   moreMenu.classList.toggle('show');
 });
+restartBtn.addEventListener('click', () => {
+  ipcRenderer.send('restart-app');
+});
+
+devToolsBtn.addEventListener('click', () => {
+  ipcRenderer.send('open-dev-tools');
+});
+
+function updateThemeButtons(activeBtn) {
+  [lightThemeBtn, darkThemeBtn, systemThemeBtn].forEach(btn => {
+    btn.classList.remove('active');
+  });
+  activeBtn.classList.add('active');
+}
 
 lightThemeBtn.addEventListener('click', () => {
   document.body.setAttribute('data-theme', 'light');
+  updateThemeButtons(lightThemeBtn);
   moreMenu.classList.remove('show');
 });
 
 darkThemeBtn.addEventListener('click', () => {
   document.body.setAttribute('data-theme', 'dark');
+  updateThemeButtons(darkThemeBtn);
   moreMenu.classList.remove('show');
 });
 
 systemThemeBtn.addEventListener('click', () => {
   ipcRenderer.send('get-system-theme');
+  updateThemeButtons(systemThemeBtn);
   moreMenu.classList.remove('show');
 });
 
 // Set initial theme
 ipcRenderer.on('system-theme', (event, theme) => {
   document.body.setAttribute('data-theme', theme);
+  if (theme === 'dark') {
+    updateThemeButtons(darkThemeBtn);
+  } else {
+    updateThemeButtons(lightThemeBtn);
+  }
 });
 ipcRenderer.send('get-system-theme');
 

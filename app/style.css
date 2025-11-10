@@ -1,7 +1,3 @@
-* {
-  box-sizing: border-box;
-}
-
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   background-color: var(--background);
@@ -11,7 +7,8 @@ body {
   padding-top: 0px;
   display: flex;
   flex-direction: column;
-  /* gap: 15px; Removed to connect toolbar and textarea */
+  height: 100vh; /* Make body take full viewport height */
+  overflow: hidden; /* Hide main scrollbar */
 }
 
 .top-toolbar {
@@ -137,13 +134,15 @@ pre {
   font-size: 14px;
   color: var(--log-foreground);
   margin-bottom: 15px; /* Added margin-bottom */
+  max-height: 200px; /* Set a maximum height for the log */
+  overflow-y: auto; /* Add scroll if content overflows */
 }
 
 .toolbar {
   display: flex;
   gap: 8px;
   /* margin-bottom: 5px; Removed to connect with textarea */
-  padding: 5px 0; /* Remove horizontal padding, body padding will handle it */
+  padding: 5px 5px; /* Remove horizontal padding, body padding will handle it */
   background-color: var(--toolbar-background);
   border: 1px solid var(--border-color);
   border-bottom: none; /* Remove bottom border to connect with textarea */
@@ -189,10 +188,12 @@ textarea {
   border-top-right-radius: 0; /* Adjust corners */
   font-size: 14px;
   width: 100%;
-  min-height: 200px;
+  min-height: 50px; /* Set a minimum height */
+  flex-grow: 1; /* Allow textarea to take available space */
   box-sizing: border-box;
   resize: vertical;
   transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  margin-bottom: 15px; /* Add space below the textarea */
 }
 
 .menu {
@@ -209,15 +210,49 @@ textarea {
 
 .menu.show {
   display: block;
+  padding: 10px;
 }
 
 .theme-switcher {
   display: flex;
-  flex-direction: column;
-  padding: 5px;
+  flex-direction: row;
+  border-radius: 5px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  justify-content: space-around;
 }
 
-.theme-switcher button {
+.theme-switcher .theme-btn {
+  background-color: transparent;
+  border: none;
+  color: var(--foreground);
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-switcher .theme-btn:not(:last-child) {
+  border-right: 1px solid var(--border-color);
+}
+
+.theme-switcher .theme-btn.active {
+  background-color: var(--button-hover-background);
+  color: var(--button-foreground);
+}
+
+.theme-switcher .theme-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 5px 0;
+}
+
+.menu-item {
   background-color: transparent;
   border: none;
   color: var(--foreground);
@@ -225,9 +260,10 @@ textarea {
   text-align: left;
   width: 100%;
   border-radius: 3px;
+  white-space: nowrap;
 }
 
-.theme-switcher button:hover {
+.menu-item:hover {
   background-color: var(--button-hover-background);
   color: var(--button-foreground);
 }
