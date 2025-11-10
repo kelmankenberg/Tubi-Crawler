@@ -1,0 +1,192 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  background-color: #f0f2f5;
+  color: #333;
+  margin: 0; /* Remove all margins from body */
+  padding: 20px; /* Apply consistent padding to body */
+  padding-top: 0px;
+  display: flex;
+  flex-direction: column;
+  /* gap: 15px; Removed to connect toolbar and textarea */
+}
+
+.top-toolbar {
+  display: flex;
+  justify-content: space-between; /* Pushes items to ends */
+  align-items: center;
+  padding: 10px 0; /* Remove horizontal padding, body padding will handle it */
+  background-color: #ffffff; /* White background for top bar */
+  border-bottom: 1px solid #dee2e6;
+  margin-bottom: 15px; /* Space below the top toolbar */
+  border-radius: 0; /* Remove border-radius for full width */
+  margin-left: -20px; /* Compensate for body padding */
+  margin-right: -20px; /* Compensate for body padding */
+  padding-left: 20px; /* Add back padding for content inside toolbar */
+  padding-right: 20px; /* Add back padding for content inside toolbar */
+  -webkit-app-region: drag; /* Make the toolbar draggable */
+}
+
+.top-toolbar h1 {
+  margin-bottom: 0; /* Remove margin from h1 when inside top-toolbar */
+  font-size: 20px; /* Slightly smaller font for toolbar title */
+  color: #2c3e50;
+  -webkit-app-region: no-drag; /* Make h1 not draggable */
+}
+
+.top-toolbar-right {
+  display: flex;
+  gap: 5px; /* Space between control buttons */
+  -webkit-app-region: no-drag; /* Make control buttons not draggable */
+}
+
+.top-toolbar-right button {
+  background-color: transparent; /* Transparent background */
+  border: none;
+  padding: 8px 12px; /* Adjusted padding for larger icons */
+  border-radius: 4px;
+  color: #6c757d; /* Icon color */
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.top-toolbar-right button:hover {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.top-toolbar-right button:active {
+  background-color: #d0d0d0;
+}
+
+.top-toolbar-right button svg {
+  width: 32px; /* Doubled size */
+  height: 32px; /* Doubled size */
+  fill: currentColor;
+  stroke: currentColor; /* Ensure stroke is also current color for outline icons */
+  stroke-width: 1.5; /* Default stroke width for outline icons */
+}
+
+h1 {
+  color: #2c3e50;
+  font-size: 24px;
+  margin-bottom: 15px; /* Added margin-bottom */
+}
+
+.input-group {
+  display: flex;
+  gap: 10px; /* Space between input and button */
+  width: 100%;
+  margin-bottom: 15px; /* Added margin-bottom */
+  padding: 0; /* Remove horizontal padding, body padding will handle it */
+}
+
+.input-group input[type="text"] {
+  flex-grow: 1; /* Allows the input to take up available space */
+  width: auto; /* Override the 100% width from general input styling */
+}
+
+input[type="text"] {
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  width: 100%;
+  /* box-sizing: border-box; Already global */
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+input[type="text"]:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+  outline: none;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+button:hover {
+  background-color: #0056b3;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+button:active {
+  background-color: #004085;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+pre {
+  background-color: #e9ecef;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 10px; /* Remove horizontal padding, body padding will handle it */
+  white-space: pre-wrap;
+  word-break: break-all;
+  font-size: 14px;
+  color: #495057;
+  margin-bottom: 15px; /* Added margin-bottom */
+}
+
+.toolbar {
+  display: flex;
+  gap: 8px;
+  /* margin-bottom: 5px; Removed to connect with textarea */
+  padding: 5px 0; /* Remove horizontal padding, body padding will handle it */
+  background-color: #e9ecef;
+  border: 1px solid #dee2e6;
+  border-bottom: none; /* Remove bottom border to connect with textarea */
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  border-bottom-left-radius: 0; /* Adjust corners */
+  border-bottom-right-radius: 0; /* Adjust corners */
+}
+
+.toolbar button {
+  padding: 6px 12px;
+  font-size: 14px;
+  background-color: #6c757d; /* A slightly different color for toolbar buttons */
+  display: flex; /* Use flexbox for icon and text alignment */
+  align-items: center;
+  justify-content: center;
+}
+
+.toolbar button svg {
+  width: 16px; /* Corresponds to h-4 w-4 */
+  height: 16px; /* Corresponds to h-4 w-4 */
+  fill: currentColor; /* Make SVG color inherit button text color */
+  margin-right: 5px; /* Space between icon and text */
+}
+
+.toolbar button:hover {
+  background-color: #5a6268;
+}
+
+.toolbar button:active {
+  background-color: #494f54;
+}
+
+textarea {
+  padding: 10px 0; /* Remove horizontal padding, body padding will handle it */
+  border: 1px solid #ccc;
+  border-top: none; /* Remove top border to connect with toolbar */
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  border-top-left-radius: 0; /* Adjust corners */
+  border-top-right-radius: 0; /* Adjust corners */
+  font-size: 14px;
+  width: 100%;
+  min-height: 200px;
+  box-sizing: border-box;
+  resize: vertical;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
