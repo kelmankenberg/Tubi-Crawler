@@ -17,49 +17,60 @@ function createWindow () {
 
 const fs = require('fs');
 
-ipcMain.on('crawl', async (event, url) => {
-  event.sender.send('log', `Crawling ${url}`);
+ipcMain.handle('crawl', async (event, url) => {
+
+  console.log(`Crawling ${url}`);
+
   const browser = await puppeteer.launch();
+
   const page = await browser.newPage();
-  await page.goto(url, { waitUntil: 'networkidle2' });
 
-  const reactQueryStateJSON = await page.evaluate(() => {
-    return JSON.stringify(window.__REACT_QUERY_STATE__);
-  });
+    await page.goto(url, { waitUntil: 'networkidle2' });
 
-  await browser.close();
+  
 
-  const reactQueryState = JSON.parse(reactQueryStateJSON);
+    // Scroll down to load all lazy-loaded content
 
-  const paginatedContent = reactQueryState.queries.find(q => q.queryHash.includes('paginated'));
-  const seriesTitle = paginatedContent.state.data.pages[0].title;
+    let previousHeight;
 
-  const seriesPaginationInfo = reactQueryState.queries.find(q => q.queryHash.includes('seriesPaginationInfo'));
-  if (seriesPaginationInfo) {
-    const seasons = seriesPaginationInfo.state.data.seasons;
-    let output = '';
-    for (const season of seasons) {
-      for (const episode of season.episodes) {
-        const contentQuery = reactQueryState.queries.find(q => q.queryHash.includes(episode.id));
-        if (contentQuery) {
-          const episodeData = contentQuery.state.data.pages[0];
-          const episodeTitle = episodeData.title.replace(/S\d+:E\d+ - /, '');
-          const sanitizedTitle = episodeTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-          const episodeUrl = `https://tubitv.com/tv-shows/${episode.id}/s${season.number}-e${episode.num}-${sanitizedTitle}`;
-          const line = `Season ${season.number}, Episode ${episode.num}: ${episodeData.title} - ${episodeUrl}\n`;
-          output += line;
-          event.sender.send('log', line);
-        }
+    while (true) {
+
+      previousHeight = await page.evaluate('document.body.scrollHeight');
+
+      await page.evaluate('window.scrollTo(0, document.body.scrollHeight)');
+
+      await new Promise(resolve => setTimeout(resolve, 2000)); // Wait for 2 seconds for content to load
+
+      let newHeight = await page.evaluate('document.body.scrollHeight');
+
+      if (newHeight === previousHeight) {
+
+        break; // No more scrolling possible, reached the end
+
       }
+
     }
-    const sanitizedSeriesTitle = seriesTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-    const filePath = path.join('output', `${sanitizedSeriesTitle}.txt`);
-    fs.writeFileSync(filePath, output);
-    event.sender.send('log', `Finished crawling. Output saved to ${filePath}`);
-  } else {
-    event.sender.send('log', 'Could not find episode data.');
-  }
+
+  
+
+    const episodeData = await page.evaluate(() => {
+    const links = Array.from(document.querySelectorAll('a[href^="/tv-shows/"]'));
+    const urls = [];
+    links.forEach(link => {
+      const relativeHref = link.getAttribute('href');
+      const fullUrl = `https://tubitv.com${relativeHref}`;
+      urls.push(fullUrl);
+    });
+    return urls;
+  });
+  await browser.close();
+  return episodeData; // Return the array of URLs directly
+
 });
+
+// ipcMain.on('close-browser', () => {
+//   app.quit();
+// });
 
 
 app.whenReady().then(() => {

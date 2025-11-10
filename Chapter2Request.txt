@@ -1,0 +1,2033 @@
+Request URL
+https://content-cdn.production-public.tubi.io/api/v2/content?app_id=tubitv&platform=web&content_id=300004778&device_id=b28c1b11-c57a-4d27-9c9f-c774d8df282b&include_channels=true&pagination%5Bseason%5D=2&pagination%5Bpage_in_season%5D=1&pagination%5Bpage_size_in_season%5D=20&limit_resolutions%5B%5D=h264_1080p&limit_resolutions%5B%5D=h265_1080p&video_resources%5B%5D=hlsv6_widevine_nonclearlead&video_resources%5B%5D=hlsv6_playready_psshv0&video_resources%5B%5D=hlsv6_fairplay&video_resources%5B%5D=hlsv6&images%5Bposterarts%5D=w408h583_poster&images%5Bhero_422%5D=w422h360_hero&images%5Bhero_feature_desktop_tablet%5D=w1920h768_hero&images%5Bhero_feature_large_mobile%5D=w960h480_hero&images%5Bhero_feature_small_mobile%5D=w540h450_hero&images%5Bhero_feature%5D=w375h355_hero&images%5Blandscape_images%5D=w978h549_landscape&images%5Blinear_larger_poster%5D=w978h549_landscape&images%5Bbackgrounds%5D=w1614h906_background&images%5Btitle_art%5D=w430h180_title
+
+
+Response:
+{
+    "video_preview_url": "https://video-preview-lb.production-public.tubi.io/videopreview/64c40327-fdcb-49cd-96b0-2bbf68e2043e/64c40327-fdcb-49cd-96b0-2bbf68e2043e-start1702-end1758_v2.mp4",
+    "valid_duration": 7200,
+    "publisher_id": "",
+    "player_type": "tubi",
+    "images": {
+        "backgrounds": [
+            "https://canvas-lb.tubitv.com/opts/zEj92xM7ag-yRQ==/3c211616-80bc-4b68-b264-aa47b07f8eaa/CM4MEIoHOgUxLjEuOA=="
+        ],
+        "hero_422": [
+            "https://canvas-lb.tubitv.com/opts/0NvBQdZR7dSzzQ==/96ddbdbc-f74a-4739-af72-f385d1c99bb0/CKYDEOgCOgUxLjEuOA=="
+        ],
+        "hero_feature": [
+            "https://canvas-lb.tubitv.com/opts/-2Q46F0IMewGqw==/96ddbdbc-f74a-4739-af72-f385d1c99bb0/CPMCEN8COgUxLjEuOA=="
+        ],
+        "hero_feature_desktop_tablet": [
+            "https://canvas-lb.tubitv.com/opts/iwtiIzuz0GeFAQ==/09d2761b-ced9-4fbe-8064-de99e652cc4e/CIAPEIAGOgUxLjEuOA=="
+        ],
+        "hero_feature_large_mobile": [
+            "https://canvas-lb.tubitv.com/opts/HuPJG_9KWMj0_g==/150bc5ba-3a3c-4622-8153-0a8b43e4096e/COAHEPADOgUxLjEuOA=="
+        ],
+        "hero_feature_small_mobile": [
+            "https://canvas-lb.tubitv.com/opts/QW7UIfZ9W8BLzQ==/96ddbdbc-f74a-4739-af72-f385d1c99bb0/CJoEEMADOgUxLjEuOA=="
+        ],
+        "landscape_images": [
+            "https://canvas-lb.tubitv.com/opts/Ienowl6eQVhm_w==/74fa79cb-8f23-4e30-9944-0eeee5cdf466/CNcHEKgEOgUxLjEuOA=="
+        ],
+        "linear_larger_poster": [
+            "https://canvas-lb.tubitv.com/opts/Ienowl6eQVhm_w==/74fa79cb-8f23-4e30-9944-0eeee5cdf466/CNcHEKgEOgUxLjEuOA=="
+        ],
+        "posterarts": [
+            "https://canvas-lb.tubitv.com/opts/wcTMhRRpBosbhQ==/2a92aa03-7cfe-4aa4-ab6b-89f24b2c64c9/CJgDEMcEOgUxLjEuOA=="
+        ],
+        "title_art": [
+            "https://canvas-lb.tubitv.com/opts/XXgjt03unwsjGw==/65979796-04d9-43dc-bbdc-edbf10a10b30/CKMEELQBOgUxLjEuOEAB"
+        ]
+    },
+    "video_renditions": [],
+    "video_previews": [
+        {
+            "source": "CONTENT_OPERATIONS",
+            "url": "https://video-preview-lb.production-public.tubi.io/videopreview/64c40327-fdcb-49cd-96b0-2bbf68e2043e/64c40327-fdcb-49cd-96b0-2bbf68e2043e-start1702-end1758_v2.mp4",
+            "uuid": "3975ae5c-228d-4869-bdbb-e66ea01e2287"
+        },
+        {
+            "source": "ML_GENERATED",
+            "url": "https://video-preview-lb.production-public.tubi.io/videopreview/28906a45-1ad4-482e-b613-f87bf7c19f21-start460.126-end518.934.mp4",
+            "uuid": "0061fa6b-d888-4990-9fc8-226a05fa1ed4"
+        },
+        {
+            "source": "ML_GENERATED",
+            "url": "https://video-preview-lb.production-public.tubi.io/videopreview/d56d9d91-2fe0-40a6-91e7-c52189f08909-start653.694-end721.178.mp4",
+            "uuid": "594ee6c3-df6c-42be-a614-8a4829d894a3"
+        },
+        {
+            "source": "ML_GENERATED",
+            "url": "https://video-preview-lb.production-public.tubi.io/videopreview/bdb4e6d5-bc5a-4e08-9b1e-57641f946f96-start2.085-end56.723.mp4",
+            "uuid": "5bc7b596-952b-4d6d-8ca8-d8ded226dd14"
+        },
+        {
+            "source": "ML_GENERATED",
+            "url": "https://video-preview-lb.production-public.tubi.io/videopreview/3cab7673-0ee1-400b-8931-73e32c97bef0-start194.027-end263.596.mp4",
+            "uuid": "a9830379-b6bd-4e15-a3ac-12da447558af"
+        },
+        {
+            "source": "ML_GENERATED",
+            "url": "https://video-preview-lb.production-public.tubi.io/videopreview/d768ed39-09f4-4312-9bc7-db7d1d3bb011-start347.597-end391.390.mp4",
+            "uuid": "b34a93b8-4dd9-40d4-96ce-6f7b5260ef9d"
+        }
+    ],
+    "tags": [
+        "Drama",
+        "Comedy",
+        "Crime"
+    ],
+    "ratings": [
+        {
+            "code": "TV-PG",
+            "system": "tvpg",
+            "value": "TV-PG",
+            "descriptors": []
+        }
+    ],
+    "login_reason": "",
+    "is_cdc": false,
+    "thumbnails": [
+        "https://canvas-lb.tubitv.com/opts/obv9rbXup_ckYw==/983a159f-04ad-45c2-8803-229174e7be6d/CIAFEOgCOgUxLjEuOA=="
+    ],
+    "partner_id": null,
+    "has_trailer": false,
+    "actors": [
+        "William Simons",
+        "Derek Fowlds",
+        "Tricia Penrose",
+        "Mark Jordon",
+        "David Lonsdale",
+        "Peter Benson"
+    ],
+    "availability_starts": null,
+    "children": [
+        {
+            "id": "2",
+            "type": "a",
+            "title": "Season 2",
+            "children": [
+                {
+                    "video_preview_url": "",
+                    "publisher_id": "fce9d37fc5c71c2f4bd5e2847e766e55",
+                    "player_type": "tubi",
+                    "video_metadata": [],
+                    "images": {
+                        "backgrounds": [
+                            "https://canvas-lb.tubitv.com/opts/zek8-mvR_nkWyg==/357c96e7-11bb-4d7e-b521-8df7d8f4f9d5/CM4MEIoHOgUxLjEuOA=="
+                        ],
+                        "hero_422": [
+                            "https://canvas-lb.tubitv.com/opts/VPI9BywMXVrlvA==/1efbd38e-cb05-4d49-a7c2-2d8b022b3900/CKYDEOgCOgUxLjEuOA=="
+                        ],
+                        "hero_feature": [
+                            "https://canvas-lb.tubitv.com/opts/v8k3dJp6P99Nqw==/1efbd38e-cb05-4d49-a7c2-2d8b022b3900/CPMCEN8COgUxLjEuOA=="
+                        ],
+                        "hero_feature_desktop_tablet": [
+                            "https://canvas-lb.tubitv.com/opts/50Lm_LgyAqCQ6Q==/19dedc34-8f1f-478e-b06d-873c21586c79/CIAPEIAGOgUxLjEuOA=="
+                        ],
+                        "hero_feature_large_mobile": [
+                            "https://canvas-lb.tubitv.com/opts/9_mEG90bHy2m0g==/26fac507-2489-4e80-94cf-4ea5f78c4fd5/COAHEPADOgUxLjEuOA=="
+                        ],
+                        "hero_feature_small_mobile": [
+                            "https://canvas-lb.tubitv.com/opts/SIp68dKV3BRz-Q==/1efbd38e-cb05-4d49-a7c2-2d8b022b3900/CJoEEMADOgUxLjEuOA=="
+                        ],
+                        "landscape_images": [
+                            "https://canvas-lb.tubitv.com/opts/ukOHRAHj8W-07A==/357c96e7-11bb-4d7e-b521-8df7d8f4f9d5/CNcHEKgEOgUxLjEuOA=="
+                        ],
+                        "linear_larger_poster": [
+                            "https://canvas-lb.tubitv.com/opts/ukOHRAHj8W-07A==/357c96e7-11bb-4d7e-b521-8df7d8f4f9d5/CNcHEKgEOgUxLjEuOA=="
+                        ],
+                        "posterarts": [
+                            "https://canvas-lb.tubitv.com/opts/yriM3W_JGyjUBw==/1efbd38e-cb05-4d49-a7c2-2d8b022b3900/CJgDEMcEOgUxLjEuOA=="
+                        ],
+                        "title_art": []
+                    },
+                    "video_renditions": [],
+                    "video_previews": [],
+                    "tags": [
+                        "Drama",
+                        "Comedy",
+                        "Crime"
+                    ],
+                    "ratings": [
+                        {
+                            "code": "TV-PG",
+                            "system": "tvpg",
+                            "value": "TV-PG",
+                            "descriptors": []
+                        }
+                    ],
+                    "login_reason": "",
+                    "is_cdc": false,
+                    "video_resources": [
+                        {
+                            "type": "hlsv6",
+                            "codec": "VIDEO_CODEC_H265",
+                            "audio_tracks": [
+                                {
+                                    "type": "MAIN",
+                                    "lang": "English",
+                                    "display_name": "English"
+                                }
+                            ],
+                            "manifest": {
+                                "duration": 3179,
+                                "url": "https://cf.tubi.video/26f15150-eadc-4019-854f-46d775af24ed/eg3c77ojvk.m3u8?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZG5fcHJlZml4IjoiaHR0cHM6Ly9jZi50dWJpLnZpZGVvIiwiZXhwIjoxNzYzMzE5NjAwLCJtZWRpYV9zaWciOjk4NzE3MDd9.jtEwQ4GedHrk5fC5l9OKYBCh43oqpPvGIsGBJskE4wg"
+                            },
+                            "titan_version": "",
+                            "resolution": "VIDEO_RESOLUTION_576P",
+                            "ssai_version": "",
+                            "generator_version": "zeus_3.2.2;zeus_3.2.2;zeus_3.2.2"
+                        },
+                        {
+                            "type": "hlsv6",
+                            "codec": "VIDEO_CODEC_H264",
+                            "audio_tracks": [
+                                {
+                                    "type": "MAIN",
+                                    "lang": "English",
+                                    "display_name": "English"
+                                }
+                            ],
+                            "manifest": {
+                                "duration": 3179,
+                                "url": "https://cf.tubi.video/26f15150-eadc-4019-854f-46d775af24ed/9ep0bv9me6.m3u8?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZG5fcHJlZml4IjoiaHR0cHM6Ly9jZi50dWJpLnZpZGVvIiwiZXhwIjoxNzYzMzE5NjAwLCJtZWRpYV9zaWciOjk4NzE3MDd9.jtEwQ4GedHrk5fC5l9OKYBCh43oqpPvGIsGBJskE4wg"
+                            },
+                            "titan_version": "",
+                            "resolution": "VIDEO_RESOLUTION_576P",
+                            "ssai_version": "",
+                            "generator_version": "zeus_3.2.2;zeus_3.2.2;zeus_3.2.2"
+                        }
+                    ],
+                    "thumbnails": [
+                        "https://canvas-lb.tubitv.com/opts/zgln3p6GHfYnug==/357c96e7-11bb-4d7e-b521-8df7d8f4f9d5/CIAFEOgCOgUxLjEuOA=="
+                    ],
+                    "partner_id": null,
+                    "has_trailer": false,
+                    "actors": [
+                        "William Simons",
+                        "Nick Berry",
+                        "Derek Fowlds",
+                        "Tricia Penrose"
+                    ],
+                    "availability_starts": null,
+                    "has_subtitle": true,
+                    "url": "https://cf.tubi.video/26f15150-eadc-4019-854f-46d775af24ed/eg3c77ojvk.m3u8?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZG5fcHJlZml4IjoiaHR0cHM6Ly9jZi50dWJpLnZpZGVvIiwiZXhwIjoxNzYzMzE5NjAwLCJtZWRpYV9zaWciOjk4NzE3MDd9.jtEwQ4GedHrk5fC5l9OKYBCh43oqpPvGIsGBJskE4wg",
+                    "policy_match": true,
+                    "canonical_id": "",
+                    "air_datetime": null,
+                    "directors": [
+                        "Tim Dowd",
+                        "Ken Horn"
+                    ],
+                    "series_id": "300004778",
+                    "title": "S02:E01 - Secrets",
+                    "imdb_id": "tt0598963",
+                    "detailed_type": "episode",
+                    "hero_images": [
+                        "https://canvas-lb.tubitv.com/opts/CuRRAZkG4RX0Rg==/19dedc34-8f1f-478e-b06d-873c21586c79/CIAPEKQFOgUxLjEuOA=="
+                    ],
+                    "availability_duration": 4415620,
+                    "duration": 3179,
+                    "updated_at": "2025-06-30T09:28:49.000Z",
+                    "display_episode_number": "1",
+                    "year": 1993,
+                    "version_id": "",
+                    "awards": {
+                        "items": []
+                    },
+                    "credit_cuepoints": {
+                        "postlude": 3095.0,
+                        "prologue": 0.0,
+                        "intro_start": 0.0,
+                        "intro_end": 0.0,
+                        "recap_start": 0.0,
+                        "recap_end": 0.0,
+                        "earlycredits_start": 0.0,
+                        "earlycredits_end": 0.0,
+                        "prelogue": 0.0
+                    },
+                    "country": "United Kingdom",
+                    "posterarts": [
+                        "https://canvas-lb.tubitv.com/opts/1fzRl0bOYYYI-Q==/1efbd38e-cb05-4d49-a7c2-2d8b022b3900/CJADEL4EOgUxLjEuOA=="
+                    ],
+                    "monetization": {
+                        "cue_points": [
+                            0.0,
+                            461.25,
+                            885.75909,
+                            1261.172727,
+                            1702.322727,
+                            2105.431818,
+                            2529.890909
+                        ]
+                    },
+                    "gracenote_id": "EP001040390011",
+                    "rt_fields": {
+                        "reviews": []
+                    },
+                    "description": "PC Rowan investigates a robbery at gunpoint and suspects Rupert Ashfordly, son of the powerful Lord Ashfordly and suspected father to Julie Neagle's unborn child.",
+                    "version": 26,
+                    "ad_languages": [],
+                    "gn_fields": null,
+                    "backgrounds": [
+                        "https://canvas-lb.tubitv.com/opts/UYJ8v3auqRtnEA==/357c96e7-11bb-4d7e-b521-8df7d8f4f9d5/CIAPELgIOgUxLjEuOA=="
+                    ],
+                    "episode_number": "1",
+                    "import_id": "filmrise",
+                    "landscape_images": [
+                        "https://canvas-lb.tubitv.com/opts/hqX68kXxv6iPGQ==/357c96e7-11bb-4d7e-b521-8df7d8f4f9d5/CMADEPwBOgUxLjEuOA=="
+                    ],
+                    "trailers": [],
+                    "availability_ends": "2025-12-30T23:59:59.000Z",
+                    "needs_login": false,
+                    "type": "v",
+                    "subtitles": [
+                        {
+                            "url": "http://s.adrise.tv/4295b9be-634c-41ea-b4bd-376ab8e51134.srt",
+                            "lang": "English",
+                            "lang_alpha3": "eng",
+                            "lang_translation": "English"
+                        }
+                    ],
+                    "id": "511904",
+                    "lang": "English",
+                    "imdb_fields": null
+                },
+                {
+                    "video_preview_url": "",
+                    "publisher_id": "fce9d37fc5c71c2f4bd5e2847e766e55",
+                    "player_type": "tubi",
+                    "video_metadata": [],
+                    "images": {
+                        "backgrounds": [
+                            "https://canvas-lb.tubitv.com/opts/jAEe7tnkfPA7XQ==/b6805966-10d2-4341-8827-3ca7813707f6/CM4MEIoHOgUxLjEuOA=="
+                        ],
+                        "hero_422": [
+                            "https://canvas-lb.tubitv.com/opts/I8qON0A2WGy01A==/b6805966-10d2-4341-8827-3ca7813707f6/CKYDEOgCOgUxLjEuOA=="
+                        ],
+                        "hero_feature": [
+                            "https://canvas-lb.tubitv.com/opts/tls9olU42obFVw==/3df405c2-46e7-4abf-9d9b-aba02bb42d65/CPMCEN8COgUxLjEuOA=="
+                        ],
+                        "hero_feature_desktop_tablet": [
+                            "https://canvas-lb.tubitv.com/opts/ONYJbB8mpWASJQ==/09954b4b-3feb-484a-8175-9ee7569d25eb/CIAPEIAGOgUxLjEuOA=="
+                        ],
+                        "hero_feature_large_mobile": [
+                            "https://canvas-lb.tubitv.com/opts/FYcSOLw9BFTmGA==/09954b4b-3feb-484a-8175-9ee7569d25eb/COAHEPADOgUxLjEuOA=="
+                        ],
+                        "hero_feature_small_mobile": [
+                            "https://canvas-lb.tubitv.com/opts/OaX2Bf-Y9AUgEA==/b6805966-10d2-4341-8827-3ca7813707f6/CJoEEMADOgUxLjEuOA=="
+                        ],
+                        "landscape_images": [
+                            "https://canvas-lb.tubitv.com/opts/Et5KjNV04Exrsw==/b6805966-10d2-4341-8827-3ca7813707f6/CNcHEKgEOgUxLjEuOA=="
+                        ],
+                        "linear_larger_poster": [
+                            "https://canvas-lb.tubitv.com/opts/Et5KjNV04Exrsw==/b6805966-10d2-4341-8827-3ca7813707f6/CNcHEKgEOgUxLjEuOA=="
+                        ],
+                        "posterarts": [
+                            "https://canvas-lb.tubitv.com/opts/HmBoxJsatfg-dA==/3df405c2-46e7-4abf-9d9b-aba02bb42d65/CJgDEMcEOgUxLjEuOA=="
+                        ],
+                        "title_art": []
+                    },
+                    "video_renditions": [],
+                    "video_previews": [],
+                    "tags": [
+                        "Drama",
+                        "Comedy",
+                        "Crime"
+                    ],
+                    "ratings": [
+                        {
+                            "code": "TV-PG",
+                            "system": "tvpg",
+                            "value": "TV-PG",
+                            "descriptors": []
+                        }
+                    ],
+                    "login_reason": "",
+                    "is_cdc": false,
+                    "video_resources": [
+                        {
+                            "type": "hlsv6",
+                            "codec": "VIDEO_CODEC_H265",
+                            "audio_tracks": [
+                                {
+                                    "type": "MAIN",
+                                    "lang": "English",
+                                    "display_name": "English"
+                                }
+                            ],
+                            "manifest": {
+                                "duration": 3140,
+                                "url": "https://cf.tubi.video/2de81144-2832-4afa-aae6-e4239c87276c/vviw5dfx73.m3u8?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZG5fcHJlZml4IjoiaHR0cHM6Ly9jZi50dWJpLnZpZGVvIiwiZXhwIjoxNzYzMzE5NjAwLCJtZWRpYV9zaWciOjkwOTYxNzB9.4h0KfscHcdERiQfGmdaJt03gJDqWYTpFaeHw-beHdK0"
+                            },
+                            "titan_version": "",
+                            "resolution": "VIDEO_RESOLUTION_576P",
+                            "ssai_version": "",
+                            "generator_version": "zeus_3.2.2;zeus_3.2.2;zeus_3.2.2"
+                        },
+                        {
+                            "type": "hlsv6",
+                            "codec": "VIDEO_CODEC_H264",
+                            "audio_tracks": [
+                                {
+                                    "type": "MAIN",
+                                    "lang": "English",
+                                    "display_name": "English"
+                                }
+                            ],
+                            "manifest": {
+                                "duration": 3140,
+                                "url": "https://cf.tubi.video/2de81144-2832-4afa-aae6-e4239c87276c/r4qpxgxudu.m3u8?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZG5fcHJlZml4IjoiaHR0cHM6Ly9jZi50dWJpLnZpZGVvIiwiZXhwIjoxNzYzMzE5NjAwLCJtZWRpYV9zaWciOjkwOTYxNzB9.4h0KfscHcdERiQfGmdaJt03gJDqWYTpFaeHw-beHdK0"
+                            },
+                            "titan_version": "",
+                            "resolution": "VIDEO_RESOLUTION_576P",
+                            "ssai_version": "",
+                            "generator_version": "zeus_3.2.2;zeus_3.2.2;zeus_3.2.2"
+                        }
+                    ],
+                    "thumbnails": [
+                        "https://canvas-lb.tubitv.com/opts/q0SdrW2QLg7Mhw==/b6805966-10d2-4341-8827-3ca7813707f6/CIAFEOgCOgUxLjEuOA=="
+                    ],
+                    "partner_id": null,
+                    "has_trailer": false,
+                    "actors": [
+                        "William Simons",
+                        "Nick Berry",
+                        "Derek Fowlds",
+                        "Tricia Penrose"
+                    ],
+                    "availability_starts": null,
+                    "has_subtitle": true,
+                    "url": "https://cf.tubi.video/2de81144-2832-4afa-aae6-e4239c87276c/vviw5dfx73.m3u8?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZG5fcHJlZml4IjoiaHR0cHM6Ly9jZi50dWJpLnZpZGVvIiwiZXhwIjoxNzYzMzE5NjAwLCJtZWRpYV9zaWciOjkwOTYxNzB9.4h0KfscHcdERiQfGmdaJt03gJDqWYTpFaeHw-beHdK0",
+                    "policy_match": true,
+                    "canonical_id": "",
+                    "air_datetime": null,
+                    "directors": [
+                        "Tim Dowd",
+                        "Ken Horn"
+                    ],
+                    "series_id": "300004778",
+                    "title": "S02:E02 - End of the Line",
+                    "imdb_id": "tt0598836",
+                    "detailed_type": "episode",
+                    "hero_images": [
+                        "https://canvas-lb.tubitv.com/opts/lKqw9cPUNa83fQ==/09954b4b-3feb-484a-8175-9ee7569d25eb/CIAPEKQFOgUxLjEuOA=="
+                    ],
+                    "availability_duration": 4415620,
+                    "duration": 3140,
+                    "updated_at": "2025-06-30T09:22:30.000Z",
+                    "display_episode_number": "2",
+                    "year": 1993,
+                    "version_id": "",
+                    "awards": {
+                        "items": []
+                    },
+                    "credit_cuepoints": {
+                        "postlude": 3073.142822265625,
+                        "prologue": 0.0,
+                        "intro_start": 4.73287296295166,
+                        "intro_end": 46.047767639160156,
+                        "recap_start": 0.0,
+                        "recap_end": 0.0,
+                        "earlycredits_start": 0.0,
+                        "earlycredits_end": 0.0,
+                        "prelogue": 0.0
+                    },
+                    "country": "United Kingdom",
+                    "posterarts": [
+                        "https://canvas-lb.tubitv.com/opts/IPHn_aCa4xsR7w==/3df405c2-46e7-4abf-9d9b-aba02bb42d65/CJADEL4EOgUxLjEuOA=="
+                    ],
+                    "monetization": {
+                        "cue_points": [
+                            0.0,
+                            501.12274169921875,
+                            906.1045532226562,
+                            1264.550048828125,
+                            1636.300048828125,
+                            1980.05908203125,
+                            2377.327392578125,
+                            2752.786376953125
+                        ]
+                    },
+                    "gracenote_id": "EP001040390012",
+                    "rt_fields": {
+                        "reviews": []
+                    },
+                    "description": "A vengeful father travels to Aidensfield to punish Nick Rowan; Sergeant Blaketon spots another chance to get the troublemaking Greengrass behind bars.",
+                    "version": 30,
+                    "ad_languages": [],
+                    "gn_fields": null,
+                    "backgrounds": [
+                        "https://canvas-lb.tubitv.com/opts/8G_rCoLRa_IEQA==/b6805966-10d2-4341-8827-3ca7813707f6/CIAPELgIOgUxLjEuOA=="
+                    ],
+                    "episode_number": "2",
+                    "import_id": "filmrise",
+                    "landscape_images": [
+                        "https://canvas-lb.tubitv.com/opts/xH4O4j8gyJ8eog==/b6805966-10d2-4341-8827-3ca7813707f6/CMADEPwBOgUxLjEuOA=="
+                    ],
+                    "trailers": [],
+                    "availability_ends": "2025-12-30T23:59:59.000Z",
+                    "needs_login": false,
+                    "type": "v",
+                    "subtitles": [
+                        {
+                            "url": "http://s.adrise.tv/8f466121-1a4d-4a96-a105-b4f085d6c4bd.srt",
+                            "lang": "English",
+                            "lang_alpha3": "eng",
+                            "lang_translation": "English"
+                        }
+                    ],
+                    "id": "511902",
+                    "lang": "English",
+                    "imdb_fields": null
+                },
+                {
+                    "video_preview_url": "",
+                    "publisher_id": "fce9d37fc5c71c2f4bd5e2847e766e55",
+                    "player_type": "tubi",
+                    "video_metadata": [],
+                    "images": {
+                        "backgrounds": [
+                            "https://canvas-lb.tubitv.com/opts/odR3mkBYK9UGwg==/4c0ff6de-3f38-4aaf-9a52-18aee40cdc80/CM4MEIoHOgUxLjEuOA=="
+                        ],
+                        "hero_422": [
+                            "https://canvas-lb.tubitv.com/opts/IY914vdS0V3HGw==/358e494e-7178-4547-8fa8-ddb6db45f251/CKYDEOgCOgUxLjEuOA=="
+                        ],
+                        "hero_feature": [
+                            "https://canvas-lb.tubitv.com/opts/EUauHvYT8MT6Kg==/358e494e-7178-4547-8fa8-ddb6db45f251/CPMCEN8COgUxLjEuOA=="
+                        ],
+                        "hero_feature_desktop_tablet": [
+                            "https://canvas-lb.tubitv.com/opts/bo76m1sFcmm9kQ==/771ba4fd-c598-4f09-a73d-80ece4829021/CIAPEIAGOgUxLjEuOA=="
+                        ],
+                        "hero_feature_large_mobile": [
+                            "https://canvas-lb.tubitv.com/opts/PXXDrtzCdnSUvA==/771ba4fd-c598-4f09-a73d-80ece4829021/COAHEPADOgUxLjEuOA=="
+                        ],
+                        "hero_feature_small_mobile": [
+                            "https://canvas-lb.tubitv.com/opts/Vs8plqLp6oePkA==/358e494e-7178-4547-8fa8-ddb6db45f251/CJoEEMADOgUxLjEuOA=="
+                        ],
+                        "landscape_images": [
+                            "https://canvas-lb.tubitv.com/opts/z-aIgYmrrA3Plw==/4c0ff6de-3f38-4aaf-9a52-18aee40cdc80/CNcHEKgEOgUxLjEuOA=="
+                        ],
+                        "linear_larger_poster": [
+                            "https://canvas-lb.tubitv.com/opts/z-aIgYmrrA3Plw==/4c0ff6de-3f38-4aaf-9a52-18aee40cdc80/CNcHEKgEOgUxLjEuOA=="
+                        ],
+                        "posterarts": [
+                            "https://canvas-lb.tubitv.com/opts/cVbMCDY9I5VmEQ==/358e494e-7178-4547-8fa8-ddb6db45f251/CJgDEMcEOgUxLjEuOA=="
+                        ],
+                        "title_art": []
+                    },
+                    "video_renditions": [],
+                    "video_previews": [],
+                    "tags": [
+                        "Drama",
+                        "Comedy",
+                        "Crime"
+                    ],
+                    "ratings": [
+                        {
+                            "code": "TV-PG",
+                            "system": "tvpg",
+                            "value": "TV-PG",
+                            "descriptors": []
+                        }
+                    ],
+                    "login_reason": "",
+                    "is_cdc": false,
+                    "video_resources": [
+                        {
+                            "type": "hlsv6",
+                            "codec": "VIDEO_CODEC_H265",
+                            "audio_tracks": [
+                                {
+                                    "type": "MAIN",
+                                    "lang": "English",
+                                    "display_name": "English"
+                                }
+                            ],
+                            "manifest": {
+                                "duration": 3168,
+                                "url": "https://cf.tubi.video/682dbf42-e119-47b4-a1b9-efd25221d092/15rsmw8rz2.m3u8?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZG5fcHJlZml4IjoiaHR0cHM6Ly9jZi50dWJpLnZpZGVvIiwiZXhwIjoxNzYzMzE5NjAwLCJtZWRpYV9zaWciOjM5NDYwMzEyfQ.fWtYa7VKpORdx-gjw2OhpRTnfRfwT03EhyhKOavMY0U"
+                            },
+                            "titan_version": "",
+                            "resolution": "VIDEO_RESOLUTION_576P",
+                            "ssai_version": "",
+                            "generator_version": "zeus_3.2.2;zeus_3.2.2;zeus_3.2.2"
+                        },
+                        {
+                            "type": "hlsv6",
+                            "codec": "VIDEO_CODEC_H264",
+                            "audio_tracks": [
+                                {
+                                    "type": "MAIN",
+                                    "lang": "English",
+                                    "display_name": "English"
+                                }
+                            ],
+                            "manifest": {
+                                "duration": 3168,
+                                "url": "https://cf.tubi.video/682dbf42-e119-47b4-a1b9-efd25221d092/yja8pczwch.m3u8?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZG5fcHJlZml4IjoiaHR0cHM6Ly9jZi50dWJpLnZpZGVvIiwiZXhwIjoxNzYzMzE5NjAwLCJtZWRpYV9zaWciOjM5NDYwMzEyfQ.fWtYa7VKpORdx-gjw2OhpRTnfRfwT03EhyhKOavMY0U"
+                            },
+                            "titan_version": "",
+                            "resolution": "VIDEO_RESOLUTION_576P",
+                            "ssai_version": "",
+                            "generator_version": "zeus_3.2.2;zeus_3.2.2;zeus_3.2.2"
+                        }
+                    ],
+                    "thumbnails": [
+                        "https://canvas-lb.tubitv.com/opts/ylnJL-4izQjbhw==/4c0ff6de-3f38-4aaf-9a52-18aee40cdc80/CIAFEOgCOgUxLjEuOA=="
+                    ],
+                    "partner_id": null,
+                    "has_trailer": false,
+                    "actors": [
+                        "William Simons",
+                        "Nick Berry",
+                        "Derek Fowlds",
+                        "Tricia Penrose"
+                    ],
+                    "availability_starts": null,
+                    "has_subtitle": true,
+                    "url": "https://cf.tubi.video/682dbf42-e119-47b4-a1b9-efd25221d092/15rsmw8rz2.m3u8?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZG5fcHJlZml4IjoiaHR0cHM6Ly9jZi50dWJpLnZpZGVvIiwiZXhwIjoxNzYzMzE5NjAwLCJtZWRpYV9zaWciOjM5NDYwMzEyfQ.fWtYa7VKpORdx-gjw2OhpRTnfRfwT03EhyhKOavMY0U",
+                    "policy_match": true,
+                    "canonical_id": "",
+                    "air_datetime": null,
+                    "directors": [
+                        "Tim Dowd",
+                        "Ken Horn"
+                    ],
+                    "series_id": "300004778",
+                    "title": "S02:E03 - Manhunt",
+                    "imdb_id": "tt0598908",
+                    "detailed_type": "episode",
+                    "hero_images": [
+                        "https://canvas-lb.tubitv.com/opts/4ZcgaVXx_D42QQ==/771ba4fd-c598-4f09-a73d-80ece4829021/CIAPEKQFOgUxLjEuOA=="
+                    ],
+                    "availability_duration": 4415620,
+                    "duration": 3168,
+                    "updated_at": "2025-06-30T09:20:29.000Z",
+                    "display_episode_number": "3",
+                    "year": 1993,
+                    "version_id": "",
+                    "awards": {
+                        "items": []
+                    },
+                    "credit_cuepoints": {
+                        "postlude": 3101.1044921875,
+                        "prologue": 0.0,
+                        "intro_start": 4.490746021270752,
+                        "intro_end": 43.627559661865234,
+                        "recap_start": 0.0,
+                        "recap_end": 0.0,
+                        "earlycredits_start": 0.0,
+                        "earlycredits_end": 0.0,
+                        "prelogue": 0.0
+                    },
+                    "country": "United Kingdom",
+                    "posterarts": [
+                        "https://canvas-lb.tubitv.com/opts/SYJwcR0CRHPRqg==/358e494e-7178-4547-8fa8-ddb6db45f251/CJADEL4EOgUxLjEuOA=="
+                    ],
+                    "monetization": {
+                        "cue_points": [
+                            0.0,
+                            423.2954406738281,
+                            821.9454345703125,
+                            1157.486328125,
+                            1584.0318603515625,
+                            2047.5408935546875,
+                            2463.91357421875
+                        ]
+                    },
+                    "gracenote_id": "EP001040390013",
+                    "rt_fields": {
+                        "reviews": []
+                    },
+                    "description": "When masked, armed robbers assault George Ward at Aidensfield Arms shortly after closing time, unlikely partners Greengrass and PC Rowan must coordinate a manhunt.",
+                    "version": 37,
+                    "ad_languages": [],
+                    "gn_fields": null,
+                    "backgrounds": [
+                        "https://canvas-lb.tubitv.com/opts/xHyvXmDDqRryBw==/4c0ff6de-3f38-4aaf-9a52-18aee40cdc80/CIAPELgIOgUxLjEuOA=="
+                    ],
+                    "episode_number": "3",
+                    "import_id": "filmrise",
+                    "landscape_images": [
+                        "https://canvas-lb.tubitv.com/opts/DcP6_ggdvzvS7g==/4c0ff6de-3f38-4aaf-9a52-18aee40cdc80/CMADEPwBOgUxLjEuOA=="
+                    ],
+                    "trailers": [],
+                    "availability_ends": "2025-12-30T23:59:59.000Z",
+                    "needs_login": false,
+                    "type": "v",
+                    "subtitles": [
+                        {
+                            "url": "http://s.adrise.tv/3d8e4cc4-61db-44fd-9b19-5a1f27520a5d.srt",
+                            "lang": "English",
+                            "lang_alpha3": "eng",
+                            "lang_translation": "English"
+                        }
+                    ],
+                    "id": "511899",
+                    "lang": "English",
+                    "imdb_fields": null
+                },
+                {
+                    "video_preview_url": "",
+                    "publisher_id": "fce9d37fc5c71c2f4bd5e2847e766e55",
+                    "player_type": "tubi",
+                    "video_metadata": [],
+                    "images": {
+                        "backgrounds": [
+                            "https://canvas-lb.tubitv.com/opts/cDQ3ZNdyjo-B6g==/40e0aae3-4ab3-416d-9d93-c052aa97cfe4/CM4MEIoHOgUxLjEuOA=="
+                        ],
+                        "hero_422": [
+                            "https://canvas-lb.tubitv.com/opts/tX-R1ydddLceMw==/40e0aae3-4ab3-416d-9d93-c052aa97cfe4/CKYDEOgCOgUxLjEuOA=="
+                        ],
+                        "hero_feature": [
+                            "https://canvas-lb.tubitv.com/opts/VYkEsrh8Z_8MfA==/40e0aae3-4ab3-416d-9d93-c052aa97cfe4/CPMCEN8COgUxLjEuOA=="
+                        ],
+                        "hero_feature_desktop_tablet": [
+                            "https://canvas-lb.tubitv.com/opts/bzASwDSRntzl9g==/40e0aae3-4ab3-416d-9d93-c052aa97cfe4/CIAPEIAGOgUxLjEuOA=="
+                        ],
+                        "hero_feature_large_mobile": [
+                            "https://canvas-lb.tubitv.com/opts/QqGtg0dK3l3dgg==/40e0aae3-4ab3-416d-9d93-c052aa97cfe4/COAHEPADOgUxLjEuOA=="
+                        ],
+                        "hero_feature_small_mobile": [
+                            "https://canvas-lb.tubitv.com/opts/DJa8QH1aNgjWFQ==/40e0aae3-4ab3-416d-9d93-c052aa97cfe4/CJoEEMADOgUxLjEuOA=="
+                        ],
+                        "landscape_images": [
+                            "https://canvas-lb.tubitv.com/opts/6LY9Do2IG-WFlA==/40e0aae3-4ab3-416d-9d93-c052aa97cfe4/CNcHEKgEOgUxLjEuOA=="
+                        ],
+                        "linear_larger_poster": [
+                            "https://canvas-lb.tubitv.com/opts/6LY9Do2IG-WFlA==/40e0aae3-4ab3-416d-9d93-c052aa97cfe4/CNcHEKgEOgUxLjEuOA=="
+                        ],
+                        "posterarts": [
+                            "https://canvas-lb.tubitv.com/opts/n0tottCrnjJKkg==/40e0aae3-4ab3-416d-9d93-c052aa97cfe4/CJgDEMcEOgUxLjEuOA=="
+                        ],
+                        "title_art": []
+                    },
+                    "video_renditions": [],
+                    "video_previews": [],
+                    "tags": [
+                        "Drama",
+                        "Comedy",
+                        "Crime"
+                    ],
+                    "ratings": [
+                        {
+                            "code": "TV-PG",
+                            "system": "tvpg",
+                            "value": "TV-PG",
+                            "descriptors": []
+                        }
+                    ],
+                    "login_reason": "",
+                    "is_cdc": false,
+                    "video_resources": [
+                        {
+                            "type": "hlsv6",
+                            "codec": "VIDEO_CODEC_H265",
+                            "audio_tracks": [
+                                {
+                                    "type": "MAIN",
+                                    "lang": "English",
+                                    "display_name": "English"
+                                }
+                            ],
+                            "manifest": {
+                                "duration": 3187,
+                                "url": "https://cf.tubi.video/c4c6ffa2-5b74-490b-9efa-b3c32ab2c936/ye5d806a9d.m3u8?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZG5fcHJlZml4IjoiaHR0cHM6Ly9jZi50dWJpLnZpZGVvIiwiZXhwIjoxNzYzMzE5NjAwLCJtZWRpYV9zaWciOjk5MjMwMjAwfQ.NgcEzx_hqd1kX_sxr5EWkxeorwX5DRW7PQdLSSIYXiQ"
+                            },
+                            "titan_version": "",
+                            "resolution": "VIDEO_RESOLUTION_576P",
+                            "ssai_version": "",
+                            "generator_version": "zeus_3.2.2;zeus_3.2.2;zeus_3.2.2"
+                        },
+                        {
+                            "type": "hlsv6",
+                            "codec": "VIDEO_CODEC_H264",
+                            "audio_tracks": [
+                                {
+                                    "type": "MAIN",
+                                    "lang": "English",
+                                    "display_name": "English"
+                                }
+                            ],
+                            "manifest": {
+                                "duration": 3187,
+                                "url": "https://cf.tubi.video/c4c6ffa2-5b74-490b-9efa-b3c32ab2c936/rbcm92bihy.m3u8?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZG5fcHJlZml4IjoiaHR0cHM6Ly9jZi50dWJpLnZpZGVvIiwiZXhwIjoxNzYzMzE5NjAwLCJtZWRpYV9zaWciOjk5MjMwMjAwfQ.NgcEzx_hqd1kX_sxr5EWkxeorwX5DRW7PQdLSSIYXiQ"
+                            },
+                            "titan_version": "",
+                            "resolution": "VIDEO_RESOLUTION_576P",
+                            "ssai_version": "",
+                            "generator_version": "zeus_3.2.2;zeus_3.2.2;zeus_3.2.2"
+                        }
+                    ],
+                    "thumbnails": [
+                        "https://canvas-lb.tubitv.com/opts/1vZPVJmQTSjsZw==/40e0aae3-4ab3-416d-9d93-c052aa97cfe4/CIAFEOgCOgUxLjEuOA=="
+                    ],
+                    "partner_id": null,
+                    "has_trailer": false,
+                    "actors": [
+                        "William Simons",
+                        "Nick Berry",
+                        "Derek Fowlds",
+                        "Tricia Penrose"
+                    ],
+                    "availability_starts": null,
+                    "has_subtitle": true,
+                    "url": "https://cf.tubi.video/c4c6ffa2-5b74-490b-9efa-b3c32ab2c936/ye5d806a9d.m3u8?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZG5fcHJlZml4IjoiaHR0cHM6Ly9jZi50dWJpLnZpZGVvIiwiZXhwIjoxNzYzMzE5NjAwLCJtZWRpYV9zaWciOjk5MjMwMjAwfQ.NgcEzx_hqd1kX_sxr5EWkxeorwX5DRW7PQdLSSIYXiQ",
+                    "policy_match": true,
+                    "canonical_id": "",
+                    "air_datetime": null,
+                    "directors": [
+                        "Tim Dowd",
+                        "Ken Horn"
+                    ],
+                    "series_id": "300004778",
+                    "title": "S02:E04 - Bitter Harvest",
+                    "imdb_id": "tt0598796",
+                    "detailed_type": "episode",
+                    "hero_images": [
+                        "https://canvas-lb.tubitv.com/opts/7F3JIGgwf0Ubug==/40e0aae3-4ab3-416d-9d93-c052aa97cfe4/CIAPEKQFOgUxLjEuOA=="
+                    ],
+                    "availability_duration": 4415620,
+                    "duration": 3187,
+                    "updated_at": "2025-06-30T09:24:44.000Z",
+                    "display_episode_number": "4",
+                    "year": 1993,
+                    "version_id": "",
+                    "awards": {
+                        "items": []
+                    },
+                    "credit_cuepoints": {
+                        "postlude": 3120.023681640625,
+                        "prologue": 0.0,
+                        "intro_start": 3.8814010620117188,
+                        "intro_end": 40.03269577026367,
+                        "recap_start": 0.0,
+                        "recap_end": 0.0,
+                        "earlycredits_start": 0.0,
+                        "earlycredits_end": 0.0,
+                        "prelogue": 0.0
+                    },
+                    "country": "United Kingdom",
+                    "posterarts": [
+                        "https://canvas-lb.tubitv.com/opts/kMJBWR7fhjp5UA==/40e0aae3-4ab3-416d-9d93-c052aa97cfe4/CJADEL4EOgUxLjEuOA=="
+                    ],
+                    "monetization": {
+                        "cue_points": [
+                            0.0,
+                            525.1272583007812,
+                            1215.0,
+                            1734.595458984375,
+                            2198.3818359375,
+                            2731.300048828125
+                        ]
+                    },
+                    "gracenote_id": "EP001040390014",
+                    "rt_fields": {
+                        "reviews": []
+                    },
+                    "description": "Disease breaks out at Reg Manston's farm, ruining his crop and putting the area on high alert - but the arrival of Reg's beautiful young niece Gina is a welcome silver lining for the customers of Aidensfield Arms.",
+                    "version": 36,
+                    "ad_languages": [],
+                    "gn_fields": null,
+                    "backgrounds": [
+                        "https://canvas-lb.tubitv.com/opts/sXgyRYBdHD9QYQ==/40e0aae3-4ab3-416d-9d93-c052aa97cfe4/CIAPELgIOgUxLjEuOA=="
+                    ],
+                    "episode_number": "4",
+                    "import_id": "filmrise",
+                    "landscape_images": [
+                        "https://canvas-lb.tubitv.com/opts/K56h7IawHsh8-Q==/40e0aae3-4ab3-416d-9d93-c052aa97cfe4/CMADEPwBOgUxLjEuOA=="
+                    ],
+                    "trailers": [],
+                    "availability_ends": "2025-12-30T23:59:59.000Z",
+                    "needs_login": false,
+                    "type": "v",
+                    "subtitles": [
+                        {
+                            "url": "http://s.adrise.tv/fab5a2fe-c40b-47d2-9820-591ab182363c.srt",
+                            "lang": "English",
+                            "lang_alpha3": "eng",
+                            "lang_translation": "English"
+                        }
+                    ],
+                    "id": "511897",
+                    "lang": "English",
+                    "imdb_fields": null
+                },
+                {
+                    "video_preview_url": "",
+                    "publisher_id": "fce9d37fc5c71c2f4bd5e2847e766e55",
+                    "player_type": "tubi",
+                    "video_metadata": [],
+                    "images": {
+                        "backgrounds": [
+                            "https://canvas-lb.tubitv.com/opts/K8WFFyhP6YdhKQ==/2cf46d46-6fa2-4025-8cd8-30555f8d607e/CM4MEIoHOgUxLjEuOA=="
+                        ],
+                        "hero_422": [
+                            "https://canvas-lb.tubitv.com/opts/ubzWRhCO9WKH5Q==/2cf46d46-6fa2-4025-8cd8-30555f8d607e/CKYDEOgCOgUxLjEuOA=="
+                        ],
+                        "hero_feature": [
+                            "https://canvas-lb.tubitv.com/opts/AQLFAkelXPs02A==/2cf46d46-6fa2-4025-8cd8-30555f8d607e/CPMCEN8COgUxLjEuOA=="
+                        ],
+                        "hero_feature_desktop_tablet": [
+                            "https://canvas-lb.tubitv.com/opts/dfoUt5w8gVpIAg==/155078c6-d6dc-416a-bf11-538a4ca5cc90/CIAPEIAGOgUxLjEuOA=="
+                        ],
+                        "hero_feature_large_mobile": [
+                            "https://canvas-lb.tubitv.com/opts/z0tFKXDh9fqGAA==/155078c6-d6dc-416a-bf11-538a4ca5cc90/COAHEPADOgUxLjEuOA=="
+                        ],
+                        "hero_feature_small_mobile": [
+                            "https://canvas-lb.tubitv.com/opts/ebFawDTHjv0-Tg==/2cf46d46-6fa2-4025-8cd8-30555f8d607e/CJoEEMADOgUxLjEuOA=="
+                        ],
+                        "landscape_images": [
+                            "https://canvas-lb.tubitv.com/opts/TTmNF_MB1bwJag==/2cf46d46-6fa2-4025-8cd8-30555f8d607e/CNcHEKgEOgUxLjEuOA=="
+                        ],
+                        "linear_larger_poster": [
+                            "https://canvas-lb.tubitv.com/opts/TTmNF_MB1bwJag==/2cf46d46-6fa2-4025-8cd8-30555f8d607e/CNcHEKgEOgUxLjEuOA=="
+                        ],
+                        "posterarts": [
+                            "https://canvas-lb.tubitv.com/opts/y5wYX4EyYtJ7mA==/2cf46d46-6fa2-4025-8cd8-30555f8d607e/CJgDEMcEOgUxLjEuOA=="
+                        ],
+                        "title_art": []
+                    },
+                    "video_renditions": [],
+                    "video_previews": [],
+                    "tags": [
+                        "Drama",
+                        "Comedy",
+                        "Crime"
+                    ],
+                    "ratings": [
+                        {
+                            "code": "TV-PG",
+                            "system": "tvpg",
+                            "value": "TV-PG",
+                            "descriptors": []
+                        }
+                    ],
+                    "login_reason": "",
+                    "is_cdc": false,
+                    "video_resources": [
+                        {
+                            "type": "hlsv6",
+                            "codec": "VIDEO_CODEC_H265",
+                            "audio_tracks": [
+                                {
+                                    "type": "MAIN",
+                                    "lang": "English",
+                                    "display_name": "English"
+                                }
+                            ],
+                            "manifest": {
+                                "duration": 3198,
+                                "url": "https://cf.tubi.video/54b75707-4e08-4249-be36-51d9db0b48d1/sjs6g7qeng.m3u8?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZG5fcHJlZml4IjoiaHR0cHM6Ly9jZi50dWJpLnZpZGVvIiwiZXhwIjoxNzYzMzE5NjAwLCJtZWRpYV9zaWciOjk5NjI1MjY1fQ.s8xPoDSjKBWcZFsgZ_WZCBb1Cfq5Ja0m_iSJyk6UgGc"
+                            },
+                            "titan_version": "",
+                            "resolution": "VIDEO_RESOLUTION_576P",
+                            "ssai_version": "",
+                            "generator_version": "zeus_3.2.2;zeus_3.2.2;zeus_3.2.2"
+                        },
+                        {
+                            "type": "hlsv6",
+                            "codec": "VIDEO_CODEC_H264",
+                            "audio_tracks": [
+                                {
+                                    "type": "MAIN",
+                                    "lang": "English",
+                                    "display_name": "English"
+                                }
+                            ],
+                            "manifest": {
+                                "duration": 3198,
+                                "url": "https://cf.tubi.video/54b75707-4e08-4249-be36-51d9db0b48d1/f58of9a1sc.m3u8?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZG5fcHJlZml4IjoiaHR0cHM6Ly9jZi50dWJpLnZpZGVvIiwiZXhwIjoxNzYzMzE5NjAwLCJtZWRpYV9zaWciOjk5NjI1MjY1fQ.s8xPoDSjKBWcZFsgZ_WZCBb1Cfq5Ja0m_iSJyk6UgGc"
+                            },
+                            "titan_version": "",
+                            "resolution": "VIDEO_RESOLUTION_576P",
+                            "ssai_version": "",
+                            "generator_version": "zeus_3.2.2;zeus_3.2.2;zeus_3.2.2"
+                        }
+                    ],
+                    "thumbnails": [
+                        "https://canvas-lb.tubitv.com/opts/he2kqbrJar3CxA==/2cf46d46-6fa2-4025-8cd8-30555f8d607e/CIAFEOgCOgUxLjEuOA=="
+                    ],
+                    "partner_id": null,
+                    "has_trailer": false,
+                    "actors": [
+                        "William Simons",
+                        "Nick Berry",
+                        "Derek Fowlds",
+                        "Tricia Penrose"
+                    ],
+                    "availability_starts": null,
+                    "has_subtitle": true,
+                    "url": "https://cf.tubi.video/54b75707-4e08-4249-be36-51d9db0b48d1/sjs6g7qeng.m3u8?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZG5fcHJlZml4IjoiaHR0cHM6Ly9jZi50dWJpLnZpZGVvIiwiZXhwIjoxNzYzMzE5NjAwLCJtZWRpYV9zaWciOjk5NjI1MjY1fQ.s8xPoDSjKBWcZFsgZ_WZCBb1Cfq5Ja0m_iSJyk6UgGc",
+                    "policy_match": true,
+                    "canonical_id": "",
+                    "air_datetime": null,
+                    "directors": [
+                        "Tim Dowd",
+                        "Ken Horn"
+                    ],
+                    "series_id": "300004778",
+                    "title": "S02:E05 - Over the Hill",
+                    "imdb_id": "tt0598941",
+                    "detailed_type": "episode",
+                    "hero_images": [
+                        "https://canvas-lb.tubitv.com/opts/RYMnvijgfV9DGQ==/155078c6-d6dc-416a-bf11-538a4ca5cc90/CIAPEKQFOgUxLjEuOA=="
+                    ],
+                    "availability_duration": 4415620,
+                    "duration": 3198,
+                    "updated_at": "2025-06-30T09:28:36.000Z",
+                    "display_episode_number": "5",
+                    "year": 1993,
+                    "version_id": "",
+                    "awards": {
+                        "items": []
+                    },
+                    "credit_cuepoints": {
+                        "postlude": 3130.939453125,
+                        "prologue": 0.0,
+                        "intro_start": 4.541740894317627,
+                        "intro_end": 41.83911895751953,
+                        "recap_start": 0.0,
+                        "recap_end": 0.0,
+                        "earlycredits_start": 0.0,
+                        "earlycredits_end": 0.0,
+                        "prelogue": 0.0
+                    },
+                    "country": "United Kingdom",
+                    "posterarts": [
+                        "https://canvas-lb.tubitv.com/opts/8Zv1-xkVhHNQFw==/2cf46d46-6fa2-4025-8cd8-30555f8d607e/CJADEL4EOgUxLjEuOA=="
+                    ],
+                    "monetization": {
+                        "cue_points": [
+                            0.0,
+                            638.7999877929688,
+                            1401.2772216796875,
+                            2000.53173828125,
+                            2491.858154296875
+                        ]
+                    },
+                    "gracenote_id": "EP001040390015",
+                    "rt_fields": {
+                        "reviews": []
+                    },
+                    "description": "When a racist army sergeant tries to kill a young black private during routine exercises in the moors, the young man flees to Aidensfield, where he befriends Tom Sandford's son Daniel.",
+                    "version": 30,
+                    "ad_languages": [],
+                    "gn_fields": null,
+                    "backgrounds": [
+                        "https://canvas-lb.tubitv.com/opts/rcZULi59km8BHg==/2cf46d46-6fa2-4025-8cd8-30555f8d607e/CIAPELgIOgUxLjEuOA=="
+                    ],
+                    "episode_number": "5",
+                    "import_id": "filmrise",
+                    "landscape_images": [
+                        "https://canvas-lb.tubitv.com/opts/-KIiyxWZJLR-Gg==/2cf46d46-6fa2-4025-8cd8-30555f8d607e/CMADEPwBOgUxLjEuOA=="
+                    ],
+                    "trailers": [],
+                    "availability_ends": "2025-12-30T23:59:59.000Z",
+                    "needs_login": false,
+                    "type": "v",
+                    "subtitles": [
+                        {
+                            "url": "http://s.adrise.tv/2c1b6a8a-9605-4f38-8221-e55441343bda.srt",
+                            "lang": "English",
+                            "lang_alpha3": "eng",
+                            "lang_translation": "English"
+                        }
+                    ],
+                    "id": "511666",
+                    "lang": "English",
+                    "imdb_fields": null
+                },
+                {
+                    "video_preview_url": "",
+                    "publisher_id": "fce9d37fc5c71c2f4bd5e2847e766e55",
+                    "player_type": "tubi",
+                    "video_metadata": [],
+                    "images": {
+                        "backgrounds": [
+                            "https://canvas-lb.tubitv.com/opts/xam_9pZ3tF4vcQ==/aaf01e93-87a7-4279-9116-148085433ead/CM4MEIoHOgUxLjEuOA=="
+                        ],
+                        "hero_422": [
+                            "https://canvas-lb.tubitv.com/opts/Lx-lgz9mNtFl-Q==/aaf01e93-87a7-4279-9116-148085433ead/CKYDEOgCOgUxLjEuOA=="
+                        ],
+                        "hero_feature": [
+                            "https://canvas-lb.tubitv.com/opts/psO89NHWRwaD1w==/aaf01e93-87a7-4279-9116-148085433ead/CPMCEN8COgUxLjEuOA=="
+                        ],
+                        "hero_feature_desktop_tablet": [
+                            "https://canvas-lb.tubitv.com/opts/wARNqxdWmd4dMA==/aaf01e93-87a7-4279-9116-148085433ead/CIAPEIAGOgUxLjEuOA=="
+                        ],
+                        "hero_feature_large_mobile": [
+                            "https://canvas-lb.tubitv.com/opts/tOsmUuZsDdOcag==/aaf01e93-87a7-4279-9116-148085433ead/COAHEPADOgUxLjEuOA=="
+                        ],
+                        "hero_feature_small_mobile": [
+                            "https://canvas-lb.tubitv.com/opts/SoWf0R9xBSrYaQ==/aaf01e93-87a7-4279-9116-148085433ead/CJoEEMADOgUxLjEuOA=="
+                        ],
+                        "landscape_images": [
+                            "https://canvas-lb.tubitv.com/opts/PsbbRUEjQFLneA==/aaf01e93-87a7-4279-9116-148085433ead/CNcHEKgEOgUxLjEuOA=="
+                        ],
+                        "linear_larger_poster": [
+                            "https://canvas-lb.tubitv.com/opts/PsbbRUEjQFLneA==/aaf01e93-87a7-4279-9116-148085433ead/CNcHEKgEOgUxLjEuOA=="
+                        ],
+                        "posterarts": [
+                            "https://canvas-lb.tubitv.com/opts/CXMmKScGCKxANw==/aaf01e93-87a7-4279-9116-148085433ead/CJgDEMcEOgUxLjEuOA=="
+                        ],
+                        "title_art": []
+                    },
+                    "video_renditions": [],
+                    "video_previews": [],
+                    "tags": [
+                        "Drama",
+                        "Comedy",
+                        "Crime"
+                    ],
+                    "ratings": [
+                        {
+                            "code": "TV-PG",
+                            "system": "tvpg",
+                            "value": "TV-PG",
+                            "descriptors": []
+                        }
+                    ],
+                    "login_reason": "",
+                    "is_cdc": false,
+                    "video_resources": [
+                        {
+                            "type": "hlsv6",
+                            "codec": "VIDEO_CODEC_H265",
+                            "audio_tracks": [
+                                {
+                                    "type": "MAIN",
+                                    "lang": "English",
+                                    "display_name": "English"
+                                }
+                            ],
+                            "manifest": {
+                                "duration": 3206,
+                                "url": "https://cf.tubi.video/a13c827b-2f72-40db-8089-ddc4dc184ad2/0aar29wy72.m3u8?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZG5fcHJlZml4IjoiaHR0cHM6Ly9jZi50dWJpLnZpZGVvIiwiZXhwIjoxNzYzMzE5NjAwLCJtZWRpYV9zaWciOjcwODYyNzk3fQ.ZlEVY9DPXsPobEX9fRysaU6K0U0vt3TL4neomTMaBcY"
+                            },
+                            "titan_version": "",
+                            "resolution": "VIDEO_RESOLUTION_576P",
+                            "ssai_version": "",
+                            "generator_version": "zeus_3.2.2;zeus_3.2.2;zeus_3.2.2"
+                        },
+                        {
+                            "type": "hlsv6",
+                            "codec": "VIDEO_CODEC_H264",
+                            "audio_tracks": [
+                                {
+                                    "type": "MAIN",
+                                    "lang": "English",
+                                    "display_name": "English"
+                                }
+                            ],
+                            "manifest": {
+                                "duration": 3206,
+                                "url": "https://cf.tubi.video/a13c827b-2f72-40db-8089-ddc4dc184ad2/nmrusp9q89.m3u8?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZG5fcHJlZml4IjoiaHR0cHM6Ly9jZi50dWJpLnZpZGVvIiwiZXhwIjoxNzYzMzE5NjAwLCJtZWRpYV9zaWciOjcwODYyNzk3fQ.ZlEVY9DPXsPobEX9fRysaU6K0U0vt3TL4neomTMaBcY"
+                            },
+                            "titan_version": "",
+                            "resolution": "VIDEO_RESOLUTION_576P",
+                            "ssai_version": "",
+                            "generator_version": "zeus_3.2.2;zeus_3.2.2;zeus_3.2.2"
+                        }
+                    ],
+                    "thumbnails": [
+                        "https://canvas-lb.tubitv.com/opts/JaZTypy6ILXnmQ==/aaf01e93-87a7-4279-9116-148085433ead/CIAFEOgCOgUxLjEuOA=="
+                    ],
+                    "partner_id": null,
+                    "has_trailer": false,
+                    "actors": [
+                        "William Simons",
+                        "Nick Berry",
+                        "Derek Fowlds",
+                        "Tricia Penrose"
+                    ],
+                    "availability_starts": null,
+                    "has_subtitle": true,
+                    "url": "https://cf.tubi.video/a13c827b-2f72-40db-8089-ddc4dc184ad2/0aar29wy72.m3u8?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZG5fcHJlZml4IjoiaHR0cHM6Ly9jZi50dWJpLnZpZGVvIiwiZXhwIjoxNzYzMzE5NjAwLCJtZWRpYV9zaWciOjcwODYyNzk3fQ.ZlEVY9DPXsPobEX9fRysaU6K0U0vt3TL4neomTMaBcY",
+                    "policy_match": true,
+                    "canonical_id": "",
+                    "air_datetime": null,
+                    "directors": [
+                        "Tim Dowd",
+                        "Ken Horn"
+                    ],
+                    "series_id": "300004778",
+                    "title": "S02:E06 - Bang to Rights",
+                    "imdb_id": "tt0598794",
+                    "detailed_type": "episode",
+                    "hero_images": [
+                        "https://canvas-lb.tubitv.com/opts/0nWfG0swLkSodg==/aaf01e93-87a7-4279-9116-148085433ead/CIAPEKQFOgUxLjEuOA=="
+                    ],
+                    "availability_duration": 4415620,
+                    "duration": 3206,
+                    "updated_at": "2025-06-30T09:15:14.000Z",
+                    "display_episode_number": "6",
+                    "year": 1993,
+                    "version_id": "",
+                    "awards": {
+                        "items": []
+                    },
+                    "credit_cuepoints": {
+                        "postlude": 3139.052734375,
+                        "prologue": 0.0,
+                        "intro_start": 3.9917380809783936,
+                        "intro_end": 41.991981506347656,
+                        "recap_start": 0.0,
+                        "recap_end": 0.0,
+                        "earlycredits_start": 0.0,
+                        "earlycredits_end": 0.0,
+                        "prelogue": 0.0
+                    },
+                    "country": "United Kingdom",
+                    "posterarts": [
+                        "https://canvas-lb.tubitv.com/opts/FEOwyehzwfnQaQ==/aaf01e93-87a7-4279-9116-148085433ead/CJADEL4EOgUxLjEuOA=="
+                    ],
+                    "monetization": {
+                        "cue_points": [
+                            0.0,
+                            496.7545471191406,
+                            1248.0743408203125,
+                            2023.8863525390625,
+                            2734.72265625
+                        ]
+                    },
+                    "gracenote_id": "EP001040390016",
+                    "rt_fields": {
+                        "reviews": []
+                    },
+                    "description": "As Bellamy prepares for his wedding, Nick and Kate Rowan take on a cold case at the behest of Rosie Tinwood, who attempts suicide because she believes her husband has been wrongfully imprisoned.",
+                    "version": 37,
+                    "ad_languages": [],
+                    "gn_fields": null,
+                    "backgrounds": [
+                        "https://canvas-lb.tubitv.com/opts/IavjrFsfLhCkvw==/aaf01e93-87a7-4279-9116-148085433ead/CIAPELgIOgUxLjEuOA=="
+                    ],
+                    "episode_number": "6",
+                    "import_id": "filmrise",
+                    "landscape_images": [
+                        "https://canvas-lb.tubitv.com/opts/7kDav1OySYkudA==/aaf01e93-87a7-4279-9116-148085433ead/CMADEPwBOgUxLjEuOA=="
+                    ],
+                    "trailers": [],
+                    "availability_ends": "2025-12-30T23:59:59.000Z",
+                    "needs_login": false,
+                    "type": "v",
+                    "subtitles": [
+                        {
+                            "url": "http://s.adrise.tv/1672a5b5-4d0c-4eba-8a04-67ddf557da64.srt",
+                            "lang": "English",
+                            "lang_alpha3": "eng",
+                            "lang_translation": "English"
+                        }
+                    ],
+                    "id": "511665",
+                    "lang": "English",
+                    "imdb_fields": null
+                },
+                {
+                    "video_preview_url": "",
+                    "publisher_id": "fce9d37fc5c71c2f4bd5e2847e766e55",
+                    "player_type": "tubi",
+                    "video_metadata": [],
+                    "images": {
+                        "backgrounds": [
+                            "https://canvas-lb.tubitv.com/opts/EIby8n85wKxN3A==/426455bf-6b69-468a-a905-81e42d732ff0/CM4MEIoHOgUxLjEuOA=="
+                        ],
+                        "hero_422": [
+                            "https://canvas-lb.tubitv.com/opts/GR5trcWWL0L5Bg==/91f9a0ed-5647-4214-a15f-18c4703c2143/CKYDEOgCOgUxLjEuOA=="
+                        ],
+                        "hero_feature": [
+                            "https://canvas-lb.tubitv.com/opts/rBr_3KTGD7zr1g==/91f9a0ed-5647-4214-a15f-18c4703c2143/CPMCEN8COgUxLjEuOA=="
+                        ],
+                        "hero_feature_desktop_tablet": [
+                            "https://canvas-lb.tubitv.com/opts/i1KY-CqnEKq-oA==/8b8d6166-a9c0-4f23-8444-885f6d53586b/CIAPEIAGOgUxLjEuOA=="
+                        ],
+                        "hero_feature_large_mobile": [
+                            "https://canvas-lb.tubitv.com/opts/Tg0_s4XUlD_b0A==/8b8d6166-a9c0-4f23-8444-885f6d53586b/COAHEPADOgUxLjEuOA=="
+                        ],
+                        "hero_feature_small_mobile": [
+                            "https://canvas-lb.tubitv.com/opts/1lelgWjYHgUs9w==/91f9a0ed-5647-4214-a15f-18c4703c2143/CJoEEMADOgUxLjEuOA=="
+                        ],
+                        "landscape_images": [
+                            "https://canvas-lb.tubitv.com/opts/1A9Xi3LZ0qaNsw==/426455bf-6b69-468a-a905-81e42d732ff0/CNcHEKgEOgUxLjEuOA=="
+                        ],
+                        "linear_larger_poster": [
+                            "https://canvas-lb.tubitv.com/opts/1A9Xi3LZ0qaNsw==/426455bf-6b69-468a-a905-81e42d732ff0/CNcHEKgEOgUxLjEuOA=="
+                        ],
+                        "posterarts": [
+                            "https://canvas-lb.tubitv.com/opts/ml9M5JzIKbKVpw==/91f9a0ed-5647-4214-a15f-18c4703c2143/CJgDEMcEOgUxLjEuOA=="
+                        ],
+                        "title_art": []
+                    },
+                    "video_renditions": [],
+                    "video_previews": [],
+                    "tags": [
+                        "Drama",
+                        "Comedy",
+                        "Crime"
+                    ],
+                    "ratings": [
+                        {
+                            "code": "TV-PG",
+                            "system": "tvpg",
+                            "value": "TV-PG",
+                            "descriptors": []
+                        }
+                    ],
+                    "login_reason": "",
+                    "is_cdc": false,
+                    "video_resources": [
+                        {
+                            "type": "hlsv6",
+                            "codec": "VIDEO_CODEC_H265",
+                            "audio_tracks": [
+                                {
+                                    "type": "MAIN",
+                                    "lang": "English",
+                                    "display_name": "English"
+                                }
+                            ],
+                            "manifest": {
+                                "duration": 3179,
+                                "url": "https://cf.tubi.video/7472b1dc-77cc-4330-8922-f377be443d25/vx0qiw0foo.m3u8?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZG5fcHJlZml4IjoiaHR0cHM6Ly9jZi50dWJpLnZpZGVvIiwiZXhwIjoxNzYzMzE5NjAwLCJtZWRpYV9zaWciOjM3NTI4NjE2fQ.S53zixnshunBZhUqoxzIZVc8NdFOVqQb1QaXEH73kvg"
+                            },
+                            "titan_version": "",
+                            "resolution": "VIDEO_RESOLUTION_576P",
+                            "ssai_version": "",
+                            "generator_version": "zeus_3.2.2;zeus_3.2.2;zeus_3.2.2"
+                        },
+                        {
+                            "type": "hlsv6",
+                            "codec": "VIDEO_CODEC_H264",
+                            "audio_tracks": [
+                                {
+                                    "type": "MAIN",
+                                    "lang": "English",
+                                    "display_name": "English"
+                                }
+                            ],
+                            "manifest": {
+                                "duration": 3179,
+                                "url": "https://cf.tubi.video/7472b1dc-77cc-4330-8922-f377be443d25/jn5z41lqcm.m3u8?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZG5fcHJlZml4IjoiaHR0cHM6Ly9jZi50dWJpLnZpZGVvIiwiZXhwIjoxNzYzMzE5NjAwLCJtZWRpYV9zaWciOjM3NTI4NjE2fQ.S53zixnshunBZhUqoxzIZVc8NdFOVqQb1QaXEH73kvg"
+                            },
+                            "titan_version": "",
+                            "resolution": "VIDEO_RESOLUTION_576P",
+                            "ssai_version": "",
+                            "generator_version": "zeus_3.2.2;zeus_3.2.2;zeus_3.2.2"
+                        }
+                    ],
+                    "thumbnails": [
+                        "https://canvas-lb.tubitv.com/opts/CJ5WXjyhLbVTwg==/426455bf-6b69-468a-a905-81e42d732ff0/CIAFEOgCOgUxLjEuOA=="
+                    ],
+                    "partner_id": null,
+                    "has_trailer": false,
+                    "actors": [
+                        "William Simons",
+                        "Nick Berry",
+                        "Derek Fowlds",
+                        "Tricia Penrose"
+                    ],
+                    "availability_starts": null,
+                    "has_subtitle": true,
+                    "url": "https://cf.tubi.video/7472b1dc-77cc-4330-8922-f377be443d25/vx0qiw0foo.m3u8?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZG5fcHJlZml4IjoiaHR0cHM6Ly9jZi50dWJpLnZpZGVvIiwiZXhwIjoxNzYzMzE5NjAwLCJtZWRpYV9zaWciOjM3NTI4NjE2fQ.S53zixnshunBZhUqoxzIZVc8NdFOVqQb1QaXEH73kvg",
+                    "policy_match": true,
+                    "canonical_id": "",
+                    "air_datetime": null,
+                    "directors": [
+                        "Tim Dowd",
+                        "Ken Horn"
+                    ],
+                    "series_id": "300004778",
+                    "title": "S02:E07 - A Talent for Deception",
+                    "imdb_id": "tt0598777",
+                    "detailed_type": "episode",
+                    "hero_images": [
+                        "https://canvas-lb.tubitv.com/opts/2zuKCkLyZvp0XQ==/8b8d6166-a9c0-4f23-8444-885f6d53586b/CIAPEKQFOgUxLjEuOA=="
+                    ],
+                    "availability_duration": 4415620,
+                    "duration": 3179,
+                    "updated_at": "2025-06-30T09:13:05.000Z",
+                    "display_episode_number": "7",
+                    "year": 1993,
+                    "version_id": "",
+                    "awards": {
+                        "items": []
+                    },
+                    "credit_cuepoints": {
+                        "postlude": 3110.063720703125,
+                        "prologue": 0.0,
+                        "intro_start": 4.635608196258545,
+                        "intro_end": 41.5673713684082,
+                        "recap_start": 0.0,
+                        "recap_end": 0.0,
+                        "earlycredits_start": 0.0,
+                        "earlycredits_end": 0.0,
+                        "prelogue": 0.0
+                    },
+                    "country": "United Kingdom",
+                    "posterarts": [
+                        "https://canvas-lb.tubitv.com/opts/b0YHusxC7kSYMg==/91f9a0ed-5647-4214-a15f-18c4703c2143/CJADEL4EOgUxLjEuOA=="
+                    ],
+                    "monetization": {
+                        "cue_points": [
+                            0.0,
+                            452.99090576171875,
+                            904.9227294921875,
+                            1421.0,
+                            1908.4727783203125,
+                            2395.07275390625
+                        ]
+                    },
+                    "gracenote_id": "EP001040390017",
+                    "rt_fields": {
+                        "reviews": []
+                    },
+                    "description": "PC Rowan and PC Bellamy investigate a woman suspected of pulling off several bank robberies all around North Riding, but things get more complicated when their suspect moves into Aidensfield Arms.",
+                    "version": 33,
+                    "ad_languages": [],
+                    "gn_fields": null,
+                    "backgrounds": [
+                        "https://canvas-lb.tubitv.com/opts/BxvMwn0e73Rf1g==/426455bf-6b69-468a-a905-81e42d732ff0/CIAPELgIOgUxLjEuOA=="
+                    ],
+                    "episode_number": "7",
+                    "import_id": "filmrise",
+                    "landscape_images": [
+                        "https://canvas-lb.tubitv.com/opts/ASnB4zuxgjFRfg==/426455bf-6b69-468a-a905-81e42d732ff0/CMADEPwBOgUxLjEuOA=="
+                    ],
+                    "trailers": [],
+                    "availability_ends": "2025-12-30T23:59:59.000Z",
+                    "needs_login": false,
+                    "type": "v",
+                    "subtitles": [
+                        {
+                            "url": "http://s.adrise.tv/25ab6d54-d580-42be-b5cf-dcd14d5d954b.srt",
+                            "lang": "English",
+                            "lang_alpha3": "eng",
+                            "lang_translation": "English"
+                        }
+                    ],
+                    "id": "511664",
+                    "lang": "English",
+                    "imdb_fields": null
+                },
+                {
+                    "video_preview_url": "",
+                    "publisher_id": "fce9d37fc5c71c2f4bd5e2847e766e55",
+                    "player_type": "tubi",
+                    "video_metadata": [],
+                    "images": {
+                        "backgrounds": [
+                            "https://canvas-lb.tubitv.com/opts/NxeO0xaTls1xgw==/61f89c65-e856-4f20-a505-8bd5c4469f53/CM4MEIoHOgUxLjEuOA=="
+                        ],
+                        "hero_422": [
+                            "https://canvas-lb.tubitv.com/opts/iJs0R839vuJtsQ==/61f89c65-e856-4f20-a505-8bd5c4469f53/CKYDEOgCOgUxLjEuOA=="
+                        ],
+                        "hero_feature": [
+                            "https://canvas-lb.tubitv.com/opts/Cb0rs7mBGpaIwQ==/61f89c65-e856-4f20-a505-8bd5c4469f53/CPMCEN8COgUxLjEuOA=="
+                        ],
+                        "hero_feature_desktop_tablet": [
+                            "https://canvas-lb.tubitv.com/opts/Umk-Cq29399WHQ==/61f89c65-e856-4f20-a505-8bd5c4469f53/CIAPEIAGOgUxLjEuOA=="
+                        ],
+                        "hero_feature_large_mobile": [
+                            "https://canvas-lb.tubitv.com/opts/rMQRj0aKjIKJXA==/61f89c65-e856-4f20-a505-8bd5c4469f53/COAHEPADOgUxLjEuOA=="
+                        ],
+                        "hero_feature_small_mobile": [
+                            "https://canvas-lb.tubitv.com/opts/lfd4XhA_SEK62w==/61f89c65-e856-4f20-a505-8bd5c4469f53/CJoEEMADOgUxLjEuOA=="
+                        ],
+                        "landscape_images": [
+                            "https://canvas-lb.tubitv.com/opts/4VwIqzqQOn4O_A==/61f89c65-e856-4f20-a505-8bd5c4469f53/CNcHEKgEOgUxLjEuOA=="
+                        ],
+                        "linear_larger_poster": [
+                            "https://canvas-lb.tubitv.com/opts/4VwIqzqQOn4O_A==/61f89c65-e856-4f20-a505-8bd5c4469f53/CNcHEKgEOgUxLjEuOA=="
+                        ],
+                        "posterarts": [
+                            "https://canvas-lb.tubitv.com/opts/ALGkSvpP0-p80A==/61f89c65-e856-4f20-a505-8bd5c4469f53/CJgDEMcEOgUxLjEuOA=="
+                        ],
+                        "title_art": []
+                    },
+                    "video_renditions": [],
+                    "video_previews": [],
+                    "tags": [
+                        "Drama",
+                        "Comedy",
+                        "Crime"
+                    ],
+                    "ratings": [
+                        {
+                            "code": "TV-PG",
+                            "system": "tvpg",
+                            "value": "TV-PG",
+                            "descriptors": []
+                        }
+                    ],
+                    "login_reason": "",
+                    "is_cdc": false,
+                    "video_resources": [
+                        {
+                            "type": "hlsv6",
+                            "codec": "VIDEO_CODEC_H265",
+                            "audio_tracks": [
+                                {
+                                    "type": "MAIN",
+                                    "lang": "English",
+                                    "display_name": "English"
+                                }
+                            ],
+                            "manifest": {
+                                "duration": 3194,
+                                "url": "https://cf.tubi.video/75b5bcb8-6c77-4b4c-aba3-a0025a279656/vxmh1k554g.m3u8?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZG5fcHJlZml4IjoiaHR0cHM6Ly9jZi50dWJpLnZpZGVvIiwiZXhwIjoxNzYzMzE5NjAwLCJtZWRpYV9zaWciOjIzMjQ5MTE0fQ.CYXr4G1JfmHZIOUgNAUMKlYVITNlQPMwQg27nHPG5aw"
+                            },
+                            "titan_version": "",
+                            "resolution": "VIDEO_RESOLUTION_576P",
+                            "ssai_version": "",
+                            "generator_version": "zeus_3.2.2;zeus_3.2.2;zeus_3.2.2"
+                        },
+                        {
+                            "type": "hlsv6",
+                            "codec": "VIDEO_CODEC_H264",
+                            "audio_tracks": [
+                                {
+                                    "type": "MAIN",
+                                    "lang": "English",
+                                    "display_name": "English"
+                                }
+                            ],
+                            "manifest": {
+                                "duration": 3194,
+                                "url": "https://cf.tubi.video/75b5bcb8-6c77-4b4c-aba3-a0025a279656/pkygcqh532.m3u8?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZG5fcHJlZml4IjoiaHR0cHM6Ly9jZi50dWJpLnZpZGVvIiwiZXhwIjoxNzYzMzE5NjAwLCJtZWRpYV9zaWciOjIzMjQ5MTE0fQ.CYXr4G1JfmHZIOUgNAUMKlYVITNlQPMwQg27nHPG5aw"
+                            },
+                            "titan_version": "",
+                            "resolution": "VIDEO_RESOLUTION_576P",
+                            "ssai_version": "",
+                            "generator_version": "zeus_3.2.2;zeus_3.2.2;zeus_3.2.2"
+                        }
+                    ],
+                    "thumbnails": [
+                        "https://canvas-lb.tubitv.com/opts/kI2-pXAEYZy1Ww==/61f89c65-e856-4f20-a505-8bd5c4469f53/CIAFEOgCOgUxLjEuOA=="
+                    ],
+                    "partner_id": null,
+                    "has_trailer": false,
+                    "actors": [
+                        "William Simons",
+                        "Nick Berry",
+                        "Derek Fowlds",
+                        "Tricia Penrose"
+                    ],
+                    "availability_starts": null,
+                    "has_subtitle": true,
+                    "url": "https://cf.tubi.video/75b5bcb8-6c77-4b4c-aba3-a0025a279656/vxmh1k554g.m3u8?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZG5fcHJlZml4IjoiaHR0cHM6Ly9jZi50dWJpLnZpZGVvIiwiZXhwIjoxNzYzMzE5NjAwLCJtZWRpYV9zaWciOjIzMjQ5MTE0fQ.CYXr4G1JfmHZIOUgNAUMKlYVITNlQPMwQg27nHPG5aw",
+                    "policy_match": true,
+                    "canonical_id": "",
+                    "air_datetime": null,
+                    "directors": [
+                        "Tim Dowd",
+                        "Ken Horn"
+                    ],
+                    "series_id": "300004778",
+                    "title": "S02:E08 - Baby Blues",
+                    "imdb_id": "tt0598790",
+                    "detailed_type": "episode",
+                    "hero_images": [
+                        "https://canvas-lb.tubitv.com/opts/L9KCQxvsqhUPzQ==/61f89c65-e856-4f20-a505-8bd5c4469f53/CIAPEKQFOgUxLjEuOA=="
+                    ],
+                    "availability_duration": 4415620,
+                    "duration": 3194,
+                    "updated_at": "2025-06-30T09:17:01.000Z",
+                    "display_episode_number": "8",
+                    "year": 1993,
+                    "version_id": "",
+                    "awards": {
+                        "items": []
+                    },
+                    "credit_cuepoints": {
+                        "postlude": 3126.07275390625,
+                        "prologue": 0.0,
+                        "intro_start": 4.081395149230957,
+                        "intro_end": 42.89474868774414,
+                        "recap_start": 0.0,
+                        "recap_end": 0.0,
+                        "earlycredits_start": 0.0,
+                        "earlycredits_end": 0.0,
+                        "prelogue": 0.0
+                    },
+                    "country": "United Kingdom",
+                    "posterarts": [
+                        "https://canvas-lb.tubitv.com/opts/4CXpjXsVgGf2AQ==/61f89c65-e856-4f20-a505-8bd5c4469f53/CJADEL4EOgUxLjEuOA=="
+                    ],
+                    "monetization": {
+                        "cue_points": [
+                            0.0,
+                            455.14544677734375,
+                            1118.8773193359375,
+                            1710.0545654296875,
+                            2107.227294921875,
+                            2442.3818359375,
+                            2847.390869140625
+                        ]
+                    },
+                    "gracenote_id": "EP001040390018",
+                    "rt_fields": {
+                        "reviews": []
+                    },
+                    "description": "Marjorie Doubleday's granddaughter is kidnapped and suspicions fall on a group of roving hippies holed up in an abandoned hall; Greengrass has decided to train his new race horse on High Street.",
+                    "version": 39,
+                    "ad_languages": [],
+                    "gn_fields": null,
+                    "backgrounds": [
+                        "https://canvas-lb.tubitv.com/opts/zpBuQmO_p5iaxQ==/61f89c65-e856-4f20-a505-8bd5c4469f53/CIAPELgIOgUxLjEuOA=="
+                    ],
+                    "episode_number": "8",
+                    "import_id": "filmrise",
+                    "landscape_images": [
+                        "https://canvas-lb.tubitv.com/opts/MSowJROJoMSP1A==/61f89c65-e856-4f20-a505-8bd5c4469f53/CMADEPwBOgUxLjEuOA=="
+                    ],
+                    "trailers": [],
+                    "availability_ends": "2025-12-30T23:59:59.000Z",
+                    "needs_login": false,
+                    "type": "v",
+                    "subtitles": [
+                        {
+                            "url": "http://s.adrise.tv/f3258a5a-f0b7-47f9-9de4-5a99a3fb2ede.srt",
+                            "lang": "English",
+                            "lang_alpha3": "eng",
+                            "lang_translation": "English"
+                        }
+                    ],
+                    "id": "511895",
+                    "lang": "English",
+                    "imdb_fields": null
+                },
+                {
+                    "video_preview_url": "",
+                    "publisher_id": "fce9d37fc5c71c2f4bd5e2847e766e55",
+                    "player_type": "tubi",
+                    "video_metadata": [],
+                    "images": {
+                        "backgrounds": [
+                            "https://canvas-lb.tubitv.com/opts/VBPmKdT4ZaPlDg==/89a104d3-a324-4f91-b29c-4fc87d5b992e/CM4MEIoHOgUxLjEuOA=="
+                        ],
+                        "hero_422": [
+                            "https://canvas-lb.tubitv.com/opts/kq8ml6R5uHCBVA==/89a104d3-a324-4f91-b29c-4fc87d5b992e/CKYDEOgCOgUxLjEuOA=="
+                        ],
+                        "hero_feature": [
+                            "https://canvas-lb.tubitv.com/opts/5JuKrSmj_cK6hg==/89a104d3-a324-4f91-b29c-4fc87d5b992e/CPMCEN8COgUxLjEuOA=="
+                        ],
+                        "hero_feature_desktop_tablet": [
+                            "https://canvas-lb.tubitv.com/opts/KKUa0QYHzcp87g==/89a104d3-a324-4f91-b29c-4fc87d5b992e/CIAPEIAGOgUxLjEuOA=="
+                        ],
+                        "hero_feature_large_mobile": [
+                            "https://canvas-lb.tubitv.com/opts/Cs66MEB54e7MPg==/89a104d3-a324-4f91-b29c-4fc87d5b992e/COAHEPADOgUxLjEuOA=="
+                        ],
+                        "hero_feature_small_mobile": [
+                            "https://canvas-lb.tubitv.com/opts/z2Dm-CynStQRNA==/89a104d3-a324-4f91-b29c-4fc87d5b992e/CJoEEMADOgUxLjEuOA=="
+                        ],
+                        "landscape_images": [
+                            "https://canvas-lb.tubitv.com/opts/mOnkSP5THIgHkQ==/89a104d3-a324-4f91-b29c-4fc87d5b992e/CNcHEKgEOgUxLjEuOA=="
+                        ],
+                        "linear_larger_poster": [
+                            "https://canvas-lb.tubitv.com/opts/mOnkSP5THIgHkQ==/89a104d3-a324-4f91-b29c-4fc87d5b992e/CNcHEKgEOgUxLjEuOA=="
+                        ],
+                        "posterarts": [
+                            "https://canvas-lb.tubitv.com/opts/FtpvshVaPZiowg==/89a104d3-a324-4f91-b29c-4fc87d5b992e/CJgDEMcEOgUxLjEuOA=="
+                        ],
+                        "title_art": []
+                    },
+                    "video_renditions": [],
+                    "video_previews": [],
+                    "tags": [
+                        "Drama",
+                        "Comedy",
+                        "Crime"
+                    ],
+                    "ratings": [
+                        {
+                            "code": "TV-PG",
+                            "system": "tvpg",
+                            "value": "TV-PG",
+                            "descriptors": []
+                        }
+                    ],
+                    "login_reason": "",
+                    "is_cdc": false,
+                    "video_resources": [
+                        {
+                            "type": "hlsv6",
+                            "codec": "VIDEO_CODEC_H265",
+                            "audio_tracks": [
+                                {
+                                    "type": "MAIN",
+                                    "lang": "English",
+                                    "display_name": "English"
+                                }
+                            ],
+                            "manifest": {
+                                "duration": 3166,
+                                "url": "https://cf.tubi.video/8ffd4f30-04dc-4dc5-81e0-bc9c6d9412f5/o4jqixocwq.m3u8?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZG5fcHJlZml4IjoiaHR0cHM6Ly9jZi50dWJpLnZpZGVvIiwiZXhwIjoxNzYzMzE5NjAwLCJtZWRpYV9zaWciOjcxNzk5OTYxfQ.a2L9JwifEb8CaiZtAHn4MX1SVqmnKDd-5YyFe2J1dP4"
+                            },
+                            "titan_version": "",
+                            "resolution": "VIDEO_RESOLUTION_576P",
+                            "ssai_version": "",
+                            "generator_version": "zeus_3.2.2;zeus_3.2.2;zeus_3.2.2"
+                        },
+                        {
+                            "type": "hlsv6",
+                            "codec": "VIDEO_CODEC_H264",
+                            "audio_tracks": [
+                                {
+                                    "type": "MAIN",
+                                    "lang": "English",
+                                    "display_name": "English"
+                                }
+                            ],
+                            "manifest": {
+                                "duration": 3166,
+                                "url": "https://cf.tubi.video/8ffd4f30-04dc-4dc5-81e0-bc9c6d9412f5/tf0tmrn4fm.m3u8?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZG5fcHJlZml4IjoiaHR0cHM6Ly9jZi50dWJpLnZpZGVvIiwiZXhwIjoxNzYzMzE5NjAwLCJtZWRpYV9zaWciOjcxNzk5OTYxfQ.a2L9JwifEb8CaiZtAHn4MX1SVqmnKDd-5YyFe2J1dP4"
+                            },
+                            "titan_version": "",
+                            "resolution": "VIDEO_RESOLUTION_576P",
+                            "ssai_version": "",
+                            "generator_version": "zeus_3.2.2;zeus_3.2.2;zeus_3.2.2"
+                        }
+                    ],
+                    "thumbnails": [
+                        "https://canvas-lb.tubitv.com/opts/7K_ZpKr9zTV-cA==/89a104d3-a324-4f91-b29c-4fc87d5b992e/CIAFEOgCOgUxLjEuOA=="
+                    ],
+                    "partner_id": null,
+                    "has_trailer": false,
+                    "actors": [
+                        "William Simons",
+                        "Nick Berry",
+                        "Derek Fowlds",
+                        "Tricia Penrose"
+                    ],
+                    "availability_starts": null,
+                    "has_subtitle": true,
+                    "url": "https://cf.tubi.video/8ffd4f30-04dc-4dc5-81e0-bc9c6d9412f5/o4jqixocwq.m3u8?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZG5fcHJlZml4IjoiaHR0cHM6Ly9jZi50dWJpLnZpZGVvIiwiZXhwIjoxNzYzMzE5NjAwLCJtZWRpYV9zaWciOjcxNzk5OTYxfQ.a2L9JwifEb8CaiZtAHn4MX1SVqmnKDd-5YyFe2J1dP4",
+                    "policy_match": true,
+                    "canonical_id": "",
+                    "air_datetime": null,
+                    "directors": [
+                        "Tim Dowd",
+                        "Ken Horn"
+                    ],
+                    "series_id": "300004778",
+                    "title": "S02:E09 - Wall of Silence",
+                    "imdb_id": "tt0599038",
+                    "detailed_type": "episode",
+                    "hero_images": [
+                        "https://canvas-lb.tubitv.com/opts/NL9bQ5Gs3YeWWg==/89a104d3-a324-4f91-b29c-4fc87d5b992e/CIAPEKQFOgUxLjEuOA=="
+                    ],
+                    "availability_duration": 4415620,
+                    "duration": 3166,
+                    "updated_at": "2025-06-30T09:21:47.000Z",
+                    "display_episode_number": "9",
+                    "year": 1993,
+                    "version_id": "",
+                    "awards": {
+                        "items": []
+                    },
+                    "credit_cuepoints": {
+                        "postlude": 3099.054443359375,
+                        "prologue": 0.0,
+                        "intro_start": 4.303595066070557,
+                        "intro_end": 41.9786491394043,
+                        "recap_start": 0.0,
+                        "recap_end": 0.0,
+                        "earlycredits_start": 0.0,
+                        "earlycredits_end": 0.0,
+                        "prelogue": 0.0
+                    },
+                    "country": "United Kingdom",
+                    "posterarts": [
+                        "https://canvas-lb.tubitv.com/opts/8nNMKltzfx3OxA==/89a104d3-a324-4f91-b29c-4fc87d5b992e/CJADEL4EOgUxLjEuOA=="
+                    ],
+                    "monetization": {
+                        "cue_points": [
+                            0.0,
+                            513.9954833984375,
+                            920.2045288085938,
+                            1369.581787109375,
+                            1784.4090576171875,
+                            2245.486328125,
+                            2723.291015625
+                        ]
+                    },
+                    "gracenote_id": "EP001040390019",
+                    "rt_fields": {
+                        "reviews": []
+                    },
+                    "description": "A daring heist threatens the reputation of Lord Ashfordly and his guest: a high-powered chief constable of North Riding. Meanwhile, young Susan Rawlings is rushed to the hospital.",
+                    "version": 34,
+                    "ad_languages": [],
+                    "gn_fields": null,
+                    "backgrounds": [
+                        "https://canvas-lb.tubitv.com/opts/TBAnkeLcx-CNMQ==/89a104d3-a324-4f91-b29c-4fc87d5b992e/CIAPELgIOgUxLjEuOA=="
+                    ],
+                    "episode_number": "9",
+                    "import_id": "filmrise",
+                    "landscape_images": [
+                        "https://canvas-lb.tubitv.com/opts/6ftA7srbN7ZGzg==/89a104d3-a324-4f91-b29c-4fc87d5b992e/CMADEPwBOgUxLjEuOA=="
+                    ],
+                    "trailers": [],
+                    "availability_ends": "2025-12-30T23:59:59.000Z",
+                    "needs_login": false,
+                    "type": "v",
+                    "subtitles": [
+                        {
+                            "url": "http://s.adrise.tv/f2ff541a-c256-4efa-bfce-0d7471dbb289.srt",
+                            "lang": "English",
+                            "lang_alpha3": "eng",
+                            "lang_translation": "English"
+                        }
+                    ],
+                    "id": "511663",
+                    "lang": "English",
+                    "imdb_fields": null
+                },
+                {
+                    "video_preview_url": "",
+                    "publisher_id": "fce9d37fc5c71c2f4bd5e2847e766e55",
+                    "player_type": "tubi",
+                    "video_metadata": [],
+                    "images": {
+                        "backgrounds": [
+                            "https://canvas-lb.tubitv.com/opts/HWyC-iSJs0VsoQ==/ef1e5b00-7e13-4626-a5e2-a49f8c0c197a/CM4MEIoHOgUxLjEuOA=="
+                        ],
+                        "hero_422": [
+                            "https://canvas-lb.tubitv.com/opts/zyMo6-BlRGu2Yg==/ef1e5b00-7e13-4626-a5e2-a49f8c0c197a/CKYDEOgCOgUxLjEuOA=="
+                        ],
+                        "hero_feature": [
+                            "https://canvas-lb.tubitv.com/opts/4pwJjHlUhogtHw==/ef1e5b00-7e13-4626-a5e2-a49f8c0c197a/CPMCEN8COgUxLjEuOA=="
+                        ],
+                        "hero_feature_desktop_tablet": [
+                            "https://canvas-lb.tubitv.com/opts/JSoRtVC7-A_anA==/ef1e5b00-7e13-4626-a5e2-a49f8c0c197a/CIAPEIAGOgUxLjEuOA=="
+                        ],
+                        "hero_feature_large_mobile": [
+                            "https://canvas-lb.tubitv.com/opts/3Ajmwhs7X53P-Q==/ef1e5b00-7e13-4626-a5e2-a49f8c0c197a/COAHEPADOgUxLjEuOA=="
+                        ],
+                        "hero_feature_small_mobile": [
+                            "https://canvas-lb.tubitv.com/opts/rOf_jeHkKAvIAw==/ef1e5b00-7e13-4626-a5e2-a49f8c0c197a/CJoEEMADOgUxLjEuOA=="
+                        ],
+                        "landscape_images": [
+                            "https://canvas-lb.tubitv.com/opts/PyCsUu7C7G2v_Q==/ef1e5b00-7e13-4626-a5e2-a49f8c0c197a/CNcHEKgEOgUxLjEuOA=="
+                        ],
+                        "linear_larger_poster": [
+                            "https://canvas-lb.tubitv.com/opts/PyCsUu7C7G2v_Q==/ef1e5b00-7e13-4626-a5e2-a49f8c0c197a/CNcHEKgEOgUxLjEuOA=="
+                        ],
+                        "posterarts": [
+                            "https://canvas-lb.tubitv.com/opts/CdPp-46cFS0y4w==/ef1e5b00-7e13-4626-a5e2-a49f8c0c197a/CJgDEMcEOgUxLjEuOA=="
+                        ],
+                        "title_art": []
+                    },
+                    "video_renditions": [],
+                    "video_previews": [],
+                    "tags": [
+                        "Drama",
+                        "Comedy",
+                        "Crime"
+                    ],
+                    "ratings": [
+                        {
+                            "code": "TV-PG",
+                            "system": "tvpg",
+                            "value": "TV-PG",
+                            "descriptors": []
+                        }
+                    ],
+                    "login_reason": "",
+                    "is_cdc": false,
+                    "video_resources": [
+                        {
+                            "type": "hlsv6",
+                            "codec": "VIDEO_CODEC_H265",
+                            "audio_tracks": [
+                                {
+                                    "type": "MAIN",
+                                    "lang": "English",
+                                    "display_name": "English"
+                                }
+                            ],
+                            "manifest": {
+                                "duration": 3193,
+                                "url": "https://cf.tubi.video/ccff770e-39de-4ded-982c-b86bf32808f2/4bj0h3wph8.m3u8?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZG5fcHJlZml4IjoiaHR0cHM6Ly9jZi50dWJpLnZpZGVvIiwiZXhwIjoxNzYzMzE5NjAwLCJtZWRpYV9zaWciOjI5NDg0NjYzfQ.HzhVwmGSo73dzNXgl1nbUMA3T-zOvL1vlBVbnZPlhAI"
+                            },
+                            "titan_version": "",
+                            "resolution": "VIDEO_RESOLUTION_576P",
+                            "ssai_version": "",
+                            "generator_version": "zeus_3.2.2;zeus_3.2.2;zeus_3.2.2"
+                        },
+                        {
+                            "type": "hlsv6",
+                            "codec": "VIDEO_CODEC_H264",
+                            "audio_tracks": [
+                                {
+                                    "type": "MAIN",
+                                    "lang": "English",
+                                    "display_name": "English"
+                                }
+                            ],
+                            "manifest": {
+                                "duration": 3193,
+                                "url": "https://cf.tubi.video/ccff770e-39de-4ded-982c-b86bf32808f2/muy70yrko4.m3u8?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZG5fcHJlZml4IjoiaHR0cHM6Ly9jZi50dWJpLnZpZGVvIiwiZXhwIjoxNzYzMzE5NjAwLCJtZWRpYV9zaWciOjI5NDg0NjYzfQ.HzhVwmGSo73dzNXgl1nbUMA3T-zOvL1vlBVbnZPlhAI"
+                            },
+                            "titan_version": "",
+                            "resolution": "VIDEO_RESOLUTION_576P",
+                            "ssai_version": "",
+                            "generator_version": "zeus_3.2.2;zeus_3.2.2;zeus_3.2.2"
+                        }
+                    ],
+                    "thumbnails": [
+                        "https://canvas-lb.tubitv.com/opts/bVnH6pHVWYRbpA==/ef1e5b00-7e13-4626-a5e2-a49f8c0c197a/CIAFEOgCOgUxLjEuOA=="
+                    ],
+                    "partner_id": null,
+                    "has_trailer": false,
+                    "actors": [
+                        "William Simons",
+                        "Nick Berry",
+                        "Derek Fowlds",
+                        "Tricia Penrose"
+                    ],
+                    "availability_starts": null,
+                    "has_subtitle": true,
+                    "url": "https://cf.tubi.video/ccff770e-39de-4ded-982c-b86bf32808f2/4bj0h3wph8.m3u8?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZG5fcHJlZml4IjoiaHR0cHM6Ly9jZi50dWJpLnZpZGVvIiwiZXhwIjoxNzYzMzE5NjAwLCJtZWRpYV9zaWciOjI5NDg0NjYzfQ.HzhVwmGSo73dzNXgl1nbUMA3T-zOvL1vlBVbnZPlhAI",
+                    "policy_match": true,
+                    "canonical_id": "",
+                    "air_datetime": null,
+                    "directors": [
+                        "Tim Dowd",
+                        "Ken Horn"
+                    ],
+                    "series_id": "300004778",
+                    "title": "S02:E10 - Missing",
+                    "imdb_id": "tt0598913",
+                    "detailed_type": "episode",
+                    "hero_images": [
+                        "https://canvas-lb.tubitv.com/opts/mBtxdUiJaAti2g==/ef1e5b00-7e13-4626-a5e2-a49f8c0c197a/CIAPEKQFOgUxLjEuOA=="
+                    ],
+                    "availability_duration": 4415620,
+                    "duration": 3193,
+                    "updated_at": "2025-06-30T09:28:35.000Z",
+                    "display_episode_number": "10",
+                    "year": 1993,
+                    "version_id": "",
+                    "awards": {
+                        "items": []
+                    },
+                    "credit_cuepoints": {
+                        "postlude": 3125.0537109375,
+                        "prologue": 0.0,
+                        "intro_start": 4.103949069976807,
+                        "intro_end": 43.14599609375,
+                        "recap_start": 0.0,
+                        "recap_end": 0.0,
+                        "earlycredits_start": 0.0,
+                        "earlycredits_end": 0.0,
+                        "prelogue": 0.0
+                    },
+                    "country": "United Kingdom",
+                    "posterarts": [
+                        "https://canvas-lb.tubitv.com/opts/cYBeMGZmgyNGMg==/ef1e5b00-7e13-4626-a5e2-a49f8c0c197a/CJADEL4EOgUxLjEuOA=="
+                    ],
+                    "monetization": {
+                        "cue_points": [
+                            0.0,
+                            433.66363525390625,
+                            954.4454345703125,
+                            1439.009033203125,
+                            1918.3046875,
+                            2366.3955078125
+                        ]
+                    },
+                    "gracenote_id": "EP001040390020",
+                    "rt_fields": {
+                        "reviews": []
+                    },
+                    "description": "5-year-old Brian Currie goes missing from Mrs. Plummer's camp site, and a patient of Kate's believes her son might have something to do with the disappearance.",
+                    "version": 33,
+                    "ad_languages": [],
+                    "gn_fields": null,
+                    "backgrounds": [
+                        "https://canvas-lb.tubitv.com/opts/HefrTQXUULzq7Q==/ef1e5b00-7e13-4626-a5e2-a49f8c0c197a/CIAPELgIOgUxLjEuOA=="
+                    ],
+                    "episode_number": "10",
+                    "import_id": "filmrise",
+                    "landscape_images": [
+                        "https://canvas-lb.tubitv.com/opts/BRiq0aUUasBNrQ==/ef1e5b00-7e13-4626-a5e2-a49f8c0c197a/CMADEPwBOgUxLjEuOA=="
+                    ],
+                    "trailers": [],
+                    "availability_ends": "2025-12-30T23:59:59.000Z",
+                    "needs_login": false,
+                    "type": "v",
+                    "subtitles": [
+                        {
+                            "url": "http://s.adrise.tv/876d8851-bd36-4d26-b435-e8510413bb34.srt",
+                            "lang": "English",
+                            "lang_alpha3": "eng",
+                            "lang_translation": "English"
+                        }
+                    ],
+                    "id": "511662",
+                    "lang": "English",
+                    "imdb_fields": null
+                }
+            ],
+            "posterarts": []
+        }
+    ],
+    "has_subtitle": true,
+    "policy_match": true,
+    "canonical_id": "",
+    "channel_id": "filmriseclassictv",
+    "air_datetime": null,
+    "directors": [],
+    "title": "Heartbeat",
+    "imdb_id": "tt0101114",
+    "detailed_type": "series",
+    "hero_images": [
+        "https://canvas-lb.tubitv.com/opts/YF9piAK8x1CuFA==/651a6e09-c7b0-4752-ac62-2055cf1ce30b/CIAPEKQFOgUxLjEuOA=="
+    ],
+    "availability_duration": null,
+    "updated_at": "2025-01-24T05:40:03.000Z",
+    "year": 1996,
+    "version_id": "",
+    "awards": {
+        "items": []
+    },
+    "country": "United Kingdom",
+    "posterarts": [
+        "https://canvas-lb.tubitv.com/opts/u9v8EBuwQux-jA==/2a92aa03-7cfe-4aa4-ab6b-89f24b2c64c9/CJADEL4EOgUxLjEuOA=="
+    ],
+    "gracenote_id": "SH001040390000",
+    "rt_fields": null,
+    "description": "The long-running popular series set in a 1960s small English town where the lives of the police constabulary, medical staff, and residents intertwine.",
+    "version": 68,
+    "ad_languages": [],
+    "gn_fields": null,
+    "backgrounds": [
+        "https://canvas-lb.tubitv.com/opts/YKk8cEooBrlFgg==/3c211616-80bc-4b68-b264-aa47b07f8eaa/CIAPELgIOgUxLjEuOA=="
+    ],
+    "channel_logo": "http://cdn.adrise.tv/image/channels/filmriseclassictv/logo_long.png",
+    "is_recurring": false,
+    "import_id": "filmrise",
+    "landscape_images": [
+        "https://canvas-lb.tubitv.com/opts/g8saJt_Zn0EFFg==/74fa79cb-8f23-4e30-9944-0eeee5cdf466/CMADEPwBOgUxLjEuOA=="
+    ],
+    "trailers": [],
+    "availability_ends": "2025-12-30T23:59:59.000Z",
+    "needs_login": false,
+    "type": "s",
+    "channel_name": "FilmRise",
+    "subtitles": [
+        {
+            "url": "",
+            "lang": "English",
+            "lang_alpha3": "eng",
+            "lang_translation": "English"
+        }
+    ],
+    "id": "300004778",
+    "lang": "English",
+    "imdb_fields": null
+}
