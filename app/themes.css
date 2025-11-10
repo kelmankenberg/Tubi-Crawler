@@ -1,0 +1,65 @@
+:root {
+  --vscode-light-foreground: #616161;
+  --vscode-light-background: #ffffff;
+  --vscode-light-editor-background: #ffffff;
+  --vscode-light-input-background: #ffffff;
+  --vscode-light-input-border: #cccccc;
+  --vscode-light-button-background: #007acc;
+  --vscode-light-button-foreground: #ffffff;
+  --vscode-light-button-hover-background: #005a9e;
+  --vscode-light-secondary-button-background: #6c757d;
+  --vscode-light-secondary-button-hover-background: #5a6268;
+  --vscode-light-toolbar-background: #f3f3f3;
+  --vscode-light-log-background: #f3f3f3;
+  --vscode-light-log-foreground: #616161;
+  --vscode-light-border-color: #dddddd;
+
+  --vscode-dark-foreground: #cccccc;
+  --vscode-dark-background: #1e1e1e;
+  --vscode-dark-editor-background: #1e1e1e;
+  --vscode-dark-input-background: #3c3c3c;
+  --vscode-dark-input-border: #3c3c3c;
+  --vscode-dark-button-background: #0e639c;
+  --vscode-dark-button-foreground: #ffffff;
+  --vscode-dark-button-hover-background: #1177bb;
+  --vscode-dark-secondary-button-background: #5a6268;
+  --vscode-dark-secondary-button-hover-background: #494f54;
+  --vscode-dark-toolbar-background: #333333;
+  --vscode-dark-log-background: #252526;
+  --vscode-dark-log-foreground: #cccccc;
+  --vscode-dark-border-color: #444444;
+}
+
+body[data-theme='light'] {
+  --foreground: var(--vscode-light-foreground);
+  --background: var(--vscode-light-background);
+  --editor-background: var(--vscode-light-editor-background);
+  --input-background: var(--vscode-light-input-background);
+  --input-border: var(--vscode-light-input-border);
+  --button-background: var(--vscode-light-button-background);
+  --button-foreground: var(--vscode-light-button-foreground);
+  --button-hover-background: var(--vscode-light-button-hover-background);
+  --secondary-button-background: var(--vscode-light-secondary-button-background);
+  --secondary-button-hover-background: var(--vscode-light-secondary-button-hover-background);
+  --toolbar-background: var(--vscode-light-toolbar-background);
+  --log-background: var(--vscode-light-log-background);
+  --log-foreground: var(--vscode-light-log-foreground);
+  --border-color: var(--vscode-light-border-color);
+}
+
+body[data-theme='dark'] {
+  --foreground: var(--vscode-dark-foreground);
+  --background: var(--vscode-dark-background);
+  --editor-background: var(--vscode-dark-editor-background);
+  --input-background: var(--vscode-dark-input-background);
+  --input-border: var(--vscode-dark-input-border);
+  --button-background: var(--vscode-dark-button-background);
+  --button-foreground: var(--vscode-dark-button-foreground);
+  --button-hover-background: var(--vscode-dark-button-hover-background);
+  --secondary-button-background: var(--vscode-dark-secondary-button-background);
+  --secondary-button-hover-background: var(--vscode-dark-secondary-button-hover-background);
+  --toolbar-background: var(--vscode-dark-toolbar-background);
+  --log-background: var(--vscode-dark-log-background);
+  --log-foreground: var(--vscode-dark-log-foreground);
+  --border-color: var(--vscode-dark-border-color);
+}

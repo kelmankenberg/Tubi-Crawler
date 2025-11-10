@@ -129,10 +129,35 @@ closeBtn.addEventListener('click', () => {
 
 // More button event listener
 const moreBtn = document.getElementById('moreBtn');
+const moreMenu = document.getElementById('moreMenu');
+const lightThemeBtn = document.getElementById('lightThemeBtn');
+const darkThemeBtn = document.getElementById('darkThemeBtn');
+const systemThemeBtn = document.getElementById('systemThemeBtn');
+
 moreBtn.addEventListener('click', () => {
-  console.log('More button clicked!');
-  log.textContent = 'More button clicked! (Menu functionality to be added)';
+  moreMenu.classList.toggle('show');
 });
+
+lightThemeBtn.addEventListener('click', () => {
+  document.body.setAttribute('data-theme', 'light');
+  moreMenu.classList.remove('show');
+});
+
+darkThemeBtn.addEventListener('click', () => {
+  document.body.setAttribute('data-theme', 'dark');
+  moreMenu.classList.remove('show');
+});
+
+systemThemeBtn.addEventListener('click', () => {
+  ipcRenderer.send('get-system-theme');
+  moreMenu.classList.remove('show');
+});
+
+// Set initial theme
+ipcRenderer.on('system-theme', (event, theme) => {
+  document.body.setAttribute('data-theme', theme);
+});
+ipcRenderer.send('get-system-theme');
 
 ipcRenderer.on('log', (event, message) => {
   if (message.startsWith('Crawling')) {

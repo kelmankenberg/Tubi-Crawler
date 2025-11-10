@@ -1,6 +1,10 @@
-const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, nativeTheme } = require('electron');
 const path = require('path');
 const puppeteer = require('puppeteer');
+
+ipcMain.on('get-system-theme', (event) => {
+  event.reply('system-theme', nativeTheme.shouldUseDarkColors ? 'dark' : 'light');
+});
 
 function createWindow () {
   const win = new BrowserWindow({

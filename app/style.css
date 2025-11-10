@@ -4,8 +4,8 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  background-color: #f0f2f5;
-  color: #333;
+  background-color: var(--background);
+  color: var(--foreground);
   margin: 0; /* Remove all margins from body */
   padding: 20px; /* Apply consistent padding to body */
   padding-top: 0px;
@@ -19,8 +19,8 @@ body {
   justify-content: space-between; /* Pushes items to ends */
   align-items: center;
   padding: 10px 0; /* Remove horizontal padding, body padding will handle it */
-  background-color: #ffffff; /* White background for top bar */
-  border-bottom: 1px solid #dee2e6;
+  background-color: var(--toolbar-background); /* White background for top bar */
+  border-bottom: 1px solid var(--border-color);
   margin-bottom: 15px; /* Space below the top toolbar */
   border-radius: 0; /* Remove border-radius for full width */
   margin-left: -20px; /* Compensate for body padding */
@@ -33,7 +33,7 @@ body {
 .top-toolbar h1 {
   margin-bottom: 0; /* Remove margin from h1 when inside top-toolbar */
   font-size: 20px; /* Slightly smaller font for toolbar title */
-  color: #2c3e50;
+  color: var(--foreground);
   -webkit-app-region: no-drag; /* Make h1 not draggable */
 }
 
@@ -48,13 +48,13 @@ body {
   border: none;
   padding: 8px 12px; /* Adjusted padding for larger icons */
   border-radius: 4px;
-  color: #6c757d; /* Icon color */
+  color: var(--foreground); /* Icon color */
   transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
 }
 
 .top-toolbar-right button:hover {
-  background-color: #e0e0e0;
-  color: #333;
+  background-color: var(--button-hover-background);
+  color: var(--button-foreground);
 }
 
 .top-toolbar-right button:active {
@@ -70,7 +70,7 @@ body {
 }
 
 h1 {
-  color: #2c3e50;
+  color: var(--foreground);
   font-size: 24px;
   margin-bottom: 15px; /* Added margin-bottom */
 }
@@ -90,7 +90,9 @@ h1 {
 
 input[type="text"] {
   padding: 10px 12px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--input-border);
+  background-color: var(--input-background);
+  color: var(--foreground);
   border-radius: 8px;
   font-size: 16px;
   width: 100%;
@@ -99,15 +101,15 @@ input[type="text"] {
 }
 
 input[type="text"]:focus {
-  border-color: #007bff;
+  border-color: var(--button-background);
   box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
   outline: none;
 }
 
 button {
   padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
+  background-color: var(--button-background);
+  color: var(--button-foreground);
   border: none;
   border-radius: 8px;
   font-size: 16px;
@@ -116,7 +118,7 @@ button {
 }
 
 button:hover {
-  background-color: #0056b3;
+  background-color: var(--button-hover-background);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -126,14 +128,14 @@ button:active {
 }
 
 pre {
-  background-color: #e9ecef;
-  border: 1px solid #dee2e6;
+  background-color: var(--log-background);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 10px; /* Remove horizontal padding, body padding will handle it */
   white-space: pre-wrap;
   word-break: break-all;
   font-size: 14px;
-  color: #495057;
+  color: var(--log-foreground);
   margin-bottom: 15px; /* Added margin-bottom */
 }
 
@@ -142,8 +144,8 @@ pre {
   gap: 8px;
   /* margin-bottom: 5px; Removed to connect with textarea */
   padding: 5px 0; /* Remove horizontal padding, body padding will handle it */
-  background-color: #e9ecef;
-  border: 1px solid #dee2e6;
+  background-color: var(--toolbar-background);
+  border: 1px solid var(--border-color);
   border-bottom: none; /* Remove bottom border to connect with textarea */
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
@@ -154,7 +156,7 @@ pre {
 .toolbar button {
   padding: 6px 12px;
   font-size: 14px;
-  background-color: #6c757d; /* A slightly different color for toolbar buttons */
+  background-color: var(--secondary-button-background); /* A slightly different color for toolbar buttons */
   display: flex; /* Use flexbox for icon and text alignment */
   align-items: center;
   justify-content: center;
@@ -168,7 +170,7 @@ pre {
 }
 
 .toolbar button:hover {
-  background-color: #5a6268;
+  background-color: var(--secondary-button-hover-background);
 }
 
 .toolbar button:active {
@@ -177,7 +179,9 @@ pre {
 
 textarea {
   padding: 10px 0; /* Remove horizontal padding, body padding will handle it */
-  border: 1px solid #ccc;
+  border: 1px solid var(--input-border);
+  background-color: var(--input-background);
+  color: var(--foreground);
   border-top: none; /* Remove top border to connect with toolbar */
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
@@ -189,4 +193,41 @@ textarea {
   box-sizing: border-box;
   resize: vertical;
   transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: var(--background);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+}
+
+.menu.show {
+  display: block;
+}
+
+.theme-switcher {
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+}
+
+.theme-switcher button {
+  background-color: transparent;
+  border: none;
+  color: var(--foreground);
+  padding: 8px 12px;
+  text-align: left;
+  width: 100%;
+  border-radius: 3px;
+}
+
+.theme-switcher button:hover {
+  background-color: var(--button-hover-background);
+  color: var(--button-foreground);
 }
