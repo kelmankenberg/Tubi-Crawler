@@ -50,14 +50,65 @@ window.addEventListener('DOMContentLoaded', () => {
   // Get references to More menu elements
   const moreBtn = document.getElementById('moreBtn');
   const moreMenu = document.getElementById('moreMenu');
+  const openBrowserBtn = document.getElementById('openBrowserBtn');
 
   // Get references to YT-DLP menu elements
   const ytDlpBtn = document.getElementById('ytDlpBtn');
   const ytDlpMenu = document.getElementById('ytDlpMenu');
   const downloadSelectedBtn = document.getElementById('downloadSelectedBtn');
-  const downloadAllBtn = document.getElementById('downloadAllBtn'); // Corrected typo here
+  const downloadAllBtn = document.getElementById('downloadAllBtn');
   const restartBtn = document.getElementById('restartBtn');
   const devToolsBtn = document.getElementById('devToolsBtn');
+
+  async function executeYtDlpCommand(urlsToDownload) {
+    const downloadPath = downloadPathInput.value;
+    const formatString = formatStringInput.value;
+    const mergeOutputFormat = mergeOutputFormatSelect.value;
+
+    if (!downloadPath) {
+      log.textContent = 'Please set a download location in settings.';
+      return;
+    }
+
+    log.textContent = `Initiating YT-DLP download for ${urlsToDownload.length} URLs...\n`;
+    try {
+      const result = await ipcRenderer.invoke('run-yt-dlp', {
+        urls: urlsToDownload,
+        downloadPath: downloadPath,
+        format: formatString,
+        mergeFormat: mergeOutputFormat
+      });
+      if (result.success) {
+        log.textContent += `YT-DLP command executed successfully. Check external terminal.\n`;
+      } else {
+        log.textContent += `Error executing YT-DLP command: ${result.error}\n`;
+      }
+    } catch (error) {
+      log.textContent += `Error invoking YT-DLP: ${error.message}\n`;
+    }
+  }
+
+  // YT-DLP menu item event listeners
+  downloadSelectedBtn.addEventListener('click', () => {
+    const selectedUrls = outputUrls.value.substring(outputUrls.selectionStart, outputUrls.selectionEnd).trim();
+    if (selectedUrls) {
+      executeYtDlpCommand(selectedUrls.split(/\s+/));
+    } else {
+      log.textContent = 'No URLs selected for download.';
+    }
+    ytDlpMenu.classList.remove('show');
+  });
+
+  downloadAllBtn.addEventListener('click', () => {
+    const allUrls = outputUrls.value.trim();
+    if (allUrls) {
+      executeYtDlpCommand(allUrls.split(/\s+/));
+    }
+    else {
+      log.textContent = 'No URLs to download.';
+    }
+    ytDlpMenu.classList.remove('show');
+  });
   const settingsBtn = document.getElementById('settingsBtn');
   const settingsModal = document.getElementById('settingsModal');
   const closeModalBtn = settingsModal.querySelector('.close-button');
@@ -71,6 +122,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const browseDownloadPathBtn = document.getElementById('browse-download-path');
   const formatStringInput = document.getElementById('format-string');
   const mergeOutputFormatSelect = document.getElementById('merge-output-format');
+  const preferredBrowserSelect = document.getElementById('preferred-browser');
 
   // Initial icon state (assuming window is not maximized on start)
   updateMaximizeRestoreIcon(false);
@@ -193,6 +245,23 @@ window.addEventListener('DOMContentLoaded', () => {
     ipcRenderer.invoke('close-window');
   });
 
+  openBrowserBtn.addEventListener('click', async () => {
+    console.log('Open Browser button clicked.'); // Diagnostic log
+    const url = 'https://tubitv.com/'; // Hardcoded URL for this button
+    // No need for a check if (!url) as it's hardcoded
+
+    const preferredBrowser = localStorage.getItem('preferred-browser') || 'external';
+    console.log('Preferred Browser setting:', preferredBrowser); // Diagnostic log
+
+    if (preferredBrowser === 'external') {
+      ipcRenderer.invoke('open-external-browser', url);
+      log.textContent = `Opening ${url} in external browser.`;
+    } else {
+      ipcRenderer.invoke('open-internal-browser', url);
+      log.textContent = `Opening ${url} in internal browser.`;
+    }
+  });
+
   // More menu event listeners
   moreBtn.addEventListener('click', (event) => {
     event.stopPropagation(); // Prevent immediate closing by global listener
@@ -259,6 +328,19 @@ window.addEventListener('DOMContentLoaded', () => {
   } else {
     // Set default value if not found in localStorage
     mergeOutputFormatSelect.value = "mp4";
+  }
+
+  // Save preferred browser to localStorage whenever it changes
+  preferredBrowserSelect.addEventListener('change', () => {
+    localStorage.setItem('preferred-browser', preferredBrowserSelect.value);
+  });
+
+  // Load saved preferred browser on startup, or set default
+  if (localStorage.getItem('preferred-browser')) {
+    preferredBrowserSelect.value = localStorage.getItem('preferred-browser');
+  } else {
+    // Set default value if not found in localStorage
+    preferredBrowserSelect.value = "external";
   }
 
   settingsBtn.addEventListener('click', () => {
