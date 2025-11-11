@@ -59,9 +59,9 @@ body {
 }
 
 .top-toolbar-right button svg {
-  width: 32px; /* Doubled size */
-  height: 32px; /* Doubled size */
-  fill: currentColor;
+  width: 24px; /* Doubled size */
+  height: 24px; /* Doubled size */
+  /* fill: currentColor; */
   stroke: currentColor; /* Ensure stroke is also current color for outline icons */
   stroke-width: 1.5; /* Default stroke width for outline icons */
 }
@@ -162,9 +162,10 @@ pre {
 }
 
 .toolbar button svg {
-  width: 16px; /* Corresponds to h-4 w-4 */
-  height: 16px; /* Corresponds to h-4 w-4 */
-  fill: currentColor; /* Make SVG color inherit button text color */
+  width: 24px; /* Corresponds to h-4 w-4 */
+  height: 24px; /* Corresponds to h-4 w-4 */
+  fill: none;
+  stroke: currentColor;
   margin-right: 5px; /* Space between icon and text */
 }
 
@@ -266,4 +267,168 @@ hr {
 .menu-item:hover {
   background-color: var(--button-hover-background);
   color: var(--button-foreground);
+}
+
+/* Modal Styles */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+}
+
+.modal.show {
+  display: flex;
+}
+
+.modal-content {
+  background-color: var(--background);
+  margin: auto;
+  padding: 20px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  width: 80%; /* Could be responsive */
+  max-width: 800px;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+  position: relative;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: var(--foreground);
+}
+
+.close-button {
+  color: var(--foreground);
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close-button:hover,
+.close-button:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.modal-body {
+  color: var(--foreground);
+}
+
+/* Settings Modal Layout */
+.settings-layout {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  min-height: 200px; /* Give some minimum height to the settings content */
+}
+
+.settings-nav {
+  display: flex;
+  flex-direction: column;
+  width: 150px; /* Fixed width for navigation */
+  border-right: 1px solid var(--border-color);
+  padding-right: 20px;
+}
+
+.settings-nav .nav-item {
+  background-color: transparent;
+  border: none;
+  color: var(--foreground);
+  padding: 10px 15px;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-bottom: 5px;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.settings-nav .nav-item:hover {
+  background-color: var(--button-hover-background);
+  color: var(--button-foreground);
+}
+
+.settings-nav .nav-item.active {
+  background-color: var(--button-background);
+  color: var(--button-foreground);
+  font-weight: bold;
+}
+
+.settings-content {
+  flex-grow: 1;
+  padding-left: 20px;
+}
+
+.settings-section {
+  display: none; /* Hidden by default */
+}
+
+.settings-section.active {
+  display: block; /* Show active section */
+}
+
+.setting-item {
+  margin-bottom: 15px;
+}
+
+.setting-item label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.input-with-button {
+  display: flex;
+  gap: 10px;
+}
+
+.input-with-button input[type="text"] {
+  flex-grow: 1;
+}
+
+/* Ensure inputs within settings sections respect padding and border */
+.settings-section input[type="text"] {
+  box-sizing: border-box;
+}
+
+.settings-section select {
+  padding: 10px 12px;
+  border: 1px solid var(--input-border);
+  background-color: var(--input-background);
+  color: var(--foreground);
+  border-radius: 8px;
+  font-size: 16px;
+  width: 100%; /* Make it take full width */
+  box-sizing: border-box; /* Include padding and border in the width */
+  appearance: none; /* Remove default browser styling for select */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23000000%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13.6-6.4H18.6c-5%200-9.3%201.8-12.9%205.4-3.6%203.6-5.4%207.9-5.4%2012.9%200%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095.4a17.6%2017.6%200%200%200%205.4-12.9c0-5-1.8-9.3-5.4-12.9z%22%2F%3E%3C%2Fsvg%3E'); /* Custom arrow */
+  background-repeat: no-repeat;
+  background-position: right 10px top 50%;
+  background-size: 12px auto;
+  cursor: pointer;
+}
+
+.settings-section select:focus {
+  border-color: var(--button-background);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+  outline: none;
 }

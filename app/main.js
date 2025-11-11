@@ -137,6 +137,14 @@ ipcMain.handle('open-file', async () => {
   return null;
 });
 
+ipcMain.handle('open-directory-dialog', async () => {
+  const window = BrowserWindow.getFocusedWindow();
+  const result = await dialog.showOpenDialog(window, {
+    properties: ['openDirectory']
+  });
+  return result;
+});
+
 ipcMain.handle('minimize-window', (event) => {
   const window = BrowserWindow.getFocusedWindow();
   if (window) {

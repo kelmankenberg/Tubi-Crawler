@@ -5,40 +5,35 @@ const urlInput = document.getElementById('url');
 const log = document.getElementById('log');
 const outputUrls = document.getElementById('outputUrls');
 
-// Load content from localStorage on startup
-if (localStorage.getItem('savedContent')) {
-  outputUrls.value = localStorage.getItem('savedContent');
-}
-
-// Save content to localStorage whenever it changes
-outputUrls.addEventListener('input', () => {
-  if (outputUrls.value) {
-    localStorage.setItem('savedContent', outputUrls.value);
-  } else {
-    localStorage.removeItem('savedContent');
-  }
-});
-
 // Get references to the new toolbar buttons
+const openBtn = document.getElementById('openBtn');
 const saveAsBtn = document.getElementById('saveAsBtn');
 const copyBtn = document.getElementById('copyBtn');
 const pasteBtn = document.getElementById('pasteBtn');
 const deleteBtn = document.getElementById('deleteBtn');
-const openBtn = document.getElementById('openBtn');
-
-openBtn.addEventListener('click', async () => {
-  const content = await ipcRenderer.invoke('open-file');
-  if (content !== null) {
-    outputUrls.value = content;
-    localStorage.setItem('savedContent', content);
-    log.textContent = 'File opened successfully.';
-  }
-});
 
 // Get references to the window control buttons
 const minimizeBtn = document.getElementById('minimizeBtn');
 const maximizeRestoreBtn = document.getElementById('maximizeRestoreBtn');
 const closeBtn = document.getElementById('closeBtn');
+
+// Get references to More menu elements
+const moreBtn = document.getElementById('moreBtn');
+const moreMenu = document.getElementById('moreMenu');
+const lightThemeBtn = document.getElementById('lightThemeBtn');
+const darkThemeBtn = document.getElementById('darkThemeBtn');
+const systemThemeBtn = document.getElementById('systemThemeBtn');
+const restartBtn = document.getElementById('restartBtn');
+const devToolsBtn = document.getElementById('devToolsBtn');
+const settingsBtn = document.getElementById('settingsBtn');
+const settingsModal = document.getElementById('settingsModal');
+const closeModalBtn = settingsModal.querySelector('.close-button');
+
+// Get references to YT-DLP settings elements
+const downloadPathInput = document.getElementById('download-path');
+const browseDownloadPathBtn = document.getElementById('browse-download-path');
+const formatStringInput = document.getElementById('format-string');
+const mergeOutputFormatSelect = document.getElementById('merge-output-format');
 
 // SVG for Maximize icon (arrows pointing out)
 const maximizeIcon = `
@@ -60,6 +55,14 @@ function updateMaximizeRestoreIcon(isMaximized) {
   maximizeRestoreBtn.title = isMaximized ? 'Restore' : 'Maximize';
 }
 
+// Function to update theme buttons
+function updateThemeButtons(activeBtn) {
+  [lightThemeBtn, darkThemeBtn, systemThemeBtn].forEach(btn => {
+    btn.classList.remove('active');
+  });
+  activeBtn.classList.add('active');
+}
+
 // Initial icon state (assuming window is not maximized on start)
 updateMaximizeRestoreIcon(false);
 
@@ -67,6 +70,19 @@ updateMaximizeRestoreIcon(false);
 ipcRenderer.on('window-maximized', () => updateMaximizeRestoreIcon(true));
 ipcRenderer.on('window-unmaximized', () => updateMaximizeRestoreIcon(false));
 
+// Load content from localStorage on startup
+if (localStorage.getItem('savedContent')) {
+  outputUrls.value = localStorage.getItem('savedContent');
+}
+
+// Save content to localStorage whenever it changes
+outputUrls.addEventListener('input', () => {
+  if (outputUrls.value) {
+    localStorage.setItem('savedContent', outputUrls.value);
+  } else {
+    localStorage.removeItem('savedContent');
+  }
+});
 
 urlInput.addEventListener('keydown', (event) => {
   if (event.key === 'Enter') {
@@ -84,17 +100,26 @@ crawlBtn.addEventListener('click', async () => {
 `;
   try {
     const urls = await ipcRenderer.invoke('crawl', url);
-    if (outputUrls.value && !outputUrls.value.endsWith(' ')) {
-      outputUrls.value += ' '; // Add a space if there's existing content and it doesn't end with a space
-    }
+    // if (outputUrls.value && !outputUrls.value.endsWith(' ')) {
+    //   outputUrls.value += ' '; // Add a space if there's existing content and it doesn't end with a space
+    // }
     outputUrls.value += urls.join(' '); // Append new URLs, space-separated
     log.textContent += 'Crawling complete. URLs appended to the text control.';
   } catch (error) {
-    log.textContent += `Error: ${error.message}\n`;
+    log.textContent = `Error: ${error.message}\n`;
   }
 });
 
 // Toolbar button event listeners
+openBtn.addEventListener('click', async () => {
+  const content = await ipcRenderer.invoke('open-file');
+  if (content !== null) {
+    outputUrls.value = content;
+    localStorage.setItem('savedContent', content);
+    log.textContent = 'File opened successfully.';
+  }
+});
+
 copyBtn.addEventListener('click', async () => {
   try {
     await navigator.clipboard.writeText(outputUrls.value);
@@ -158,18 +183,11 @@ closeBtn.addEventListener('click', () => {
   ipcRenderer.invoke('close-window');
 });
 
-// More button event listener
-const moreBtn = document.getElementById('moreBtn');
-const moreMenu = document.getElementById('moreMenu');
-const lightThemeBtn = document.getElementById('lightThemeBtn');
-const darkThemeBtn = document.getElementById('darkThemeBtn');
-const systemThemeBtn = document.getElementById('systemThemeBtn');
-const restartBtn = document.getElementById('restartBtn');
-const devToolsBtn = document.getElementById('devToolsBtn');
-
+// More menu event listeners
 moreBtn.addEventListener('click', () => {
   moreMenu.classList.toggle('show');
 });
+
 restartBtn.addEventListener('click', () => {
   ipcRenderer.send('restart-app');
 });
@@ -178,11 +196,60 @@ devToolsBtn.addEventListener('click', () => {
   ipcRenderer.send('open-dev-tools');
 });
 
-function updateThemeButtons(activeBtn) {
-  [lightThemeBtn, darkThemeBtn, systemThemeBtn].forEach(btn => {
-    btn.classList.remove('active');
-  });
-  activeBtn.classList.add('active');
+settingsBtn.addEventListener('click', () => {
+  settingsModal.classList.add('show');
+  moreMenu.classList.remove('show'); // Close the more menu when settings opens
+});
+
+closeModalBtn.addEventListener('click', () => {
+  settingsModal.classList.remove('show');
+});
+
+window.addEventListener('click', (event) => {
+  if (event.target === settingsModal) {
+    settingsModal.classList.remove('show');
+  }
+});
+
+// YT-DLP settings event listeners
+browseDownloadPathBtn.addEventListener('click', async () => {
+  const result = await ipcRenderer.invoke('open-directory-dialog');
+  if (result && !result.canceled && result.filePaths.length > 0) {
+    const selectedPath = result.filePaths[0];
+    downloadPathInput.value = selectedPath;
+    localStorage.setItem('yt-dlp-download-path', selectedPath);
+  }
+});
+
+// Load saved download path on startup
+if (localStorage.getItem('yt-dlp-download-path')) {
+  downloadPathInput.value = localStorage.getItem('yt-dlp-download-path');
+}
+
+// Save format string to localStorage whenever it changes
+formatStringInput.addEventListener('input', () => {
+  localStorage.setItem('yt-dlp-format-string', formatStringInput.value);
+});
+
+// Load saved format string on startup, or set default
+if (localStorage.getItem('yt-dlp-format-string')) {
+  formatStringInput.value = localStorage.getItem('yt-dlp-format-string');
+} else {
+  // Set default value if not found in localStorage
+  formatStringInput.value = "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best";
+}
+
+// Save merge output format to localStorage whenever it changes
+mergeOutputFormatSelect.addEventListener('change', () => {
+  localStorage.setItem('yt-dlp-merge-output-format', mergeOutputFormatSelect.value);
+});
+
+// Load saved merge output format on startup, or set default
+if (localStorage.getItem('yt-dlp-merge-output-format')) {
+  mergeOutputFormatSelect.value = localStorage.getItem('yt-dlp-merge-output-format');
+} else {
+  // Set default value if not found in localStorage
+  mergeOutputFormatSelect.value = "mp4";
 }
 
 lightThemeBtn.addEventListener('click', () => {
@@ -221,4 +288,24 @@ ipcRenderer.on('log', (event, message) => {
     log.textContent += `${message}\n`;
   }
 });
+
+// Settings modal navigation
+const navItems = document.querySelectorAll('.settings-nav .nav-item');
+const settingsSections = document.querySelectorAll('.settings-content .settings-section');
+
+navItems.forEach(item => {
+  item.addEventListener('click', () => {
+    // Remove active class from all nav items and sections
+    navItems.forEach(nav => nav.classList.remove('active'));
+    settingsSections.forEach(section => section.classList.remove('active'));
+
+    // Add active class to the clicked nav item
+    item.classList.add('active');
+
+    // Show the corresponding settings section
+    const targetSectionId = item.dataset.section + '-settings';
+    document.getElementById(targetSectionId).classList.add('active');
+  });
+});
+
 
