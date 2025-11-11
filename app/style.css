@@ -432,3 +432,8 @@ hr {
   box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
   outline: none;
 }
+
+/* Push YT-DLP button to the right in the toolbar */
+.toolbar .more-menu-container:has(#ytDlpBtn) {
+  margin-left: auto;
+}
