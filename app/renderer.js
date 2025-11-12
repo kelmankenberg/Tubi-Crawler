@@ -151,6 +151,17 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Select all text when the URL input receives focus; prevent mouseup
+  // from clearing that selection immediately after clicking.
+  if (urlInput) {
+    urlInput.addEventListener('focus', () => {
+      urlInput.select();
+    });
+    urlInput.addEventListener('mouseup', (e) => {
+      e.preventDefault();
+    });
+  }
+
   crawlBtn.addEventListener('click', async () => {
     const url = urlInput.value;
     if (!url) {
@@ -247,17 +258,18 @@ window.addEventListener('DOMContentLoaded', () => {
 
   openBrowserBtn.addEventListener('click', async () => {
     console.log('Open Browser button clicked.'); // Diagnostic log
-    const url = 'https://tubitv.com/'; // Hardcoded URL for this button
+    const url = 'https://www.tubitv.com/'; // Hardcoded canonical URL for this button
     // No need for a check if (!url) as it's hardcoded
 
     const preferredBrowser = localStorage.getItem('preferred-browser') || 'external';
     console.log('Preferred Browser setting:', preferredBrowser); // Diagnostic log
 
+    const currentTheme = document.body.getAttribute('data-theme') || 'light';
     if (preferredBrowser === 'external') {
       ipcRenderer.invoke('open-external-browser', url);
       log.textContent = `Opening ${url} in external browser.`;
     } else {
-      ipcRenderer.invoke('open-internal-browser', url);
+      ipcRenderer.invoke('open-internal-browser', { theme: currentTheme });
       log.textContent = `Opening ${url} in internal browser.`;
     }
   });

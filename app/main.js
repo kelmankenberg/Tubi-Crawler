@@ -317,22 +317,172 @@ ipcMain.handle('open-external-browser', async (event, url) => {
   }
 });
 
-ipcMain.handle('open-internal-browser', async (event, url) => {
-  console.log('Main process received open-internal-browser request for URL:', url); // New diagnostic log
+const browserViews = new Map(); // Map windowId -> BrowserView
+
+ipcMain.handle('open-internal-browser', async (event, options = {}) => {
+  // Always open Tubi's main site regardless of the caller-provided URL.
+  const target = 'https://www.tubitv.com/';
+  const theme = options.theme || 'light';
+  console.log('Main process opening internal browser for:', target, 'theme:', theme);
   try {
     const newWindow = new BrowserWindow({
       width: 1200,
       height: 800,
       webPreferences: {
-        // webviewTag: true // No longer needed, using iframe
+        nodeIntegration: false,
+        contextIsolation: true,
+        preload: path.join(__dirname, 'browser-preload.js')
       }
     });
-    newWindow.loadFile(path.join(__dirname, 'browser.html'), { query: { url: url } }); // Load browser.html again
+
+    // Create a BrowserView to host the remote site (not an iframe)
+    const { BrowserView } = require('electron');
+    const view = new BrowserView({
+      webPreferences: {
+        nodeIntegration: false,
+        contextIsolation: true
+      }
+    });
+
+    newWindow.setBrowserView(view);
+
+    // Set initial bounds: leave room at top for the toolbar (60px)
+    const [w, h] = newWindow.getSize();
+    view.setBounds({ x: 0, y: 60, width: w, height: h - 60 });
+    view.setAutoResize({ width: true, height: true });
+
+    // Load the wrapper UI (toolbar) into the window
+
+    await newWindow.loadFile(path.join(__dirname, 'browser.html'));
+
+    // Once the wrapper UI has loaded, set its theme
+    newWindow.webContents.once('did-finish-load', () => {
+      try {
+        newWindow.webContents.send('set-theme', theme);
+      } catch (e) {
+        console.warn('Failed to send theme to browser window:', e);
+      }
+    });
+
+    // Load the target URL in the BrowserView
+    await view.webContents.loadURL(target);
+
+    // Store mapping so IPC handlers can find the view for this window
+    browserViews.set(newWindow.id, view);
+
+    // Forward URL updates from the view to the renderer (toolbar)
+    const sendUrlUpdate = () => {
+      try {
+        const current = view.webContents.getURL();
+        newWindow.webContents.send('browser-url-updated', current);
+      } catch (e) {
+        console.warn('Could not send URL update:', e);
+      }
+    };
+
+    view.webContents.on('did-navigate', sendUrlUpdate);
+    view.webContents.on('did-navigate-in-page', sendUrlUpdate);
+    view.webContents.on('did-finish-load', sendUrlUpdate);
+
+    // Adjust view bounds when window is resized
+    newWindow.on('resize', () => {
+      const [width, height] = newWindow.getSize();
+      const toolbarHeight = 60;
+      const view = browserViews.get(newWindow.id);
+      if (view) view.setBounds({ x: 0, y: toolbarHeight, width, height: height - toolbarHeight });
+    });
+
+    // Clean up when closed
+    newWindow.on('closed', () => {
+      const view = browserViews.get(newWindow.id);
+      if (view) {
+        try { view.webContents.destroy(); } catch (e) {}
+        browserViews.delete(newWindow.id);
+      }
+    });
+
     return { success: true };
   } catch (error) {
     console.error('Failed to open internal browser:', error);
     return { success: false, error: error.message };
   }
+});
+
+// IPC from the toolbar renderer to control the BrowserView
+ipcMain.on('internal-browser-command', (event, command, payload) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  if (!win) return;
+  const view = browserViews.get(win.id);
+  if (!view) return;
+
+  try {
+    switch (command) {
+      case 'go':
+        if (payload && payload.url) view.webContents.loadURL(payload.url);
+        break;
+      case 'back':
+        if (view.webContents.canGoBack()) view.webContents.goBack();
+        break;
+      case 'forward':
+        if (view.webContents.canGoForward()) view.webContents.goForward();
+        break;
+      case 'reload':
+        view.webContents.reload();
+        break;
+      case 'get-url':
+        event.sender.send('browser-url-updated', view.webContents.getURL());
+        break;
+      case 'copy-url':
+        const { clipboard } = require('electron');
+        clipboard.writeText(view.webContents.getURL() || '');
+        break;
+      case 'insert-css':
+        // payload: { css: string }
+        if (payload && payload.css) {
+          view.webContents.insertCSS(payload.css).then((key) => {
+            // Return the key back to the renderer that requested via a one-off channel
+            event.sender.send('browser-insert-css-result', { key });
+          }).catch((err) => {
+            console.error('insertCSS failed:', err);
+            event.sender.send('browser-insert-css-result', { error: err.message });
+          });
+        }
+        break;
+      case 'remove-inserted-css':
+        // payload: { key: string }
+        if (payload && payload.key) {
+          try {
+            view.webContents.removeInsertedCSS(payload.key);
+            event.sender.send('browser-remove-css-result', { ok: true });
+          } catch (err) {
+            console.error('removeInsertedCSS failed:', err);
+            event.sender.send('browser-remove-css-result', { error: err.message });
+          }
+        }
+        break;
+    }
+  } catch (e) {
+    console.error('internal-browser-command failed:', e);
+  }
+});
+
+// Also provide promise-based handlers usable via ipcRenderer.invoke from preload
+ipcMain.handle('browser-insert-css', async (event, css) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  if (!win) throw new Error('No window');
+  const view = browserViews.get(win.id);
+  if (!view) throw new Error('No BrowserView for window');
+  const key = await view.webContents.insertCSS(css);
+  return key;
+});
+
+ipcMain.handle('browser-remove-css', async (event, key) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  if (!win) throw new Error('No window');
+  const view = browserViews.get(win.id);
+  if (!view) throw new Error('No BrowserView for window');
+  await view.webContents.removeInsertedCSS(key);
+  return true;
 });
 console.log('open-internal-browser handler registered.'); // Diagnostic log after registration
 
