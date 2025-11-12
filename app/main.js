@@ -1,85 +1,99 @@
 console.log('MAIN PROCESS IS ALIVE'); // Aggressive diagnostic log
 console.log('app/main.js started loading.'); // Diagnostic log at the very top
 const { app, BrowserWindow, ipcMain, dialog, nativeTheme, shell } = require('electron');
-const Store = require('electron-store');
-const store = new Store();
 const path = require('path');
 const puppeteer = require('puppeteer');
 
-ipcMain.on('get-system-theme', (event) => {
-  event.reply('system-theme', nativeTheme.shouldUseDarkColors ? 'dark' : 'light');
-});
+let Store;
+import('electron-store').then((module) => {
+  Store = module.default;
+  const store = new Store();
 
-ipcMain.on('restart-app', () => {
-  app.relaunch();
-  app.quit();
-});
-
-ipcMain.on('open-dev-tools', () => {
-  const window = BrowserWindow.getFocusedWindow();
-  if (window) {
-    window.webContents.openDevTools();
-  }
-});
-
-function createWindow () {
-  const defaultWidth = 1024;
-  const defaultHeight = 768;
-
-  let { width, height, x, y, isMaximized } = store.get('windowState', {
-    width: defaultWidth,
-    height: defaultHeight,
-    x: undefined,
-    y: undefined,
-    isMaximized: false
+  ipcMain.on('get-system-theme', (event) => {
+    event.reply('system-theme', nativeTheme.shouldUseDarkColors ? 'dark' : 'light');
   });
 
-  const win = new BrowserWindow({
-    width: width,
-    height: height,
-    x: x,
-    y: y,
-    frame: false, // Remove default title bar
-    autoHideMenuBar: true, // Hide menu bar
-    titleBarStyle: 'hidden', // For macOS, makes title bar hidden but still draggable
-    webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false
+  ipcMain.on('restart-app', () => {
+    app.relaunch();
+    app.quit();
+  });
+
+  ipcMain.on('open-dev-tools', () => {
+    const window = BrowserWindow.getFocusedWindow();
+    if (window) {
+      window.webContents.openDevTools();
     }
   });
 
-  if (isMaximized) {
-    win.maximize();
+  function createWindow () {
+    const defaultWidth = 1024;
+    const defaultHeight = 768;
+
+    let { width, height, x, y, isMaximized } = store.get('windowState', {
+      width: defaultWidth,
+      height: defaultHeight,
+      x: undefined,
+      y: undefined,
+      isMaximized: false
+    });
+
+    const win = new BrowserWindow({
+      width: width,
+      height: height,
+      x: x,
+      y: y,
+      frame: false, // Remove default title bar
+      autoHideMenuBar: true, // Hide menu bar
+      titleBarStyle: 'hidden', // For macOS, makes title bar hidden but still draggable
+      webPreferences: {
+        nodeIntegration: true,
+        contextIsolation: false
+      }
+    });
+
+    if (isMaximized) {
+      win.maximize();
+    }
+
+    win.loadFile(path.join(__dirname, 'index.html'));
+
+    // Save window state on resize, move, and close
+    win.on('resize', () => {
+      const { width, height } = win.getBounds();
+      store.set('windowState', { width, height, x: win.getPosition()[0], y: win.getPosition()[1], isMaximized: win.isMaximized() });
+    });
+
+    win.on('move', () => {
+      const { x, y } = win.getBounds();
+      store.set('windowState', { width: win.getBounds().width, height: win.getBounds().height, x, y, isMaximized: win.isMaximized() });
+    });
+
+    win.on('close', () => {
+      store.set('windowState', { width: win.getBounds().width, height: win.getBounds().height, x: win.getPosition()[0], y: win.getPosition()[1], isMaximized: win.isMaximized() });
+    });
+
+    // Send messages to renderer process when window is maximized/unmaximized
+    win.on('maximize', () => {
+      win.webContents.send('window-maximized');
+      store.set('windowState.isMaximized', true);
+    });
+
+    win.on('unmaximize', () => {
+      win.webContents.send('window-unmaximized');
+      store.set('windowState.isMaximized', false);
+    });
   }
 
-  win.loadFile(path.join(__dirname, 'index.html'));
+  app.whenReady().then(() => {
+    createWindow();
 
-  // Save window state on resize, move, and close
-  win.on('resize', () => {
-    const { width, height } = win.getBounds();
-    store.set('windowState', { width, height, x: win.getPosition()[0], y: win.getPosition()[1], isMaximized: win.isMaximized() });
+    app.on('activate', () => {
+      if (BrowserWindow.getAllWindows().length === 0) {
+        createWindow();
+      }
+    });
   });
-
-  win.on('move', () => {
-    const { x, y } = win.getBounds();
-    store.set('windowState', { width: win.getBounds().width, height: win.getBounds().height, x, y, isMaximized: win.isMaximized() });
-  });
-
-  win.on('close', () => {
-    store.set('windowState', { width: win.getBounds().width, height: win.getBounds().height, x: win.getPosition()[0], y: win.getPosition()[1], isMaximized: win.isMaximized() });
-  });
-
-  // Send messages to renderer process when window is maximized/unmaximized
-  win.on('maximize', () => {
-    win.webContents.send('window-maximized');
-    store.set('windowState.isMaximized', true);
-  });
-
-  win.on('unmaximize', () => {
-    win.webContents.send('window-unmaximized');
-    store.set('windowState.isMaximized', false);
-  });
-}
+});
 
 const fs = require('fs');
 const { spawn } = require('child_process');
