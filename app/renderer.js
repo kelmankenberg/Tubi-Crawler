@@ -381,6 +381,177 @@ window.addEventListener('DOMContentLoaded', () => {
 
   settingsBtn.addEventListener('click', openSettings);
 
+  // Changelog panel handlers
+  const changelogBtn = document.getElementById('changelogBtn');
+  const changelogPanel = document.getElementById('changelogPanel');
+  const closeChangelogBtn = document.getElementById('closeChangelogBtn');
+  const changelogContent = document.getElementById('changelogContent');
+
+  async function loadChangelog() {
+    try {
+      const response = await fetch('../CHANGELOG.md');
+      const markdown = await response.text();
+      const html = markdownToHtml(markdown);
+      changelogContent.innerHTML = html;
+      attachCollapseListeners();
+    } catch (error) {
+      changelogContent.innerHTML = '<p>Error loading changelog. Please try again.</p>';
+      console.error('Error loading changelog:', error);
+    }
+  }
+
+  function attachCollapseListeners() {
+    const collapsibleHeaders = document.querySelectorAll('.changelog-content .collapsible-header');
+    
+    collapsibleHeaders.forEach((header) => {
+      header.addEventListener('click', () => {
+        const section = header.closest('.changelog-section');
+        const isOpen = section.classList.contains('open');
+        
+        if (isOpen) {
+          section.classList.remove('open');
+        } else {
+          section.classList.add('open');
+        }
+      });
+    });
+  }
+
+  function markdownToHtml(markdown) {
+    // Split by main version headings (##)
+    const versionBlocks = markdown.split(/(?=^## )/gm);
+    let html = '<div class="changelog-container">';
+
+    versionBlocks.forEach((block) => {
+      if (!block.trim()) return;
+
+      // Check if this is a version block (starts with ##)
+      if (block.trim().startsWith('##')) {
+        const lines = block.split('\n');
+        const versionHeader = lines[0]; // e.g., "## v1.3.0 (Current)"
+        const versionContent = lines.slice(1).join('\n');
+
+        // Extract version for section ID
+        const versionMatch = versionHeader.match(/##\s+(.*)/);
+        const versionText = versionMatch ? versionMatch[1] : 'Version';
+        const versionId = versionText.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+
+        // Create collapsible version section
+        html += `<div class="changelog-section">`;
+        html += `<div class="collapsible-header" data-section="${versionId}">`;
+        html += `<svg class="collapse-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">`;
+        html += `<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />`;
+        html += `</svg>`;
+        html += `<h2>${versionText}</h2>`;
+        html += `</div>`;
+        html += `<div class="section-content">`;
+
+        // Process subsections within this version
+        const subsections = versionContent.split(/(?=^### )/gm);
+        
+        subsections.forEach((subsection) => {
+          if (!subsection.trim()) return;
+
+          if (subsection.trim().startsWith('###')) {
+            const subLines = subsection.split('\n');
+            const subHeader = subLines[0]; // e.g., "### 🔒 Security"
+            const subContent = subLines.slice(1).join('\n');
+
+            const subMatch = subHeader.match(/###\s+(.*)/);
+            const subText = subMatch ? subMatch[1] : 'Section';
+
+            html += `<div class="changelog-subsection">`;
+            html += `<h3>${subText}</h3>`;
+            html += `<div class="subsection-content">`;
+            html += convertContentToHtml(subContent);
+            html += `</div>`;
+            html += `</div>`;
+          } else {
+            html += convertContentToHtml(subsection);
+          }
+        });
+
+        html += `</div>`;
+        html += `</div>`;
+      } else {
+        html += convertContentToHtml(block);
+      }
+    });
+
+    html += '</div>';
+    return html;
+  }
+
+  function convertContentToHtml(content) {
+    let html = content
+      // Bold
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      // Italic
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      // Inline code
+      .replace(/`(.*?)`/g, '<code style="background-color: var(--log-background); padding: 2px 4px; border-radius: 3px; font-size: 12px;">$1</code>')
+      // Horizontal rule
+      .replace(/^---$/gm, '<hr>')
+      // Unordered lists - convert to proper ul/li
+      .split('\n')
+      .map((line) => {
+        if (line.trim().startsWith('-')) {
+          return '<li>' + line.replace(/^\s*-\s*/, '') + '</li>';
+        }
+        return line;
+      })
+      .join('\n');
+
+    // Wrap consecutive li items in ul
+    html = html.replace(/(<li>.*<\/li>)/s, (match) => {
+      if (match.includes('<li>')) {
+        return '<ul>' + match + '</ul>';
+      }
+      return match;
+    });
+
+    // Remove empty lines and wrap in paragraphs
+    const lines = html.split('\n').filter((line) => line.trim());
+    html = lines
+      .map((line) => {
+        if (line.trim().startsWith('<') || line.trim() === '') {
+          return line;
+        }
+        return '<p>' + line + '</p>';
+      })
+      .join('\n');
+
+    return html;
+  }
+
+  function openChangelog() {
+    loadChangelog();
+    changelogPanel.classList.add('show');
+    document.body.classList.add('changelog-open');
+    moreMenu.classList.remove('show');
+  }
+
+  function closeChangelog() {
+    changelogPanel.classList.remove('show');
+    document.body.classList.remove('changelog-open');
+  }
+
+  changelogBtn.addEventListener('click', openChangelog);
+  closeChangelogBtn.addEventListener('click', closeChangelog);
+
+  // Close changelog on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && changelogPanel.classList.contains('show')) {
+      closeChangelog();
+    }
+  });
+
+  // Close changelog when clicking outside
+  changelogPanel.addEventListener('click', (e) => {
+    if (e.target === changelogPanel) {
+      closeChangelog();
+    }
+  });
 
   window.electron.on('log', (event, message) => {
     if (message.startsWith('Crawling')) {
