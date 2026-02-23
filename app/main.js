@@ -1,90 +1,105 @@
-console.log('MAIN PROCESS IS ALIVE'); // Aggressive diagnostic log
-console.log('app/main.js started loading.'); // Diagnostic log at the very top
 const { app, BrowserWindow, ipcMain, dialog, nativeTheme, shell } = require('electron');
 const path = require('path');
 const puppeteer = require('puppeteer');
 
 let Store;
-import('electron-store').then((module) => {
-  Store = module.default;
-  const store = new Store();
+let store;
 
-  ipcMain.on('get-system-theme', (event) => {
-    event.reply('system-theme', nativeTheme.shouldUseDarkColors ? 'dark' : 'light');
+function createWindow() {
+  const defaultWidth = 1024;
+  const defaultHeight = 768;
+
+  let {
+    width,
+    height,
+    x,
+    y,
+    isMaximized
+  } = store.get('windowState', {
+    width: defaultWidth,
+    height: defaultHeight,
+    x: undefined,
+    y: undefined,
+    isMaximized: false
   });
 
-  ipcMain.on('restart-app', () => {
-    app.relaunch();
-    app.quit();
-  });
-
-  ipcMain.on('open-dev-tools', () => {
-    const window = BrowserWindow.getFocusedWindow();
-    if (window) {
-      window.webContents.openDevTools();
+  const win = new BrowserWindow({
+    width: width,
+    height: height,
+    x: x,
+    y: y,
+    frame: false, // Remove default title bar
+    autoHideMenuBar: true, // Hide menu bar
+    titleBarStyle: 'hidden', // For macOS, makes title bar hidden but still draggable
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js')
     }
   });
 
-  function createWindow () {
-    const defaultWidth = 1024;
-    const defaultHeight = 768;
-
-    let { width, height, x, y, isMaximized } = store.get('windowState', {
-      width: defaultWidth,
-      height: defaultHeight,
-      x: undefined,
-      y: undefined,
-      isMaximized: false
-    });
-
-    const win = new BrowserWindow({
-      width: width,
-      height: height,
-      x: x,
-      y: y,
-      frame: false, // Remove default title bar
-      autoHideMenuBar: true, // Hide menu bar
-      titleBarStyle: 'hidden', // For macOS, makes title bar hidden but still draggable
-      webPreferences: {
-        nodeIntegration: true,
-        contextIsolation: false
-      }
-    });
-
-    if (isMaximized) {
-      win.maximize();
-    }
-
-    win.loadFile(path.join(__dirname, 'index.html'));
-
-    // Save window state on resize, move, and close
-    win.on('resize', () => {
-      const { width, height } = win.getBounds();
-      store.set('windowState', { width, height, x: win.getPosition()[0], y: win.getPosition()[1], isMaximized: win.isMaximized() });
-    });
-
-    win.on('move', () => {
-      const { x, y } = win.getBounds();
-      store.set('windowState', { width: win.getBounds().width, height: win.getBounds().height, x, y, isMaximized: win.isMaximized() });
-    });
-
-    win.on('close', () => {
-      store.set('windowState', { width: win.getBounds().width, height: win.getBounds().height, x: win.getPosition()[0], y: win.getPosition()[1], isMaximized: win.isMaximized() });
-    });
-
-    // Send messages to renderer process when window is maximized/unmaximized
-    win.on('maximize', () => {
-      win.webContents.send('window-maximized');
-      store.set('windowState.isMaximized', true);
-    });
-
-    win.on('unmaximize', () => {
-      win.webContents.send('window-unmaximized');
-      store.set('windowState.isMaximized', false);
-    });
+  if (isMaximized) {
+    win.maximize();
   }
 
-  app.whenReady().then(() => {
+  win.loadFile(path.join(__dirname, 'index.html'));
+
+  // Save window state on resize, move, and close
+  win.on('resize', () => {
+    const {
+      width,
+      height
+    } = win.getBounds();
+    store.set('windowState', {
+      width,
+      height,
+      x: win.getPosition()[0],
+      y: win.getPosition()[1],
+      isMaximized: win.isMaximized()
+    });
+  });
+
+  win.on('move', () => {
+    const {
+      x,
+      y
+    } = win.getBounds();
+    store.set('windowState', {
+      width: win.getBounds().width,
+      height: win.getBounds().height,
+      x,
+      y,
+      isMaximized: win.isMaximized()
+    });
+  });
+
+  win.on('close', () => {
+    store.set('windowState', {
+      width: win.getBounds().width,
+      height: win.getBounds().height,
+      x: win.getPosition()[0],
+      y: win.getPosition()[1],
+      isMaximized: win.isMaximized()
+    });
+  });
+
+  // Send messages to renderer process when window is maximized/unmaximized
+  win.on('maximize', () => {
+    win.webContents.send('window-maximized');
+    store.set('windowState.isMaximized', true);
+  });
+
+  win.on('unmaximize', () => {
+    win.webContents.send('window-unmaximized');
+    store.set('windowState.isMaximized', false);
+  });
+}
+
+app.whenReady().then(() => {
+  import('electron-store').then((module) => {
+    const Store = module.default;
+    store = new Store();
+
     createWindow();
 
     app.on('activate', () => {
@@ -95,58 +110,266 @@ import('electron-store').then((module) => {
   });
 });
 
+
 const fs = require('fs');
-const { spawn } = require('child_process');
+const {
+  spawn
+} = require('child_process');
+
+ipcMain.on('get-system-theme', (event) => {
+  event.reply('system-theme', nativeTheme.shouldUseDarkColors ? 'dark' : 'light');
+});
+
+ipcMain.on('restart-app', () => {
+  app.relaunch();
+  app.quit();
+});
+
+ipcMain.on('open-dev-tools', () => {
+  const window = BrowserWindow.getFocusedWindow();
+  if (window) {
+    window.webContents.openDevTools();
+  }
+});
 
 ipcMain.handle('crawl', async (event, url) => {
+  // Timeout constants
+  const BROWSER_TIMEOUT = 60000;     // 60 seconds
+  const GOTO_TIMEOUT = 30000;        // 30 seconds
+  const PAGE_LOAD_TIMEOUT = 30000;   // 30 seconds
+  const SCROLL_WAIT = 500;           // 500ms between scrolls (reduced from 2000ms)
+  const SCROLL_MAX_ATTEMPTS = 20;    // Hard limit on scroll attempts
+  const SCROLL_TIMEOUT = 30000;      // Total timeout for scrolling
 
-  console.log(`Crawling ${url}`);
+  let browser;
+  try {
+    console.log(`Crawling: ${url}`);
 
-  const browser = await puppeteer.launch();
+    browser = await puppeteer.launch();
+    const page = await browser.newPage();
 
-  const page = await browser.newPage();
+    // Set default timeouts for page operations
+    page.setDefaultTimeout(PAGE_LOAD_TIMEOUT);
+    page.setDefaultNavigationTimeout(PAGE_LOAD_TIMEOUT);
 
-    await page.goto(url, { waitUntil: 'networkidle2' });
+    await page.goto(url, {
+      waitUntil: 'networkidle2',
+      timeout: GOTO_TIMEOUT
+    });
 
-  
+    // Scroll down to load all lazy-loaded content with optimized timing
+    let previousHeight = 0;
+    let scrollAttempts = 0;
+    const scrollStartTime = Date.now();
 
-    // Scroll down to load all lazy-loaded content
-
-    let previousHeight;
-
-    while (true) {
-
-      previousHeight = await page.evaluate('document.body.scrollHeight');
-
-      await page.evaluate('window.scrollTo(0, document.body.scrollHeight)');
-
-      await new Promise(resolve => setTimeout(resolve, 2000)); // Wait for 2 seconds for content to load
-
-      let newHeight = await page.evaluate('document.body.scrollHeight');
-
-      if (newHeight === previousHeight) {
-
-        break; // No more scrolling possible, reached the end
-
+    while (scrollAttempts < SCROLL_MAX_ATTEMPTS) {
+      // Check if we've exceeded total scroll timeout
+      if (Date.now() - scrollStartTime > SCROLL_TIMEOUT) {
+        console.warn('Scroll timeout reached, stopping scroll attempts');
+        break;
       }
 
+      previousHeight = await page.evaluate('document.body.scrollHeight');
+      await page.evaluate('window.scrollTo(0, document.body.scrollHeight)');
+      await new Promise(resolve => setTimeout(resolve, SCROLL_WAIT));
+
+      const newHeight = await page.evaluate('document.body.scrollHeight');
+      if (newHeight === previousHeight) {
+        break; // No new content loaded, reached the end
+      }
+      scrollAttempts++;
     }
 
-  
+    // Helper function: Try to extract episodes via API (fast, reliable)
+    async function tryApiExtraction(page) {
+      try {
+        // Try to infer series id from the page URL first
+        let seriesId = (page.url().match(/tv-shows\/(\d+)/) || page.url().match(/series\/(\d+)/))?.[1] || null;
 
-    const episodeData = await page.evaluate(() => {
-    const links = Array.from(document.querySelectorAll('a[href^="/tv-shows/"]'));
-    const urls = [];
-    links.forEach(link => {
-      const relativeHref = link.getAttribute('href');
-      const fullUrl = `https://tubitv.com${relativeHref}`;
-      urls.push(fullUrl);
+        if (!seriesId) {
+          // Fallback: try to find a canonical/meta URL or script blob containing the id
+          seriesId = await page.evaluate(() => {
+            try {
+              const meta = document.querySelector('link[rel="canonical"][href]') || document.querySelector('meta[property="og:url"][content]');
+              const url = meta ? (meta.getAttribute('href') || meta.getAttribute('content')) : window.location.href;
+              const m = url.match(/tv-shows\/(\d+)/) || url.match(/series\/(\d+)/);
+              if (m) return m[1];
+
+              // Last resort: look for any element with a data-id-like attribute
+              const attrEl = document.querySelector('[data-series-id], [data-show-id]');
+              if (attrEl) return attrEl.getAttribute('data-series-id') || attrEl.getAttribute('data-show-id');
+            } catch (e) {
+              return null;
+            }
+            return null;
+          });
+        }
+
+        if (!seriesId) return [];
+
+        const apiPath = `/uapi/series/${seriesId}/episodes`;
+        // Use page.fetch via browser context so cookies/headers are preserved
+        const apiData = await page.evaluate(async (apiPath) => {
+          try {
+            const resp = await fetch(apiPath, { credentials: 'same-origin' });
+            if (!resp.ok) return null;
+            return await resp.json();
+          } catch (e) {
+            return null;
+          }
+        }, apiPath);
+
+        if (!apiData) return [];
+
+        // API may return an array or an object with an `episodes`/`items` property
+        let items = Array.isArray(apiData) ? apiData : (apiData.episodes || apiData.items || []);
+        if (Array.isArray(items) && items.length > 0) {
+          const episodeUrls = items.map(it => {
+            if (!it) return null;
+            if (it.path) return `https://tubitv.com${it.path}`;
+            if (it.id) return `https://tubitv.com/watch/${it.id}`;
+            // sometimes API objects include a `url` or `link`
+            if (it.url) return it.url.startsWith('http') ? it.url : `https://tubitv.com${it.url}`;
+            return null;
+          }).filter(u => !!u);
+          
+          if (episodeUrls.length > 0) {
+            console.log(`Found ${episodeUrls.length} episodes via API`);
+            return episodeUrls;
+          }
+        }
+        return [];
+      } catch (e) {
+        console.warn('API extraction failed:', e && e.message ? e.message : e);
+        return [];
+      }
+    }
+
+    // Helper function: Interact with carousels to load more items
+    async function interactWithCarousels(page) {
+      try {
+        let prevCount = await page.evaluate(() => {
+          return Array.from(document.querySelectorAll('a[href^="/tv-shows/"]')).length;
+        });
+        
+        for (let i = 0; i < 10; i++) {
+          const clicked = await page.evaluate(() => {
+            const sel = document.querySelector('[class*="web-carousel-shell__next"], [class*="web-carousel-shell__control--next"], [aria-label="Next"], [data-test-id="web-carousel-next"]');
+            if (sel) {
+              try { sel.click(); } catch (e) { try { sel.dispatchEvent(new MouseEvent('click', { bubbles: true })); } catch (e) {} }
+              return true;
+            }
+            return false;
+          });
+          await new Promise(r => setTimeout(r, 1000));
+          
+          const newCount = await page.evaluate(() => {
+            const anchors = Array.from(document.querySelectorAll('a[href^="/tv-shows/"]'));
+            const seen = new Set();
+            anchors.forEach(a => {
+              const h = a.getAttribute('href');
+              if (!h) return;
+              const full = h.startsWith('http') ? h : `https://tubitv.com${h}`;
+              seen.add(full);
+            });
+            return seen.size;
+          });
+          
+          if (newCount > prevCount) {
+            prevCount = newCount;
+          } else {
+            if (!clicked) break;
+          }
+        }
+      } catch (e) {
+        console.warn('Carousel interaction failed:', e && e.message ? e.message : e);
+      }
+    }
+
+    // Helper function: Extract episodes from DOM with consolidated queries
+    async function tryDomExtraction(page) {
+      try {
+        // Interact with carousels first to load more items
+        await interactWithCarousels(page);
+
+        // Single consolidated DOM query for all episode URLs
+        const domUrls = await page.evaluate(() => {
+          const selectors = [
+            'div[data-test-id="web-ui-grid-item"] a[href^="/tv-shows/"]',
+            'a[href^="/tv-shows/"]'  // Fallback to broader selector
+          ];
+
+          const seen = new Set();
+          const urls = [];
+
+          for (const selector of selectors) {
+            const anchors = Array.from(document.querySelectorAll(selector));
+            anchors.forEach(a => {
+              try {
+                const href = a.getAttribute('href');
+                if (!href) return;
+                const full = href.startsWith('http') ? href : `https://tubitv.com${href}`;
+                if (!seen.has(full)) {
+                  seen.add(full);
+                  urls.push(full);
+                }
+              } catch (e) { /* ignore */ }
+            });
+          }
+          return urls;
+        });
+
+        if (domUrls.length > 0) {
+          console.log(`Found ${domUrls.length} episodes via DOM extraction`);
+          return domUrls;
+        }
+        return [];
+      } catch (e) {
+        console.warn('DOM extraction failed:', e && e.message ? e.message : e);
+        return [];
+      }
+    }
+
+    // Extract episodes: API first (faster), then DOM (fallback)
+    let episodeUrls = [];
+    
+    // Try 1: API extraction (fastest, most reliable)
+    episodeUrls = await tryApiExtraction(page);
+    if (episodeUrls && episodeUrls.length > 0) {
+      return episodeUrls;
+    }
+
+    // Try 2: DOM extraction (fallback)
+    episodeUrls = await tryDomExtraction(page);
+    if (episodeUrls && episodeUrls.length > 0) {
+      return episodeUrls;
+    }
+
+    // As a final measure, collect any remaining tv-shows anchors on the page
+    const otherUrls = await page.evaluate(() => {
+      const anchors = Array.from(document.querySelectorAll('a[href^="/tv-shows/"]'));
+      return anchors.map(a => {
+        const h = a.getAttribute('href');
+        return h ? (h.startsWith('http') ? h : `https://tubitv.com${h}`) : null;
+      }).filter(Boolean);
     });
-    return urls;
-  });
-  await browser.close();
-  return episodeData; // Return the array of URLs directly
 
+    const all = Array.from(new Set([...(episodeUrls || []), ...otherUrls]));
+    return all;
+
+  } catch (error) {
+    console.error('Crawl error:', error && error.message ? error.message : error);
+    throw error;
+  } finally {
+    // Always close the browser, even if an error occurred
+    if (browser) {
+      try {
+        await browser.close();
+      } catch (e) {
+        console.error('Failed to close browser:', e && e.message ? e.message : e);
+      }
+    }
+  }
 });
 
 ipcMain.handle('save-file', async (event, content) => {
@@ -408,98 +631,9 @@ ipcMain.handle('open-internal-browser', async (event, options = {}) => {
   }
 });
 
-// IPC from the toolbar renderer to control the BrowserView
-ipcMain.on('internal-browser-command', (event, command, payload) => {
-  const win = BrowserWindow.fromWebContents(event.sender);
-  if (!win) return;
-  const view = browserViews.get(win.id);
-  if (!view) return;
-
-  try {
-    switch (command) {
-      case 'go':
-        if (payload && payload.url) view.webContents.loadURL(payload.url);
-        break;
-      case 'back':
-        if (view.webContents.canGoBack()) view.webContents.goBack();
-        break;
-      case 'forward':
-        if (view.webContents.canGoForward()) view.webContents.goForward();
-        break;
-      case 'reload':
-        view.webContents.reload();
-        break;
-      case 'get-url':
-        event.sender.send('browser-url-updated', view.webContents.getURL());
-        break;
-      case 'copy-url':
-        const { clipboard } = require('electron');
-        clipboard.writeText(view.webContents.getURL() || '');
-        break;
-      case 'insert-css':
-        // payload: { css: string }
-        if (payload && payload.css) {
-          view.webContents.insertCSS(payload.css).then((key) => {
-            // Return the key back to the renderer that requested via a one-off channel
-            event.sender.send('browser-insert-css-result', { key });
-          }).catch((err) => {
-            console.error('insertCSS failed:', err);
-            event.sender.send('browser-insert-css-result', { error: err.message });
-          });
-        }
-        break;
-      case 'remove-inserted-css':
-        // payload: { key: string }
-        if (payload && payload.key) {
-          try {
-            view.webContents.removeInsertedCSS(payload.key);
-            event.sender.send('browser-remove-css-result', { ok: true });
-          } catch (err) {
-            console.error('removeInsertedCSS failed:', err);
-            event.sender.send('browser-remove-css-result', { error: err.message });
-          }
-        }
-        break;
-    }
-  } catch (e) {
-    console.error('internal-browser-command failed:', e);
-  }
-});
-
-// Also provide promise-based handlers usable via ipcRenderer.invoke from preload
-ipcMain.handle('browser-insert-css', async (event, css) => {
-  const win = BrowserWindow.fromWebContents(event.sender);
-  if (!win) throw new Error('No window');
-  const view = browserViews.get(win.id);
-  if (!view) throw new Error('No BrowserView for window');
-  const key = await view.webContents.insertCSS(css);
-  return key;
-});
-
-ipcMain.handle('browser-remove-css', async (event, key) => {
-  const win = BrowserWindow.fromWebContents(event.sender);
-  if (!win) throw new Error('No window');
-  const view = browserViews.get(win.id);
-  if (!view) throw new Error('No BrowserView for window');
-  await view.webContents.removeInsertedCSS(key);
-  return true;
-});
-console.log('open-internal-browser handler registered.'); // Diagnostic log after registration
-
-// ipcMain.on('close-browser', () => {
-//   app.quit();
-// });
 
 
-app.whenReady().then(() => {
-  createWindow();
 
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
-    }
-  });
-});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {

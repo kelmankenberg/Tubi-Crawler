@@ -1,4 +1,4 @@
-const { ipcRenderer } = require('electron');
+// Using preload script to access electron APIs via context bridge
 
 // Function to update maximize/restore icon
 function updateMaximizeRestoreIcon(isMaximized) {
@@ -72,7 +72,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     log.textContent = `Initiating YT-DLP download for ${urlsToDownload.length} URLs...\n`;
     try {
-      const result = await ipcRenderer.invoke('run-yt-dlp', {
+      const result = await window.electron.invoke('run-yt-dlp', {
         urls: urlsToDownload,
         downloadPath: downloadPath,
         format: formatString,
@@ -110,11 +110,35 @@ window.addEventListener('DOMContentLoaded', () => {
     ytDlpMenu.classList.remove('show');
   });
   const settingsBtn = document.getElementById('settingsBtn');
-  const settingsModal = document.getElementById('settingsModal');
-  const closeModalBtn = settingsModal.querySelector('.close-button');
+  const settingsPage = document.getElementById('settingsPage');
+  const mainContent = document.getElementById('mainContent');
+  const backFromSettingsBtn = document.getElementById('backFromSettingsBtn');
 
-  closeModalBtn.addEventListener('click', () => {
-    settingsModal.classList.remove('show');
+  function openSettings() {
+    settingsPage.style.display = 'flex';
+    mainContent.style.display = 'none';
+    moreMenu.classList.remove('show');
+  }
+
+  function closeSettings() {
+    settingsPage.style.display = 'none';
+    mainContent.style.display = 'flex';
+  }
+
+  backFromSettingsBtn.addEventListener('click', closeSettings);
+
+  // Keyboard shortcut: Ctrl+, to open settings
+  document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.key === ',') {
+      e.preventDefault();
+      if (settingsPage.style.display === 'none' || settingsPage.style.display === '') {
+        openSettings();
+      }
+    }
+    // Escape key to close settings
+    if (e.key === 'Escape' && settingsPage.style.display === 'flex') {
+      closeSettings();
+    }
   });
 
   // Get references to YT-DLP settings elements
@@ -128,8 +152,8 @@ window.addEventListener('DOMContentLoaded', () => {
   updateMaximizeRestoreIcon(false);
 
   // Listen for window maximize/unmaximize events (from main process)
-  ipcRenderer.on('window-maximized', () => updateMaximizeRestoreIcon(true));
-  ipcRenderer.on('window-unmaximized', () => updateMaximizeRestoreIcon(false));
+  window.electron.on('window-maximized', () => updateMaximizeRestoreIcon(true));
+  window.electron.on('window-unmaximized', () => updateMaximizeRestoreIcon(false));
 
   // Load content from localStorage on startup
   if (localStorage.getItem('savedContent')) {
@@ -171,7 +195,7 @@ window.addEventListener('DOMContentLoaded', () => {
     log.textContent = `Crawling ${url}...
 `;
     try {
-      const urls = await ipcRenderer.invoke('crawl', url);
+      const urls = await window.electron.invoke('crawl', url);
       // if (outputUrls.value && !outputUrls.value.endsWith(' ')) {
       //   outputUrls.value += ' '; // Add a space if there's existing content and it doesn't end with a space
       // }
@@ -185,7 +209,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // Toolbar button event listeners
   openBtn.addEventListener('click', async () => {
-    const content = await ipcRenderer.invoke('open-file');
+    const content = await window.electron.invoke('open-file');
     if (content !== null) {
       outputUrls.value = content;
       localStorage.setItem('savedContent', content);
@@ -231,7 +255,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     log.textContent = 'Saving content...';
     try {
-      const result = await ipcRenderer.invoke('save-file', content);
+      const result = await window.electron.invoke('save-file', content);
       if (result.filePath) {
         log.textContent = `Content saved to: ${result.filePath}`;
       } else {
@@ -245,15 +269,15 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // Window control button event listeners
   minimizeBtn.addEventListener('click', () => {
-    ipcRenderer.invoke('minimize-window');
+    window.electron.invoke('minimize-window');
   });
 
   maximizeRestoreBtn.addEventListener('click', () => {
-    ipcRenderer.invoke('maximize-restore-window');
+    window.electron.invoke('maximize-restore-window');
   });
 
   closeBtn.addEventListener('click', () => {
-    ipcRenderer.invoke('close-window');
+    window.electron.invoke('close-window');
   });
 
   openBrowserBtn.addEventListener('click', async () => {
@@ -266,10 +290,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
     const currentTheme = document.body.getAttribute('data-theme') || 'light';
     if (preferredBrowser === 'external') {
-      ipcRenderer.invoke('open-external-browser', url);
+      window.electron.invoke('open-external-browser', url);
       log.textContent = `Opening ${url} in external browser.`;
     } else {
-      ipcRenderer.invoke('open-internal-browser', { theme: currentTheme });
+      window.electron.invoke('open-internal-browser', { theme: currentTheme });
       log.textContent = `Opening ${url} in internal browser.`;
     }
   });
@@ -303,7 +327,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // YT-DLP settings event listeners
   browseDownloadPathBtn.addEventListener('click', async () => {
-    const result = await ipcRenderer.invoke('open-directory-dialog');
+    const result = await window.electron.invoke('open-directory-dialog');
     if (result && !result.canceled && result.filePaths.length > 0) {
       const selectedPath = result.filePaths[0];
       downloadPathInput.value = selectedPath;
@@ -355,13 +379,10 @@ window.addEventListener('DOMContentLoaded', () => {
     preferredBrowserSelect.value = "external";
   }
 
-  settingsBtn.addEventListener('click', () => {
-    settingsModal.classList.add('show');
-    moreMenu.classList.remove('show'); // Close the more menu when settings opens
-  });
+  settingsBtn.addEventListener('click', openSettings);
 
 
-  ipcRenderer.on('log', (event, message) => {
+  window.electron.on('log', (event, message) => {
     if (message.startsWith('Crawling')) {
       log.textContent = `${message}\n`;
     } else {
@@ -404,12 +425,12 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   systemThemeBtn.addEventListener('click', () => {
-    ipcRenderer.send('get-system-theme');
+  window.electron.send('get-system-theme');
     updateThemeButtons(systemThemeBtn);
   });
 
   // Set initial theme
-  ipcRenderer.on('system-theme', (event, theme) => {
+  window.electron.on('system-theme', (event, theme) => {
     document.body.setAttribute('data-theme', theme);
     if (theme === 'dark') {
       updateThemeButtons(darkThemeBtn);
@@ -417,5 +438,5 @@ window.addEventListener('DOMContentLoaded', () => {
       updateThemeButtons(lightThemeBtn);
     }
   });
-  ipcRenderer.send('get-system-theme');
+  window.electron.send('get-system-theme');
 });
