@@ -217,7 +217,8 @@ textarea {
 }
 
 .menu.show {
-  display: block;
+  display: flex;
+  flex-direction: column;
   padding: 10px;
 }
 
@@ -269,11 +270,20 @@ hr {
   width: 100%;
   border-radius: 3px;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
 }
 
 .menu-item:hover {
   background-color: var(--button-hover-background);
   color: var(--button-foreground);
+}
+
+.menu .menu-item {
+  justify-content: flex-start !important;
+  text-align: left !important;
 }
 
 /* Modal Styles */
@@ -762,4 +772,290 @@ body.changelog-open {
   margin: 8px 0;
   font-size: 13px;
   line-height: 1.5;
+}
+
+/* ═══════════════════════════════════════════════════════════════════ */
+/* CATEGORY 1: VISUAL POLISH & AESTHETICS                             */
+/* ═══════════════════════════════════════════════════════════════════ */
+
+/* 1. LOADING STATES & SPINNERS */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+#crawl.loading {
+  position: relative;
+  cursor: not-allowed;
+  opacity: 0.85;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+#crawl.loading::before {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  margin-right: 6px;
+  margin-left: -20px;
+}
+
+#crawl.loading span {
+  margin-left: 6px;
+}
+
+/* 2. STATUS INDICATORS */
+.log-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.log-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  font-size: 14px;
+  font-weight: bold;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.log-line.success .log-icon {
+  color: #22c55e;
+  content: '✓';
+}
+
+.log-line.error .log-icon {
+  color: #ef4444;
+  content: '✗';
+}
+
+.log-line.warning .log-icon {
+  color: #eab308;
+  content: '⚠';
+}
+
+.log-line.info .log-icon {
+  color: #3b82f6;
+  content: 'ℹ';
+}
+
+.log-text {
+  flex: 1;
+  word-break: break-word;
+}
+
+/* Status badges in log */
+.status-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.success {
+  background-color: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+
+.status-badge.error {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.status-badge.warning {
+  background-color: rgba(234, 179, 8, 0.2);
+  color: #eab308;
+}
+
+.status-badge.info {
+  background-color: rgba(59, 130, 246, 0.2);
+  color: #3b82f6;
+}
+
+.status-badge.crawling {
+  background-color: rgba(139, 92, 246, 0.2);
+  color: #a78bfa;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+/* 3. GRADIENT HEADERS & MODERN STYLING */
+.top-toolbar {
+  background: linear-gradient(
+    to right,
+    var(--toolbar-background),
+    var(--toolbar-background)
+  );
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.toolbar {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.input-group {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+input[type="text"] {
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease-in-out;
+}
+
+input[type="text"]:focus {
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04), 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+button {
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+button:active {
+  transform: translateY(0);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Rounded corners on major sections */
+.input-group input {
+  border-radius: 8px;
+}
+
+.toolbar {
+  border-radius: 8px 8px 0 0;
+}
+
+textarea {
+  border-radius: 0 0 8px 8px;
+}
+
+pre {
+  border-radius: 8px;
+}
+
+/* 4. ICONS TO ALL BUTTONS - Styling for button consistency */
+button[id$="Btn"],
+.nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+}
+
+button[id$="Btn"] svg,
+.menu-item svg,
+.nav-item svg {
+  flex-shrink: 0;
+}
+
+/* Settings button styling */
+#settingsBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#settingsBtn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Restart button styling */
+#restartBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+/* DevTools button styling */
+#devToolsBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+/* Changelog button styling */
+#changelogBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+/* Better button focus states */
+button:focus-visible {
+  outline: 2px solid var(--button-background);
+  outline-offset: 2px;
+}
+
+/* Disabled state styling */
+button:disabled,
+button.loading {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+button:disabled:hover,
+button.loading:hover {
+  background-color: var(--button-background);
+  transform: none;
+}
+
+/* Small icon buttons (toolbar) */
+.toolbar button {
+  border-radius: 6px;
+}
+
+.toolbar button:hover {
+  background-color: var(--secondary-button-hover-background);
+}
+
+/* Better menu styling */
+.menu {
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Enhanced link/button text */
+.menu-item:active {
+  background-color: var(--button-background);
+  color: var(--button-foreground);
 }

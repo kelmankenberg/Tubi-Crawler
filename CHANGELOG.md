@@ -1,6 +1,14 @@
 # Changelog
 
-## v1.3.0 (Current)
+## v1.3.1 (Current)
+
+### 🎨 UI/UX
+- **Menu Item Alignment** - Fixed More menu buttons to be left-aligned instead of centered
+- **Visual Polish** - Improved menu item layout consistency
+
+---
+
+## v1.3.0
 
 ### 🔒 Security
 - **Context Isolation Enabled** - Renderer process now runs in isolated context, preventing unauthorized access to Node.js APIs

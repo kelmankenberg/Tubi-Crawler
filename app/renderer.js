@@ -192,20 +192,44 @@ window.addEventListener('DOMContentLoaded', () => {
       log.textContent = 'Please enter a URL.';
       return;
     }
-    log.textContent = `Crawling ${url}...
-`;
+    
+    // Set loading state
+    crawlBtn.classList.add('loading');
+    crawlBtn.disabled = true;
+    log.textContent = `Crawling ${url}...\n`;
+    
     try {
       const urls = await window.electron.invoke('crawl', url);
-      // if (outputUrls.value && !outputUrls.value.endsWith(' ')) {
-      //   outputUrls.value += ' '; // Add a space if there's existing content and it doesn't end with a space
-      // }
-      outputUrls.value += urls.join(' '); // Append new URLs, space-separated
-      log.textContent += 'Crawling complete. URLs appended to the text control.';
+      outputUrls.value += urls.join(' ');
+      log.textContent += '✓ Crawling complete. URLs appended to the text control.';
     } catch (error) {
-      log.textContent = `Error: ${error.message}
-`;
+      log.textContent = `✗ Error: ${error.message}\n`;
+    } finally {
+      // Clear loading state
+      crawlBtn.classList.remove('loading');
+      crawlBtn.disabled = false;
     }
   });
+
+  // Helper function to add log lines with status indicators
+  function addStatusLog(message, status = 'info') {
+    const statusEmojis = {
+      success: '✓',
+      error: '✗',
+      warning: '⚠',
+      info: 'ℹ'
+    };
+    
+    const emoji = statusEmojis[status] || statusEmojis.info;
+    const timestamp = new Date().toLocaleTimeString();
+    const line = `[${timestamp}] ${emoji} ${message}`;
+    
+    if (message.startsWith('Crawling')) {
+      log.textContent = `${line}\n`;
+    } else {
+      log.textContent += `${line}\n`;
+    }
+  }
 
   // Toolbar button event listeners
   openBtn.addEventListener('click', async () => {
@@ -213,16 +237,16 @@ window.addEventListener('DOMContentLoaded', () => {
     if (content !== null) {
       outputUrls.value = content;
       localStorage.setItem('savedContent', content);
-      log.textContent = 'File opened successfully.';
+      addStatusLog('File opened successfully.', 'success');
     }
   });
 
   copyBtn.addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText(outputUrls.value);
-      log.textContent = 'Content copied to clipboard!';
+      addStatusLog('Content copied to clipboard!', 'success');
     } catch (err) {
-      log.textContent = 'Failed to copy content.';
+      addStatusLog('Failed to copy content.', 'error');
       console.error('Failed to copy: ', err);
     }
   });
@@ -234,9 +258,9 @@ window.addEventListener('DOMContentLoaded', () => {
       const end = outputUrls.selectionEnd;
       outputUrls.value = outputUrls.value.substring(0, start) + text + outputUrls.value.substring(end);
       outputUrls.selectionStart = outputUrls.selectionEnd = start + text.length;
-      log.textContent = 'Content pasted from clipboard!';
+      addStatusLog('Content pasted from clipboard!', 'success');
     } catch (err) {
-      log.textContent = 'Failed to paste content.';
+      addStatusLog('Failed to paste content.', 'error');
       console.error('Failed to paste: ', err);
     }
   });
@@ -244,25 +268,25 @@ window.addEventListener('DOMContentLoaded', () => {
   deleteBtn.addEventListener('click', () => {
     outputUrls.value = '';
     localStorage.removeItem('savedContent');
-    log.textContent = 'Content cleared.';
+    addStatusLog('Content cleared.', 'success');
   });
 
   saveAsBtn.addEventListener('click', async () => {
     const content = outputUrls.value;
     if (!content) {
-      log.textContent = 'No content to save.';
+      addStatusLog('No content to save.', 'warning');
       return;
     }
-    log.textContent = 'Saving content...';
+    addStatusLog('Saving content...', 'info');
     try {
       const result = await window.electron.invoke('save-file', content);
       if (result.filePath) {
-        log.textContent = `Content saved to: ${result.filePath}`;
+        addStatusLog(`Content saved to: ${result.filePath}`, 'success');
       } else {
-        log.textContent = 'Save operation cancelled or failed.';
+        addStatusLog('Save operation cancelled or failed.', 'warning');
       }
     } catch (error) {
-      log.textContent = `Error saving file: ${error.message}`;
+      addStatusLog(`Error saving file: ${error.message}`, 'error');
       console.error('Error saving file:', error);
     }
   });
@@ -278,6 +302,17 @@ window.addEventListener('DOMContentLoaded', () => {
 
   closeBtn.addEventListener('click', () => {
     window.electron.invoke('close-window');
+  });
+
+  // More menu button event listeners
+  restartBtn.addEventListener('click', () => {
+    window.electron.invoke('restart-app');
+    moreMenu.classList.remove('show');
+  });
+
+  devToolsBtn.addEventListener('click', () => {
+    window.electron.invoke('toggle-dev-tools');
+    moreMenu.classList.remove('show');
   });
 
   openBrowserBtn.addEventListener('click', async () => {
