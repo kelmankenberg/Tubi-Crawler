@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain, dialog, nativeTheme, shell } = require('electron');
 const path = require('path');
 const puppeteer = require('puppeteer');
+const packageJson = require('../package.json');
 
 let Store;
 let store;
@@ -118,6 +119,10 @@ const {
 
 ipcMain.on('get-system-theme', (event) => {
   event.reply('system-theme', nativeTheme.shouldUseDarkColors ? 'dark' : 'light');
+});
+
+ipcMain.handle('get-app-version', () => {
+  return packageJson.version;
 });
 
 ipcMain.on('restart-app', () => {
@@ -628,6 +633,91 @@ ipcMain.handle('open-internal-browser', async (event, options = {}) => {
   } catch (error) {
     console.error('Failed to open internal browser:', error);
     return { success: false, error: error.message };
+  }
+});
+
+ipcMain.on('internal-browser-command', (event, cmd, payload) => {
+  const senderWindow = BrowserWindow.fromWebContents(event.sender);
+  if (!senderWindow) {
+    console.warn('Could not find window for internal browser command');
+    return;
+  }
+
+  const view = browserViews.get(senderWindow.id);
+  if (!view) {
+    console.warn('No BrowserView found for window:', senderWindow.id);
+    return;
+  }
+
+  switch (cmd) {
+    case 'back':
+      if (view.webContents.canGoBack()) {
+        view.webContents.goBack();
+      }
+      break;
+    case 'forward':
+      if (view.webContents.canGoForward()) {
+        view.webContents.goForward();
+      }
+      break;
+    case 'reload':
+      view.webContents.reload();
+      break;
+    case 'go':
+      if (payload && payload.url) {
+        view.webContents.loadURL(payload.url).catch(err => {
+          console.error('Failed to load URL:', err);
+        });
+      }
+      break;
+    case 'copy-url':
+      try {
+        const { clipboard } = require('electron');
+        const url = view.webContents.getURL();
+        clipboard.writeText(url);
+      } catch (err) {
+        console.error('Failed to copy URL:', err);
+      }
+      break;
+    case 'get-url':
+      try {
+        const url = view.webContents.getURL();
+        senderWindow.webContents.send('browser-url-updated', url);
+      } catch (err) {
+        console.error('Failed to get URL:', err);
+      }
+      break;
+    default:
+      console.warn('Unknown internal-browser-command:', cmd);
+  }
+});
+
+ipcMain.handle('browser-insert-css', async (event, css) => {
+  const senderWindow = BrowserWindow.fromWebContents(event.sender);
+  if (!senderWindow) throw new Error('Could not find window');
+
+  const view = browserViews.get(senderWindow.id);
+  if (!view) throw new Error('No BrowserView found');
+
+  try {
+    const key = await view.webContents.insertCSS(css);
+    return key;
+  } catch (err) {
+    throw new Error('Failed to insert CSS: ' + err.message);
+  }
+});
+
+ipcMain.handle('browser-remove-css', async (event, key) => {
+  const senderWindow = BrowserWindow.fromWebContents(event.sender);
+  if (!senderWindow) throw new Error('Could not find window');
+
+  const view = browserViews.get(senderWindow.id);
+  if (!view) throw new Error('No BrowserView found');
+
+  try {
+    await view.webContents.removeInsertedCSS(key);
+  } catch (err) {
+    throw new Error('Failed to remove CSS: ' + err.message);
   }
 });
 

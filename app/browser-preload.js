@@ -8,7 +8,6 @@ contextBridge.exposeInMainWorld('internalBrowser', {
   },
   removeCss: async (key) => {
     return ipcRenderer.invoke('browser-remove-css', key);
-  }
-  ,
+  },
   onSetTheme: (fn) => ipcRenderer.on('set-theme', (event, theme) => fn(theme))
 });

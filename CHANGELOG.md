@@ -1,6 +1,35 @@
 # Changelog
 
-## v1.3.1 (Current)
+## v1.3.3 (Current)
+
+### 💬 User Feedback
+- **Toast Notifications** - Brief success/error messages appear in bottom-right corner
+- **Copy Feedback** - "✓ Copied to clipboard" toast on successful copy
+- **Paste Feedback** - "✓ Pasted from clipboard" toast on successful paste
+- **Save Feedback** - "✓ File saved successfully" toast when file is saved
+- **Delete Feedback** - "✓ Content cleared" toast when clearing URLs
+- **Open Feedback** - "✓ File opened" toast when opening a file
+- **Error Handling** - Error toasts for failed operations (copy, paste, save)
+- **Auto-dismiss** - Toasts automatically disappear after 3 seconds
+- **Color-coded** - Success (green), error (red), warning (yellow), info (blue)
+
+### 🎨 Visual Enhancements
+- Slide-in/out animations for toast messages
+- Themed styling matching app dark/light modes
+- Professional box-shadow and border styling
+
+---
+
+## v1.3.2
+
+### 🐛 Bug Fixes
+- **Internal Browser Toolbar** - Fixed back, forward, reload, and Go buttons in the internal browser
+- **Browser Commands** - Implemented missing IPC handlers for all toolbar commands (back, forward, reload, go, copy-url)
+- **CSS Injection** - Added support for CSS insertion and removal in browser view
+
+---
+
+## v1.3.1
 
 ### 🎨 UI/UX
 - **Menu Item Alignment** - Fixed More menu buttons to be left-aligned instead of centered

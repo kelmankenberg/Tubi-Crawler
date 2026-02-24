@@ -29,11 +29,44 @@ function updateThemeButtons(activeBtn) {
   if (activeBtn) activeBtn.classList.add('active');
 }
 
+// Function to show toast notifications
+function showToast(message, type = 'info', duration = 3000) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  
+  const icon = document.createElement('div');
+  icon.className = 'toast-icon';
+  
+  const messageEl = document.createElement('div');
+  messageEl.className = 'toast-message';
+  messageEl.textContent = message;
+  
+  toast.appendChild(icon);
+  toast.appendChild(messageEl);
+  container.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.classList.add('removing');
+    setTimeout(() => toast.remove(), 300);
+  }, duration);
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   const crawlBtn = document.getElementById('crawl');
   const urlInput = document.getElementById('url');
   const log = document.getElementById('log');
   const outputUrls = document.getElementById('outputUrls');
+
+  // Load and display app version
+  window.electron.invoke('get-app-version').then((version) => {
+    const versionLabel = document.getElementById('versionLabel');
+    if (versionLabel) {
+      versionLabel.textContent = `v${version}`;
+    }
+  }).catch((error) => {
+    console.error('Failed to load app version:', error);
+  });
 
   // Get references to the new toolbar buttons
   const openBtn = document.getElementById('openBtn');
@@ -41,6 +74,68 @@ window.addEventListener('DOMContentLoaded', () => {
   const copyBtn = document.getElementById('copyBtn');
   const pasteBtn = document.getElementById('pasteBtn');
   const deleteBtn = document.getElementById('deleteBtn');
+
+  // Get references to stats elements
+  const urlCountEl = document.getElementById('urlCount');
+  const lastCrawlTimeEl = document.getElementById('lastCrawlTime');
+  let lastCrawlStartTime = null;
+
+  // Get references to URL validation elements
+  const urlValidation = document.getElementById('urlValidation');
+  const validationIcon = document.getElementById('validationIcon');
+  const validationText = document.getElementById('validationText');
+
+  // Function to validate Tubi URL
+  function validateUrl(url) {
+    if (!url || url.trim() === '') {
+      urlValidation.style.display = 'none';
+      return false;
+    }
+
+    // Check if it's a valid Tubi URL format
+    const tubiPatterns = [
+      /tubitv\.com\/series/i,
+      /tubitv\.com\/\d+\/series/i
+    ];
+
+    const isValid = tubiPatterns.some(pattern => pattern.test(url));
+    
+    urlValidation.style.display = 'flex';
+    if (isValid) {
+      urlValidation.className = 'url-validation valid';
+      validationIcon.textContent = '✓';
+      validationText.textContent = 'Valid Tubi URL';
+    } else {
+      urlValidation.className = 'url-validation invalid';
+      validationIcon.textContent = '✗';
+      validationText.textContent = 'Invalid format';
+    }
+
+    return isValid;
+  }
+
+  // Function to update stats display
+  function updateStats() {
+    const urlText = outputUrls.value.trim();
+    const urlCount = urlText ? urlText.split(/\s+/).length : 0;
+    if (urlCountEl) {
+      urlCountEl.textContent = urlCount;
+    }
+  }
+
+  // Function to update crawl time display
+  function updateCrawlTime() {
+    if (lastCrawlStartTime && lastCrawlTimeEl) {
+      const elapsedMs = Date.now() - lastCrawlStartTime;
+      const seconds = Math.floor(elapsedMs / 1000);
+      const minutes = Math.floor(seconds / 60);
+      if (minutes > 0) {
+        lastCrawlTimeEl.textContent = `${minutes}m ${seconds % 60}s`;
+      } else {
+        lastCrawlTimeEl.textContent = `${seconds}s`;
+      }
+    }
+  }
 
   // Get references to the window control buttons
   const minimizeBtn = document.getElementById('minimizeBtn');
@@ -60,17 +155,109 @@ window.addEventListener('DOMContentLoaded', () => {
   const restartBtn = document.getElementById('restartBtn');
   const devToolsBtn = document.getElementById('devToolsBtn');
 
+  // Get references to quick action buttons
+  const clipboardBtn = document.getElementById('clipboardBtn');
+  const clearCrawlBtn = document.getElementById('clearCrawlBtn');
+  const recentUrlsBtn = document.getElementById('recentUrlsBtn');
+  const recentUrlsMenu = document.getElementById('recentUrlsMenu');
+  const recentUrlsList = document.getElementById('recentUrlsList');
+  const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+
+  // Recent URLs management
+  const MAX_RECENT_URLS = 10;
+  
+  function loadRecentUrls() {
+    const recent = localStorage.getItem('recentUrls');
+    return recent ? JSON.parse(recent) : [];
+  }
+
+  function saveRecentUrls(urls) {
+    localStorage.setItem('recentUrls', JSON.stringify(urls.slice(0, MAX_RECENT_URLS)));
+    updateRecentUrlsList();
+  }
+
+  function addRecentUrl(url) {
+    if (!url || url.trim() === '') return;
+    const recent = loadRecentUrls();
+    const cleaned = url.trim();
+    const filtered = recent.filter(u => u !== cleaned);
+    filtered.unshift(cleaned);
+    saveRecentUrls(filtered);
+  }
+
+  function updateRecentUrlsList() {
+    const recent = loadRecentUrls();
+    recentUrlsList.innerHTML = '';
+    
+    if (recent.length === 0) {
+      const emptyMsg = document.createElement('div');
+      emptyMsg.style.cssText = 'padding: 12px; font-size: 12px; color: var(--text-secondary); text-align: center;';
+      emptyMsg.textContent = 'No recent URLs';
+      recentUrlsList.appendChild(emptyMsg);
+      return;
+    }
+
+    recent.forEach((url, index) => {
+      const item = document.createElement('button');
+      item.className = 'recent-url-item';
+      const displayUrl = url.length > 50 ? url.substring(0, 47) + '...' : url;
+      item.innerHTML = `<span class="recent-url-item-text">${displayUrl}</span>`;
+      
+      item.addEventListener('click', () => {
+        urlInput.value = url;
+        validateUrl(url);
+        recentUrlsMenu.classList.remove('show');
+        crawlBtn.click();
+      });
+
+      recentUrlsList.appendChild(item);
+    });
+  }
+
+  // Initialize recent URLs display
+  updateRecentUrlsList();
+
+  // Statistics management
+  const STATS_KEY = 'crawlerStats';
+  
+  function getStats() {
+    const stored = localStorage.getItem(STATS_KEY);
+    if (!stored) {
+      return {
+        totalUrls: 0,
+        uniqueUrls: 0,
+        totalCrawlTime: 0,
+        seriesCrawled: 0
+      };
+    }
+    return JSON.parse(stored);
+  }
+
+  function saveStats(stats) {
+    localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+  }
+
+  function updateStatisticsPanelDisplay() {
+    const stats = getStats();
+    document.getElementById('totalUrlsStat').textContent = stats.totalUrls;
+    document.getElementById('uniqueUrlsStat').textContent = stats.uniqueUrls;
+    document.getElementById('totalCrawlTimeStat').textContent = stats.totalCrawlTime + 's';
+    document.getElementById('seriesCrawledStat').textContent = stats.seriesCrawled;
+  }
+
   async function executeYtDlpCommand(urlsToDownload) {
     const downloadPath = downloadPathInput.value;
     const formatString = formatStringInput.value;
     const mergeOutputFormat = mergeOutputFormatSelect.value;
 
     if (!downloadPath) {
-      log.textContent = 'Please set a download location in settings.';
+      clearLog();
+      appendLog('Please set a download location in settings.', 'warning');
       return;
     }
 
-    log.textContent = `Initiating YT-DLP download for ${urlsToDownload.length} URLs...\n`;
+    clearLog();
+    appendLog(`Initiating YT-DLP download for ${urlsToDownload.length} URLs...`, 'info');
     try {
       const result = await window.electron.invoke('run-yt-dlp', {
         urls: urlsToDownload,
@@ -79,12 +266,12 @@ window.addEventListener('DOMContentLoaded', () => {
         mergeFormat: mergeOutputFormat
       });
       if (result.success) {
-        log.textContent += `YT-DLP command executed successfully. Check external terminal.\n`;
+        appendLog(`YT-DLP command executed successfully. Check external terminal.`, 'success');
       } else {
-        log.textContent += `Error executing YT-DLP command: ${result.error}\n`;
+        appendLog(`Error executing YT-DLP command: ${result.error}`, 'error');
       }
     } catch (error) {
-      log.textContent += `Error invoking YT-DLP: ${error.message}\n`;
+      appendLog(`Error invoking YT-DLP: ${error.message}`, 'error');
     }
   }
 
@@ -94,7 +281,8 @@ window.addEventListener('DOMContentLoaded', () => {
     if (selectedUrls) {
       executeYtDlpCommand(selectedUrls.split(/\s+/));
     } else {
-      log.textContent = 'No URLs selected for download.';
+      clearLog();
+      appendLog('No URLs selected for download.', 'warning');
     }
     ytDlpMenu.classList.remove('show');
   });
@@ -105,7 +293,8 @@ window.addEventListener('DOMContentLoaded', () => {
       executeYtDlpCommand(allUrls.split(/\s+/));
     }
     else {
-      log.textContent = 'No URLs to download.';
+      clearLog();
+      appendLog('No URLs to download.', 'warning');
     }
     ytDlpMenu.classList.remove('show');
   });
@@ -158,6 +347,7 @@ window.addEventListener('DOMContentLoaded', () => {
   // Load content from localStorage on startup
   if (localStorage.getItem('savedContent')) {
     outputUrls.value = localStorage.getItem('savedContent');
+    updateStats();
   }
 
   // Save content to localStorage whenever it changes
@@ -167,12 +357,18 @@ window.addEventListener('DOMContentLoaded', () => {
     } else {
       localStorage.removeItem('savedContent');
     }
+    updateStats();
   });
 
   urlInput.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') {
       crawlBtn.click();
     }
+  });
+
+  // Add URL validation on input
+  urlInput.addEventListener('input', (event) => {
+    validateUrl(event.target.value);
   });
 
   // Select all text when the URL input receives focus; prevent mouseup
@@ -189,26 +385,82 @@ window.addEventListener('DOMContentLoaded', () => {
   crawlBtn.addEventListener('click', async () => {
     const url = urlInput.value;
     if (!url) {
-      log.textContent = 'Please enter a URL.';
+      clearLog();
+      appendLog('Please enter a URL.', 'warning');
       return;
     }
     
-    // Set loading state
+    // Add to recent URLs
+    addRecentUrl(url);
+    
+    // Set loading state and track time
     crawlBtn.classList.add('loading');
     crawlBtn.disabled = true;
-    log.textContent = `Crawling ${url}...\n`;
+    lastCrawlStartTime = Date.now();
+    clearLog();
+    appendLog(`Crawling ${url}...`, 'info');
     
     try {
       const urls = await window.electron.invoke('crawl', url);
       outputUrls.value += urls.join(' ');
-      log.textContent += '✓ Crawling complete. URLs appended to the text control.';
+      appendLog('Crawling complete. URLs appended to the text control.', 'success');
+      
+      // Update statistics
+      const crawlTime = Math.round((Date.now() - lastCrawlStartTime) / 1000);
+      const stats = getStats();
+      stats.totalUrls += urls.length;
+      stats.uniqueUrls = new Set(outputUrls.value.trim().split(/\s+/).filter(u => u.length > 0)).size;
+      stats.totalCrawlTime += crawlTime;
+      stats.seriesCrawled += 1;
+      saveStats(stats);
+      
+      updateStats();
+      updateCrawlTime();
     } catch (error) {
-      log.textContent = `✗ Error: ${error.message}\n`;
+      appendLog(`Error: ${error.message}`, 'error');
     } finally {
       // Clear loading state
       crawlBtn.classList.remove('loading');
       crawlBtn.disabled = false;
     }
+  });
+
+  // Quick action button handlers
+  clipboardBtn.addEventListener('click', async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      urlInput.value = text.trim();
+      validateUrl(urlInput.value);
+      showToast('📋 URL pasted from clipboard', 'info');
+      // Auto-crawl after a short delay
+      setTimeout(() => crawlBtn.click(), 200);
+    } catch (err) {
+      appendLog('Failed to read clipboard', 'error');
+      showToast('Failed to read clipboard', 'error');
+    }
+  });
+
+  clearCrawlBtn.addEventListener('click', () => {
+    outputUrls.value = '';
+    localStorage.removeItem('savedContent');
+    updateStats();
+    showToast('✓ Cleared, ready to crawl', 'info');
+    crawlBtn.click();
+  });
+
+  // Recent URLs menu handlers
+  recentUrlsBtn.addEventListener('click', (event) => {
+    event.stopPropagation();
+    recentUrlsMenu.classList.toggle('show');
+    moreMenu.classList.remove('show');
+    ytDlpMenu.classList.remove('show');
+  });
+
+  clearHistoryBtn.addEventListener('click', () => {
+    localStorage.removeItem('recentUrls');
+    updateRecentUrlsList();
+    showToast('✓ History cleared', 'info');
+    recentUrlsMenu.classList.remove('show');
   });
 
   // Helper function to add log lines with status indicators
@@ -222,13 +474,38 @@ window.addEventListener('DOMContentLoaded', () => {
     
     const emoji = statusEmojis[status] || statusEmojis.info;
     const timestamp = new Date().toLocaleTimeString();
-    const line = `[${timestamp}] ${emoji} ${message}`;
     
     if (message.startsWith('Crawling')) {
-      log.textContent = `${line}\n`;
-    } else {
-      log.textContent += `${line}\n`;
+      log.innerHTML = '';
     }
+    
+    const logLine = document.createElement('div');
+    logLine.className = `log-line log-${status}`;
+    logLine.innerHTML = `<span class="log-icon">${emoji}</span><span class="log-timestamp">[${timestamp}]</span><span class="log-text">${message}</span>`;
+    log.appendChild(logLine);
+  }
+
+  // Helper function to clear log
+  function clearLog() {
+    log.innerHTML = '';
+  }
+
+  // Helper function to append simple log message (for backwards compatibility)
+  function appendLog(message, status = 'info') {
+    const statusEmojis = {
+      success: '✓',
+      error: '✗',
+      warning: '⚠',
+      info: 'ℹ'
+    };
+    
+    const emoji = statusEmojis[status] || statusEmojis.info;
+    const timestamp = new Date().toLocaleTimeString();
+    
+    const logLine = document.createElement('div');
+    logLine.className = `log-line log-${status}`;
+    logLine.innerHTML = `<span class="log-icon">${emoji}</span><span class="log-timestamp">[${timestamp}]</span><span class="log-text">${message}</span>`;
+    log.appendChild(logLine);
   }
 
   // Toolbar button event listeners
@@ -238,6 +515,8 @@ window.addEventListener('DOMContentLoaded', () => {
       outputUrls.value = content;
       localStorage.setItem('savedContent', content);
       addStatusLog('File opened successfully.', 'success');
+      showToast('✓ File opened', 'success');
+      updateStats();
     }
   });
 
@@ -245,8 +524,10 @@ window.addEventListener('DOMContentLoaded', () => {
     try {
       await navigator.clipboard.writeText(outputUrls.value);
       addStatusLog('Content copied to clipboard!', 'success');
+      showToast('✓ Copied to clipboard', 'success');
     } catch (err) {
       addStatusLog('Failed to copy content.', 'error');
+      showToast('Failed to copy to clipboard', 'error');
       console.error('Failed to copy: ', err);
     }
   });
@@ -259,8 +540,11 @@ window.addEventListener('DOMContentLoaded', () => {
       outputUrls.value = outputUrls.value.substring(0, start) + text + outputUrls.value.substring(end);
       outputUrls.selectionStart = outputUrls.selectionEnd = start + text.length;
       addStatusLog('Content pasted from clipboard!', 'success');
+      showToast('✓ Pasted from clipboard', 'success');
+      updateStats();
     } catch (err) {
       addStatusLog('Failed to paste content.', 'error');
+      showToast('Failed to paste from clipboard', 'error');
       console.error('Failed to paste: ', err);
     }
   });
@@ -269,12 +553,15 @@ window.addEventListener('DOMContentLoaded', () => {
     outputUrls.value = '';
     localStorage.removeItem('savedContent');
     addStatusLog('Content cleared.', 'success');
+    showToast('✓ Content cleared', 'success');
+    updateStats();
   });
 
   saveAsBtn.addEventListener('click', async () => {
     const content = outputUrls.value;
     if (!content) {
       addStatusLog('No content to save.', 'warning');
+      showToast('No content to save', 'warning');
       return;
     }
     addStatusLog('Saving content...', 'info');
@@ -282,11 +569,14 @@ window.addEventListener('DOMContentLoaded', () => {
       const result = await window.electron.invoke('save-file', content);
       if (result.filePath) {
         addStatusLog(`Content saved to: ${result.filePath}`, 'success');
+        showToast('✓ File saved successfully', 'success');
       } else {
         addStatusLog('Save operation cancelled or failed.', 'warning');
+        showToast('Save operation cancelled', 'warning');
       }
     } catch (error) {
       addStatusLog(`Error saving file: ${error.message}`, 'error');
+      showToast('Failed to save file', 'error');
       console.error('Error saving file:', error);
     }
   });
@@ -326,10 +616,12 @@ window.addEventListener('DOMContentLoaded', () => {
     const currentTheme = document.body.getAttribute('data-theme') || 'light';
     if (preferredBrowser === 'external') {
       window.electron.invoke('open-external-browser', url);
-      log.textContent = `Opening ${url} in external browser.`;
+      clearLog();
+      appendLog(`Opening ${url} in external browser.`, 'info');
     } else {
       window.electron.invoke('open-internal-browser', { theme: currentTheme });
-      log.textContent = `Opening ${url} in internal browser.`;
+      clearLog();
+      appendLog(`Opening ${url} in internal browser.`, 'info');
     }
   });
 
@@ -588,11 +880,118 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Keyboard Shortcuts Panel handlers
+  const keyboardShortcutsBtn = document.getElementById('keyboardShortcutsBtn');
+  const shortcutsPanel = document.getElementById('keyboardShortcutsPanel');
+  const closeShortcutsBtn = document.getElementById('closeShortcutsBtn');
+
+  function openShortcuts() {
+    shortcutsPanel.style.display = 'flex';
+    moreMenu.classList.remove('show');
+  }
+
+  function closeShortcuts() {
+    shortcutsPanel.style.display = 'none';
+  }
+
+  keyboardShortcutsBtn.addEventListener('click', openShortcuts);
+  closeShortcutsBtn.addEventListener('click', closeShortcuts);
+
+  // Close shortcuts on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && shortcutsPanel.style.display !== 'none') {
+      closeShortcuts();
+    }
+  });
+
+  // Close shortcuts when clicking outside
+  shortcutsPanel.addEventListener('click', (e) => {
+    if (e.target === shortcutsPanel) {
+      closeShortcuts();
+    }
+  });
+
+  // Help Panel handlers
+  const helpBtn = document.getElementById('helpBtn');
+  const helpPanel = document.getElementById('helpPanel');
+  const closeHelpBtn = document.getElementById('closeHelpBtn');
+
+  function openHelp() {
+    helpPanel.style.display = 'flex';
+    moreMenu.classList.remove('show');
+  }
+
+  function closeHelp() {
+    helpPanel.style.display = 'none';
+  }
+
+  helpBtn.addEventListener('click', openHelp);
+  closeHelpBtn.addEventListener('click', closeHelp);
+
+  // Close help on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && helpPanel.style.display !== 'none') {
+      closeHelp();
+    }
+  });
+
+  // Close help when clicking outside
+  helpPanel.addEventListener('click', (e) => {
+    if (e.target === helpPanel) {
+      closeHelp();
+    }
+  });
+
+  // Statistics Panel handlers
+  const statsBtn = document.getElementById('statsBtn');
+  const statsPanel = document.getElementById('statsPanel');
+  const closeStatsBtn = document.getElementById('closeStatsBtn');
+  const resetStatsBtn = document.getElementById('resetStatsBtn');
+
+  function openStats() {
+    updateStatisticsPanelDisplay();
+    statsPanel.style.display = 'flex';
+    moreMenu.classList.remove('show');
+  }
+
+  function closeStats() {
+    statsPanel.style.display = 'none';
+  }
+
+  statsBtn.addEventListener('click', openStats);
+  closeStatsBtn.addEventListener('click', closeStats);
+
+  resetStatsBtn.addEventListener('click', () => {
+    saveStats({
+      totalUrls: 0,
+      uniqueUrls: 0,
+      totalCrawlTime: 0,
+      seriesCrawled: 0
+    });
+    updateStatisticsPanelDisplay();
+    showToast('📊 Statistics reset', 'success');
+  });
+
+  // Close stats on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && statsPanel.style.display !== 'none') {
+      closeStats();
+    }
+  });
+
+  // Close stats when clicking outside
+  statsPanel.addEventListener('click', (e) => {
+    if (e.target === statsPanel) {
+      closeStats();
+    }
+  });
+
   window.electron.on('log', (event, message) => {
     if (message.startsWith('Crawling')) {
-      log.textContent = `${message}\n`;
+      clearLog();
+      appendLog(message, 'info');
     } else {
-      log.textContent += `${message}\n`;
+      appendLog(message, 'info');
     }
   });
 
