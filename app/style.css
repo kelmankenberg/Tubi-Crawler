@@ -987,17 +987,22 @@ body.changelog-open {
   animation: pulse 1.5s ease-in-out infinite;
 }
 
+/* Disable ::after spinner on the Crawl button */
+#crawl.loading::after {
+  content: none;
+}
+
 #crawl.loading::before {
   content: '';
   position: absolute;
-  width: 14px;
-  height: 14px;
-  border: 2px solid currentColor;
+  width: 12px;
+  height: 12px;
+  border: 1px solid currentColor;
   border-top-color: transparent;
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
   margin-right: 6px;
-  margin-left: -20px;
+  margin-left: -14px;
 }
 
 #crawl.loading span {

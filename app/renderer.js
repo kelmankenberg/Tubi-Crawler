@@ -640,17 +640,17 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   // Close menus if click is outside
-  window.addEventListener('click', (event) => {
-    if (event.target === settingsModal) {
-      settingsModal.classList.remove('show');
-    }
-    if (!moreBtn.contains(event.target) && !moreMenu.contains(event.target)) {
-      moreMenu.classList.remove('show');
-    }
-    if (!ytDlpBtn.contains(event.target) && !ytDlpMenu.contains(event.target)) {
-      ytDlpMenu.classList.remove('show');
-    }
-  });
+  // window.addEventListener('click', (event) => {
+  //   if (event.target === settingsModal) {
+  //     settingsModal.classList.remove('show');
+  //   }
+  //   if (!moreBtn.contains(event.target) && !moreMenu.contains(event.target)) {
+  //     moreMenu.classList.remove('show');
+  //   }
+  //   if (!ytDlpBtn.contains(event.target) && !ytDlpMenu.contains(event.target)) {
+  //     ytDlpMenu.classList.remove('show');
+  //   }
+  // });
 
   // YT-DLP settings event listeners
   browseDownloadPathBtn.addEventListener('click', async () => {

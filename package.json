@@ -16,6 +16,7 @@
   "license": "ISC",
   "dependencies": {
     "electron-store": "^11.0.2",
+    "heroicons": "^2.2.0",
     "puppeteer": "^24.29.1"
   },
   "devDependencies": {
