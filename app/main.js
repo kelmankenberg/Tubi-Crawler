@@ -3,6 +3,11 @@ const path = require('path');
 const puppeteer = require('puppeteer');
 const packageJson = require('../package.json');
 
+// Auto-reload on file changes (development only)
+if (process.env.NODE_ENV !== 'production') {
+  require('electron-reload')(__dirname);
+}
+
 let Store;
 let store;
 
@@ -415,6 +420,23 @@ ipcMain.handle('open-file', async () => {
       console.error('Failed to read file:', error);
       return null;
     }
+  }
+  return null;
+});
+
+ipcMain.handle('open-executable-dialog', async () => {
+  const window = BrowserWindow.getFocusedWindow();
+  const { filePaths } = await dialog.showOpenDialog(window, {
+    title: 'Select FFmpeg Executable',
+    properties: ['openFile'],
+    filters: [
+      { name: 'Executable Files', extensions: ['exe'] },
+      { name: 'All Files', extensions: ['*'] }
+    ]
+  });
+
+  if (filePaths && filePaths.length > 0) {
+    return filePaths[0];
   }
   return null;
 });

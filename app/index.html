@@ -217,6 +217,7 @@
         <div class="settings-nav">
           <button class="nav-item active" data-section="general">General</button>
           <button class="nav-item" data-section="yt-dlp">YT-DLP settings</button>
+          <button class="nav-item" data-section="ffmpeg">FFmpeg settings</button>
         </div>
         <div class="settings-content">
           <div id="general-settings" class="settings-section active">
@@ -268,6 +269,17 @@
                 <option value="mkv">mkv</option>
                 <option value="mp4" selected>mp4</option>
               </select>
+            </div>
+          </div>
+          <div id="ffmpeg-settings" class="settings-section">
+            <h3>FFmpeg Settings</h3>
+            <div class="setting-item">
+              <label for="ffmpeg-path">FFmpeg Executable Location:</label>
+              <div class="input-with-button">
+                <input type="text" id="ffmpeg-path" placeholder="Select ffmpeg.exe location" readonly>
+                <button id="browse-ffmpeg-path">Browse</button>
+              </div>
+              <p class="setting-description">Select the location of ffmpeg.exe for video processing and merging.</p>
             </div>
           </div>
         </div>

@@ -337,6 +337,10 @@ window.addEventListener('DOMContentLoaded', () => {
   const mergeOutputFormatSelect = document.getElementById('merge-output-format');
   const preferredBrowserSelect = document.getElementById('preferred-browser');
 
+  // Get references to FFmpeg settings elements
+  const ffmpegPathInput = document.getElementById('ffmpeg-path');
+  const browseFfmpegPathBtn = document.getElementById('browse-ffmpeg-path');
+
   // Initial icon state (assuming window is not maximized on start)
   updateMaximizeRestoreIcon(false);
 
@@ -704,6 +708,20 @@ window.addEventListener('DOMContentLoaded', () => {
   } else {
     // Set default value if not found in localStorage
     preferredBrowserSelect.value = "external";
+  }
+
+  // FFmpeg settings event listeners
+  browseFfmpegPathBtn.addEventListener('click', async () => {
+    const result = await window.electron.invoke('open-executable-dialog');
+    if (result) {
+      ffmpegPathInput.value = result;
+      localStorage.setItem('ffmpeg-path', result);
+    }
+  });
+
+  // Load saved ffmpeg path on startup
+  if (localStorage.getItem('ffmpeg-path')) {
+    ffmpegPathInput.value = localStorage.getItem('ffmpeg-path');
   }
 
   settingsBtn.addEventListener('click', openSettings);

@@ -553,11 +553,13 @@ hr {
   border: none;
   color: var(--foreground);
   padding: 10px 15px;
-  text-align: left;
+  text-align: left !important;
   cursor: pointer;
   border-radius: 5px;
   margin-bottom: 5px;
   transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+  width: 100%;
+  justify-content: flex-start;
 }
 
 .settings-nav .nav-item:hover {
@@ -592,6 +594,12 @@ hr {
   display: block;
   margin-bottom: 5px;
   font-weight: bold;
+}
+
+.setting-description {
+  margin-top: 5px;
+  font-size: 0.85rem;
+  color: var(--text-secondary, #666);
 }
 
 .input-with-button {
@@ -709,6 +717,9 @@ hr {
   padding-right: 20px;
   overflow-y: auto;
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 
 .settings-page .settings-content {
