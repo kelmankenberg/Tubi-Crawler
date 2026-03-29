@@ -130,10 +130,11 @@ ipcMain.on('restart-app', () => {
   app.quit();
 });
 
-ipcMain.on('open-dev-tools', () => {
+ipcMain.handle('open-dev-tools', () => {
+  console.log('open-dev-tools handler called');
   const window = BrowserWindow.getFocusedWindow();
   if (window) {
-    window.webContents.openDevTools();
+    window.webContents.toggleDevTools();
   }
 });
 
@@ -448,6 +449,13 @@ ipcMain.handle('close-window', (event) => {
   const window = BrowserWindow.getFocusedWindow();
   if (window) {
     window.close();
+  }
+});
+
+ipcMain.handle('toggle-dev-tools', (event) => {
+  const window = BrowserWindow.getFocusedWindow();
+  if (window) {
+    window.webContents.toggleDevTools();
   }
 });
 

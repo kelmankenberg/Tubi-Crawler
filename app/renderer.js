@@ -601,7 +601,7 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   devToolsBtn.addEventListener('click', () => {
-    window.electron.invoke('toggle-dev-tools');
+    window.electron.invoke('open-dev-tools');
     moreMenu.classList.remove('show');
   });
 
