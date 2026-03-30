@@ -84,7 +84,7 @@ function parseUrlsFromText(text) {
   if (!text || text.trim() === '') {
     return [];
   }
-  return text.trim().split(/\s+/).filter(u => u.length > 0);
+  return text.trim().split(/\n+/).filter(u => u.length > 0);
 }
 
 /**

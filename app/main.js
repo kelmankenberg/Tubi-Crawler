@@ -130,7 +130,7 @@ ipcMain.handle('get-app-version', () => {
   return packageJson.version;
 });
 
-ipcMain.on('restart-app', () => {
+ipcMain.handle('restart-app', () => {
   app.relaunch();
   app.quit();
 });

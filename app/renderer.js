@@ -54,6 +54,8 @@ function showToast(message, type = 'info', duration = 3000) {
 
 window.addEventListener('DOMContentLoaded', () => {
   const crawlBtn = document.getElementById('crawl');
+  const toggleQuickActionsBtn = document.getElementById('toggleQuickActionsBtn');
+  const quickActions = document.getElementById('quickActions');
   const urlInput = document.getElementById('url');
   const log = document.getElementById('log');
   const outputUrls = document.getElementById('outputUrls');
@@ -117,7 +119,7 @@ window.addEventListener('DOMContentLoaded', () => {
   // Function to update stats display
   function updateStats() {
     const urlText = outputUrls.value.trim();
-    const urlCount = urlText ? urlText.split(/\s+/).length : 0;
+    const urlCount = urlText ? urlText.split(/\n+/).length : 0;
     if (urlCountEl) {
       urlCountEl.textContent = urlCount;
     }
@@ -309,8 +311,8 @@ window.addEventListener('DOMContentLoaded', () => {
     const selectedUrls = outputUrls.value.substring(outputUrls.selectionStart, outputUrls.selectionEnd).trim();
     console.log('Selected URLs:', selectedUrls);
     if (selectedUrls) {
-      console.log('Calling executeYtDlpCommand with:', selectedUrls.split(/\s+/));
-      executeYtDlpCommand(selectedUrls.split(/\s+/));
+      console.log('Calling executeYtDlpCommand with:', selectedUrls.split(/\n+/));
+      executeYtDlpCommand(selectedUrls.split(/\n+/));
     } else {
       clearLog();
       appendLog('No URLs selected for download.', 'warning');
@@ -323,8 +325,8 @@ window.addEventListener('DOMContentLoaded', () => {
     const allUrls = outputUrls.value.trim();
     console.log('All URLs:', allUrls);
     if (allUrls) {
-      console.log('Calling executeYtDlpCommand with:', allUrls.split(/\s+/));
-      executeYtDlpCommand(allUrls.split(/\s+/));
+      console.log('Calling executeYtDlpCommand with:', allUrls.split(/\n+/));
+      executeYtDlpCommand(allUrls.split(/\n+/));
     }
     else {
       clearLog();
@@ -451,31 +453,36 @@ window.addEventListener('DOMContentLoaded', () => {
       appendLog('Please enter a URL.', 'warning');
       return;
     }
-    
+
     // Add to recent URLs
     addRecentUrl(url);
-    
+
     // Set loading state and track time
     crawlBtn.classList.add('loading');
     crawlBtn.disabled = true;
     lastCrawlStartTime = Date.now();
     clearLog();
     appendLog(`Crawling ${url}...`, 'info');
-    
+
     try {
       const urls = await window.electron.invoke('crawl', url);
-      outputUrls.value += urls.join(' ');
+      // Add newline before first URL if output is not empty, then join URLs with newlines
+      if (outputUrls.value.trim() !== '') {
+        outputUrls.value += '\n' + urls.join('\n');
+      } else {
+        outputUrls.value = urls.join('\n');
+      }
       appendLog('Crawling complete. URLs appended to the text control.', 'success');
-      
+
       // Update statistics
       const crawlTime = Math.round((Date.now() - lastCrawlStartTime) / 1000);
       const stats = getStats();
       stats.totalUrls += urls.length;
-      stats.uniqueUrls = new Set(outputUrls.value.trim().split(/\s+/).filter(u => u.length > 0)).size;
+      stats.uniqueUrls = new Set(outputUrls.value.trim().split(/\n+/).filter(u => u.length > 0)).size;
       stats.totalCrawlTime += crawlTime;
       stats.seriesCrawled += 1;
       saveStats(stats);
-      
+
       updateStats();
       updateCrawlTime();
     } catch (error) {
@@ -484,6 +491,29 @@ window.addEventListener('DOMContentLoaded', () => {
       // Clear loading state
       crawlBtn.classList.remove('loading');
       crawlBtn.disabled = false;
+    }
+  });
+
+  // Toggle quick actions
+  // Load saved state from localStorage
+  const quickActionsExpanded = localStorage.getItem('quick-actions-expanded') === 'true';
+  if (quickActionsExpanded) {
+    quickActions.classList.remove('collapsed');
+    quickActions.style.display = 'flex';
+    toggleQuickActionsBtn.classList.remove('collapsed');
+  }
+
+  toggleQuickActionsBtn.addEventListener('click', () => {
+    quickActions.classList.toggle('collapsed');
+    toggleQuickActionsBtn.classList.toggle('collapsed');
+    
+    // Toggle display property
+    if (quickActions.style.display === 'none') {
+      quickActions.style.display = 'flex';
+      localStorage.setItem('quick-actions-expanded', 'true');
+    } else {
+      quickActions.style.display = 'none';
+      localStorage.setItem('quick-actions-expanded', 'false');
     }
   });
 
@@ -516,6 +546,13 @@ window.addEventListener('DOMContentLoaded', () => {
     recentUrlsMenu.classList.toggle('show');
     moreMenu.classList.remove('show');
     ytDlpMenu.classList.remove('show');
+  });
+
+  // Close recent URLs menu when clicking outside
+  document.addEventListener('click', (event) => {
+    if (!recentUrlsBtn.contains(event.target) && !recentUrlsMenu.contains(event.target)) {
+      recentUrlsMenu.classList.remove('show');
+    }
   });
 
   clearHistoryBtn.addEventListener('click', () => {
@@ -701,18 +738,12 @@ window.addEventListener('DOMContentLoaded', () => {
     moreMenu.classList.remove('show'); // Close More menu if open
   });
 
-  // Close menus if click is outside
-  // window.addEventListener('click', (event) => {
-  //   if (event.target === settingsModal) {
-  //     settingsModal.classList.remove('show');
-  //   }
-  //   if (!moreBtn.contains(event.target) && !moreMenu.contains(event.target)) {
-  //     moreMenu.classList.remove('show');
-  //   }
-  //   if (!ytDlpBtn.contains(event.target) && !ytDlpMenu.contains(event.target)) {
-  //     ytDlpMenu.classList.remove('show');
-  //   }
-  // });
+  // Close YT-DLP menu when clicking outside
+  document.addEventListener('click', (event) => {
+    if (!ytDlpBtn.contains(event.target) && !ytDlpMenu.contains(event.target)) {
+      ytDlpMenu.classList.remove('show');
+    }
+  });
 
   // YT-DLP settings event listeners
   browseDownloadPathBtn.addEventListener('click', async () => {
