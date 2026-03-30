@@ -482,19 +482,88 @@ ipcMain.handle('toggle-dev-tools', (event) => {
 });
 
 ipcMain.handle('run-yt-dlp', async (event, options) => {
-  const { urls, downloadPath, format, mergeFormat } = options;
-  const ytDlpPath = 'yt-dlp'; // Assuming yt-dlp is in PATH or globally installed
+  const {
+    urls,
+    downloadPath,
+    format,
+    mergeFormat,
+    videoQuality,
+    audioFormat,
+    embedSubs,
+    subLangs,
+    embedThumbnail,
+    embedMetadata,
+    playlistStart,
+    playlistEnd,
+    ffmpegPath: ffmpegFolderPath,
+    ytDlpPath: ytDlpFolderPath
+  } = options;
+
+  // Convert folder paths to full executable paths
+  const ytDlpPath = ytDlpFolderPath ? path.join(ytDlpFolderPath, 'yt-dlp.exe') : 'yt-dlp';
+  const ffmpegPath = ffmpegFolderPath ? path.join(ffmpegFolderPath, 'ffmpeg.exe') : null;
+
+  console.log('Received options:', { downloadPath, ffmpegPath, ytDlpPath });
+  console.log('YT-DLP folder path:', ytDlpFolderPath);
+  console.log('YT-DLP full path:', ytDlpPath);
+  console.log('FFmpeg folder path:', ffmpegFolderPath);
+  console.log('FFmpeg full path:', ffmpegPath);
 
   let args = [];
 
-  // Add format string
-  if (format) {
+  // Build format string based on video quality or custom format
+  if (videoQuality && videoQuality !== 'best') {
+    // Use video quality limit
+    args.push('-f', `bestvideo[height<=${videoQuality}]+bestaudio/best[height<=${videoQuality}]/best`);
+  } else if (format) {
+    // Use custom format string
     args.push('-f', format);
+  }
+
+  // Add audio format conversion
+  if (audioFormat && audioFormat !== 'none') {
+    args.push('--audio-format', audioFormat);
   }
 
   // Add merge format
   if (mergeFormat) {
     args.push('--merge-output-format', mergeFormat);
+  }
+
+  // Add embed subtitles
+  if (embedSubs) {
+    args.push('--embed-subs');
+    if (subLangs) {
+      args.push('--sub-langs', subLangs);
+    }
+  }
+
+  // Add embed thumbnail
+  if (embedThumbnail) {
+    args.push('--embed-thumbnail');
+  }
+
+  // Add embed metadata
+  if (embedMetadata) {
+    args.push('--embed-metadata');
+  }
+
+  // Add playlist start
+  if (playlistStart && parseInt(playlistStart) > 0) {
+    args.push('--playlist-start', playlistStart);
+  }
+
+  // Add playlist end
+  if (playlistEnd && parseInt(playlistEnd) > 0) {
+    args.push('--playlist-end', playlistEnd);
+  }
+
+  // Add ffmpeg location
+  if (ffmpegPath) {
+    console.log('Adding ffmpeg-location:', ffmpegPath);
+    args.push('--ffmpeg-location', ffmpegPath);
+  } else {
+    console.log('No ffmpeg path provided');
   }
 
   // Add output directory
@@ -505,64 +574,79 @@ ipcMain.handle('run-yt-dlp', async (event, options) => {
   // Add URLs
   args = args.concat(urls);
 
-  let command = ytDlpPath;
-  let commandArgs = args;
-  let shell = true; // Use shell to allow command to be found in PATH
+  console.log('YT-DLP command:', ytDlpPath, args.join(' '));
+  console.log('Full ffmpeg path being used:', ffmpegPath || 'NOT SET');
 
   // Platform-specific terminal commands
   if (process.platform === 'win32') {
-    // On Windows, use cmd.exe /c start "" to open a new window
-    // or powershell.exe -NoExit -Command to keep it open
-    command = 'powershell.exe';
-    commandArgs = ['-NoExit', '-Command', `& {${ytDlpPath} ${args.map(arg => `'${arg}'`).join(' ')}}`];
-    // Note: The above powershell command might need adjustment for complex arguments or spaces.
-    // A simpler approach for now is to just run yt-dlp directly and let it open its own console if it's a console app.
-    // Or, if we want a new window, it gets more complex. Let's try direct spawn first.
-    // For opening a new terminal window:
-    // command = 'cmd.exe';
-    // commandArgs = ['/c', 'start', 'cmd.exe', '/k', `"${ytDlpPath} ${args.map(arg => `"${arg}"`).join(' ')}"`];
-    // This is tricky with quoting. Let's simplify for now and just spawn yt-dlp directly.
-    // If yt-dlp is a console app, it will open a console.
-    // If not, we might need to wrap it.
-    // For now, let's just spawn yt-dlp directly.
-    // If it doesn't open a window, we'll revisit.
-    command = ytDlpPath;
-    commandArgs = args;
-    shell = true; // Let the shell handle finding yt-dlp and opening a window if it's a console app.
+    // On Windows, create a temporary batch file and run it in a new console window
+    // Only quote arguments that contain spaces
+    const ytDlpCommand = `${ytDlpPath} ${args.map(arg => arg.includes(' ') || arg.includes('[') || arg.includes(']') ? `"${arg}"` : arg).join(' ')}`;
+    // Escape % as %% for batch files
+    // Use cd /d to change drive and directory, then run yt-dlp
+    const batchContent = `@echo off\necho Starting YT-DLP...\ncd /d "${downloadPath}"\necho.\n${ytDlpCommand}\necho.\npause`.replace(/%/g, '%%');
+
+    // Write batch file to temp directory
+    const tempBatchPath = path.join(require('os').tmpdir(), 'yt-dlp-download.bat');
+    fs.writeFileSync(tempBatchPath, batchContent, 'utf8');
+
+    console.log('Batch file path:', tempBatchPath);
+    console.log('Batch content:', batchContent);
+
+    try {
+      // Open the batch file in a new console window
+      const child = spawn('cmd.exe', ['/c', 'start', 'YT-DLP Download', tempBatchPath], {
+        cwd: downloadPath,
+        shell: false,
+        detached: true,
+        stdio: 'ignore'
+      });
+
+      child.on('error', (err) => {
+        console.error('YT-DLP child process error:', err);
+      });
+
+      child.unref();
+
+      return { success: true };
+    } catch (error) {
+      console.error('Failed to spawn yt-dlp:', error);
+      return { success: false, error: error.message };
+    }
   } else if (process.platform === 'linux') {
-    // On Linux, common terminal emulators: xterm, gnome-terminal, konsole, etc.
-    // This assumes one of these is installed.
-    // For simplicity, let's try to open a new gnome-terminal or xterm.
-    // This is highly dependent on user's setup.
-    // A more robust solution would be to let the user configure their preferred terminal.
-    // For now, let's try gnome-terminal.
-    command = 'gnome-terminal';
-    commandArgs = ['--', ytDlpPath].concat(args);
-    shell = false; // gnome-terminal expects the command as separate arguments
+    const command = 'gnome-terminal';
+    const commandArgs = ['--', ytDlpPath].concat(args);
+    
+    try {
+      const child = spawn(command, commandArgs, {
+        detached: true,
+        stdio: 'ignore'
+      });
+      child.unref();
+      return { success: true };
+    } catch (error) {
+      console.error('Failed to spawn yt-dlp:', error);
+      return { success: false, error: error.message };
+    }
   } else if (process.platform === 'darwin') {
-    // On macOS, can use osascript to open a new Terminal.app window
-    // This is more complex. For now, let's just spawn directly.
-    command = ytDlpPath;
-    commandArgs = args;
-    shell = true;
+    // On macOS, open Terminal.app
+    const script = `tell application "Terminal" to do script "${ytDlpPath} ${args.join(' ')}"`;
+    
+    try {
+      const child = spawn('osascript', ['-e', script], {
+        detached: true,
+        stdio: 'ignore'
+      });
+      child.unref();
+      return { success: true };
+    } catch (error) {
+      console.error('Failed to spawn yt-dlp:', error);
+      return { success: false, error: error.message };
+    }
   }
-
-
-  try {
-    const child = spawn(command, commandArgs, {
-      cwd: downloadPath, // Run yt-dlp in the specified download directory
-      detached: true, // Detach the child process from the parent
-      shell: shell,
-      stdio: 'ignore' // Ignore stdio to prevent it from blocking the main process
-    });
-
-    child.unref(); // Allow the parent process to exit independently of the child
-
-    return { success: true };
-  } catch (error) {
-    console.error('Failed to spawn yt-dlp:', error);
-    return { success: false, error: error.message };
-  }
+  
+  // Fallback
+  return { success: false, error: 'Unsupported platform' };
 });
 
 ipcMain.handle('open-external-browser', async (event, url) => {
@@ -759,4 +843,14 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
+});
+
+// Handle app before-quit to ensure data is saved
+app.on('before-quit', (event) => {
+  // Notify renderer to save any pending data
+  const windows = BrowserWindow.getAllWindows();
+  windows.forEach((win) => {
+    win.webContents.send('app-before-quit');
+  });
+  // Note: We don't prevent default here as localStorage saves synchronously
 });

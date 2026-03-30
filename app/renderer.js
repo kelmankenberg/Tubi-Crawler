@@ -246,9 +246,24 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   async function executeYtDlpCommand(urlsToDownload) {
+    console.log('executeYtDlpCommand called with URLs:', urlsToDownload);
+    const ytDlpPath = ytDlpPathInput.value;
     const downloadPath = downloadPathInput.value;
     const formatString = formatStringInput.value;
     const mergeOutputFormat = mergeOutputFormatSelect.value;
+    const videoQuality = videoQualitySelect.value;
+    const audioFormat = audioFormatSelect.value;
+    const embedSubs = embedSubsCheckbox.checked;
+    const subLangs = subLangsInput.value;
+    const embedThumbnail = embedThumbnailCheckbox.checked;
+    const embedMetadata = embedMetadataCheckbox.checked;
+    const playlistStart = playlistStartInput.value;
+    const playlistEnd = playlistEndInput.value;
+    const ffmpegPath = ffmpegPathInput.value;
+
+    console.log('YT-DLP path:', ytDlpPath);
+    console.log('Download path:', downloadPath);
+    console.log('FFmpeg path:', ffmpegPath);
 
     if (!downloadPath) {
       clearLog();
@@ -259,26 +274,42 @@ window.addEventListener('DOMContentLoaded', () => {
     clearLog();
     appendLog(`Initiating YT-DLP download for ${urlsToDownload.length} URLs...`, 'info');
     try {
+      console.log('Invoking run-yt-dlp IPC...');
       const result = await window.electron.invoke('run-yt-dlp', {
         urls: urlsToDownload,
         downloadPath: downloadPath,
         format: formatString,
-        mergeFormat: mergeOutputFormat
+        mergeFormat: mergeOutputFormat,
+        videoQuality: videoQuality,
+        audioFormat: audioFormat,
+        embedSubs: embedSubs,
+        subLangs: subLangs,
+        embedThumbnail: embedThumbnail,
+        embedMetadata: embedMetadata,
+        playlistStart: playlistStart,
+        playlistEnd: playlistEnd,
+        ffmpegPath: ffmpegPath,
+        ytDlpPath: ytDlpPath
       });
+      console.log('run-yt-dlp result:', result);
       if (result.success) {
         appendLog(`YT-DLP command executed successfully. Check external terminal.`, 'success');
       } else {
         appendLog(`Error executing YT-DLP command: ${result.error}`, 'error');
       }
     } catch (error) {
+      console.error('Error in executeYtDlpCommand:', error);
       appendLog(`Error invoking YT-DLP: ${error.message}`, 'error');
     }
   }
 
   // YT-DLP menu item event listeners
   downloadSelectedBtn.addEventListener('click', () => {
+    console.log('Download Selected clicked');
     const selectedUrls = outputUrls.value.substring(outputUrls.selectionStart, outputUrls.selectionEnd).trim();
+    console.log('Selected URLs:', selectedUrls);
     if (selectedUrls) {
+      console.log('Calling executeYtDlpCommand with:', selectedUrls.split(/\s+/));
       executeYtDlpCommand(selectedUrls.split(/\s+/));
     } else {
       clearLog();
@@ -288,8 +319,11 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   downloadAllBtn.addEventListener('click', () => {
+    console.log('Download All clicked');
     const allUrls = outputUrls.value.trim();
+    console.log('All URLs:', allUrls);
     if (allUrls) {
+      console.log('Calling executeYtDlpCommand with:', allUrls.split(/\s+/));
       executeYtDlpCommand(allUrls.split(/\s+/));
     }
     else {
@@ -331,11 +365,21 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   // Get references to YT-DLP settings elements
+  const ytDlpPathInput = document.getElementById('yt-dlp-path');
+  const browseYtDlpPathBtn = document.getElementById('browse-yt-dlp-path');
   const downloadPathInput = document.getElementById('download-path');
   const browseDownloadPathBtn = document.getElementById('browse-download-path');
   const formatStringInput = document.getElementById('format-string');
   const mergeOutputFormatSelect = document.getElementById('merge-output-format');
   const preferredBrowserSelect = document.getElementById('preferred-browser');
+  const videoQualitySelect = document.getElementById('video-quality');
+  const audioFormatSelect = document.getElementById('audio-format');
+  const embedSubsCheckbox = document.getElementById('embed-subs');
+  const subLangsInput = document.getElementById('sub-langs');
+  const embedThumbnailCheckbox = document.getElementById('embed-thumbnail');
+  const embedMetadataCheckbox = document.getElementById('embed-metadata');
+  const playlistStartInput = document.getElementById('playlist-start');
+  const playlistEndInput = document.getElementById('playlist-end');
 
   // Get references to FFmpeg settings elements
   const ffmpegPathInput = document.getElementById('ffmpeg-path');
@@ -347,6 +391,13 @@ window.addEventListener('DOMContentLoaded', () => {
   // Listen for window maximize/unmaximize events (from main process)
   window.electron.on('window-maximized', () => updateMaximizeRestoreIcon(true));
   window.electron.on('window-unmaximized', () => updateMaximizeRestoreIcon(false));
+
+  // Listen for app before-quit to ensure content is saved
+  window.electron.on('app-before-quit', () => {
+    if (outputUrls.value) {
+      localStorage.setItem('savedContent', outputUrls.value);
+    }
+  });
 
   // Load content from localStorage on startup
   if (localStorage.getItem('savedContent')) {
@@ -362,6 +413,13 @@ window.addEventListener('DOMContentLoaded', () => {
       localStorage.removeItem('savedContent');
     }
     updateStats();
+  });
+
+  // Save content before app closes
+  window.addEventListener('beforeunload', () => {
+    if (outputUrls.value) {
+      localStorage.setItem('savedContent', outputUrls.value);
+    }
   });
 
   urlInput.addEventListener('keydown', (event) => {
@@ -710,12 +768,91 @@ window.addEventListener('DOMContentLoaded', () => {
     preferredBrowserSelect.value = "external";
   }
 
+  // YT-DLP additional settings event listeners
+  // Video Quality
+  videoQualitySelect.addEventListener('change', () => {
+    localStorage.setItem('yt-dlp-video-quality', videoQualitySelect.value);
+  });
+  if (localStorage.getItem('yt-dlp-video-quality')) {
+    videoQualitySelect.value = localStorage.getItem('yt-dlp-video-quality');
+  }
+
+  // Audio Format
+  audioFormatSelect.addEventListener('change', () => {
+    localStorage.setItem('yt-dlp-audio-format', audioFormatSelect.value);
+  });
+  if (localStorage.getItem('yt-dlp-audio-format')) {
+    audioFormatSelect.value = localStorage.getItem('yt-dlp-audio-format');
+  }
+
+  // Embed Subtitles
+  embedSubsCheckbox.addEventListener('change', () => {
+    localStorage.setItem('yt-dlp-embed-subs', embedSubsCheckbox.checked);
+  });
+  if (localStorage.getItem('yt-dlp-embed-subs') === 'true') {
+    embedSubsCheckbox.checked = true;
+  }
+
+  // Subtitle Languages
+  subLangsInput.addEventListener('input', () => {
+    localStorage.setItem('yt-dlp-sub-langs', subLangsInput.value);
+  });
+  if (localStorage.getItem('yt-dlp-sub-langs')) {
+    subLangsInput.value = localStorage.getItem('yt-dlp-sub-langs');
+  }
+
+  // Embed Thumbnail
+  embedThumbnailCheckbox.addEventListener('change', () => {
+    localStorage.setItem('yt-dlp-embed-thumbnail', embedThumbnailCheckbox.checked);
+  });
+  if (localStorage.getItem('yt-dlp-embed-thumbnail') === 'true') {
+    embedThumbnailCheckbox.checked = true;
+  }
+
+  // Embed Metadata
+  embedMetadataCheckbox.addEventListener('change', () => {
+    localStorage.setItem('yt-dlp-embed-metadata', embedMetadataCheckbox.checked);
+  });
+  if (localStorage.getItem('yt-dlp-embed-metadata') === 'true') {
+    embedMetadataCheckbox.checked = true;
+  }
+
+  // Playlist Start
+  playlistStartInput.addEventListener('input', () => {
+    localStorage.setItem('yt-dlp-playlist-start', playlistStartInput.value);
+  });
+  if (localStorage.getItem('yt-dlp-playlist-start')) {
+    playlistStartInput.value = localStorage.getItem('yt-dlp-playlist-start');
+  }
+
+  // Playlist End
+  playlistEndInput.addEventListener('input', () => {
+    localStorage.setItem('yt-dlp-playlist-end', playlistEndInput.value);
+  });
+  if (localStorage.getItem('yt-dlp-playlist-end')) {
+    playlistEndInput.value = localStorage.getItem('yt-dlp-playlist-end');
+  }
+
+  // YT-DLP folder path event listeners
+  browseYtDlpPathBtn.addEventListener('click', async () => {
+    const result = await window.electron.invoke('open-directory-dialog');
+    if (result && !result.canceled && result.filePaths.length > 0) {
+      ytDlpPathInput.value = result.filePaths[0];
+      localStorage.setItem('yt-dlp-path', result.filePaths[0]);
+    }
+  });
+
+  // Load saved yt-dlp path on startup
+  if (localStorage.getItem('yt-dlp-path')) {
+    ytDlpPathInput.value = localStorage.getItem('yt-dlp-path');
+  }
+
   // FFmpeg settings event listeners
   browseFfmpegPathBtn.addEventListener('click', async () => {
-    const result = await window.electron.invoke('open-executable-dialog');
-    if (result) {
-      ffmpegPathInput.value = result;
-      localStorage.setItem('ffmpeg-path', result);
+    const result = await window.electron.invoke('open-directory-dialog');
+    if (result && !result.canceled && result.filePaths.length > 0) {
+      ffmpegPathInput.value = result.filePaths[0];
+      localStorage.setItem('ffmpeg-path', result.filePaths[0]);
     }
   });
 

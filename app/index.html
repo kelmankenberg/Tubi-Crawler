@@ -253,6 +253,14 @@
           <div id="yt-dlp-settings" class="settings-section">
             <h3>YT-DLP Settings</h3>
             <div class="setting-item">
+              <label for="yt-dlp-path">YT-DLP Folder Location:</label>
+              <div class="input-with-button">
+                <input type="text" id="yt-dlp-path" placeholder="Select yt-dlp folder" readonly>
+                <button id="browse-yt-dlp-path">Browse</button>
+              </div>
+              <p class="setting-description">Select the folder containing yt-dlp.exe for downloading videos.</p>
+            </div>
+            <div class="setting-item">
               <label for="download-path">Download Location:</label>
               <div class="input-with-button">
                 <input type="text" id="download-path" placeholder="Select download folder" readonly>
@@ -270,16 +278,78 @@
                 <option value="mp4" selected>mp4</option>
               </select>
             </div>
+            <div class="setting-item">
+              <label for="video-quality">Video Quality Limit:</label>
+              <select id="video-quality">
+                <option value="best">Best Available</option>
+                <option value="2160">4K (2160p)</option>
+                <option value="1440">2K (1440p)</option>
+                <option value="1080" selected>1080p</option>
+                <option value="720">720p</option>
+                <option value="480">480p</option>
+                <option value="360">360p</option>
+              </select>
+              <p class="setting-description">Maximum video resolution to download.</p>
+            </div>
+            <div class="setting-item">
+              <label for="audio-format">Audio Format:</label>
+              <select id="audio-format">
+                <option value="none" selected>Original (No Conversion)</option>
+                <option value="mp3">MP3</option>
+                <option value="m4a">M4A</option>
+                <option value="opus">Opus</option>
+                <option value="vorbis">Vorbis</option>
+                <option value="wav">WAV</option>
+                <option value="flac">FLAC</option>
+              </select>
+              <p class="setting-description">Convert audio to specified format.</p>
+            </div>
+            <div class="setting-item">
+              <label class="checkbox-label">
+                <input type="checkbox" id="embed-subs">
+                Embed Subtitles
+              </label>
+              <p class="setting-description">Embed subtitles in the video file when available.</p>
+            </div>
+            <div class="setting-item">
+              <label for="sub-langs">Subtitle Languages:</label>
+              <input type="text" id="sub-langs" placeholder="e.g., en, en-US, all" value="en">
+              <p class="setting-description">Comma-separated language codes (e.g., "en" or "en-US,all").</p>
+            </div>
+            <div class="setting-item">
+              <label class="checkbox-label">
+                <input type="checkbox" id="embed-thumbnail">
+                Embed Thumbnail
+              </label>
+              <p class="setting-description">Embed thumbnail image in the output file.</p>
+            </div>
+            <div class="setting-item">
+              <label class="checkbox-label">
+                <input type="checkbox" id="embed-metadata" checked>
+                Embed Metadata
+              </label>
+              <p class="setting-description">Add metadata (title, description, etc.) to the output file.</p>
+            </div>
+            <div class="setting-item">
+              <label for="playlist-start">Playlist Start:</label>
+              <input type="number" id="playlist-start" placeholder="1" min="1" value="">
+              <p class="setting-description">Start downloading from this playlist index (1-based).</p>
+            </div>
+            <div class="setting-item">
+              <label for="playlist-end">Playlist End:</label>
+              <input type="number" id="playlist-end" placeholder="Last" min="1" value="">
+              <p class="setting-description">Stop downloading at this playlist index.</p>
+            </div>
           </div>
           <div id="ffmpeg-settings" class="settings-section">
             <h3>FFmpeg Settings</h3>
             <div class="setting-item">
-              <label for="ffmpeg-path">FFmpeg Executable Location:</label>
+              <label for="ffmpeg-path">FFmpeg Folder Location:</label>
               <div class="input-with-button">
-                <input type="text" id="ffmpeg-path" placeholder="Select ffmpeg.exe location" readonly>
+                <input type="text" id="ffmpeg-path" placeholder="Select ffmpeg folder" readonly>
                 <button id="browse-ffmpeg-path">Browse</button>
               </div>
-              <p class="setting-description">Select the location of ffmpeg.exe for video processing and merging.</p>
+              <p class="setting-description">Select the folder containing ffmpeg.exe for video processing and merging.</p>
             </div>
           </div>
         </div>
