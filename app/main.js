@@ -4,8 +4,13 @@ const puppeteer = require('puppeteer');
 const packageJson = require('../package.json');
 
 // Auto-reload on file changes (development only)
-if (process.env.NODE_ENV !== 'production') {
-  require('electron-reload')(__dirname);
+// Wrap in try-catch to prevent errors in production builds
+try {
+  if (process.env.NODE_ENV === 'development' || !app.isPackaged) {
+    require('electron-reload')(__dirname);
+  }
+} catch (error) {
+  // Module not available (production build), silently ignore
 }
 
 let Store;

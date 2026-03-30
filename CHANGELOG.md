@@ -1,6 +1,59 @@
 # Changelog
 
-## v1.3.3 (Current)
+## v1.3.4 (Current)
+
+### 🎨 Major Features
+- **Interactive URL Table** - Replaced textarea with structured table display for episode management
+  - Columns: Thumbnail, Season, Episode, Duration, URL
+  - Multi-selection support (Ctrl+Click, Ctrl+Shift+Click, Ctrl+A)
+  - Right-click context menu with Download, Export, Delete options
+  - Resizable column headers with persistent widths
+  - Double-click column separators to auto-fit content
+- **Duplicate Detection** - Prevents adding duplicate URLs when crawling
+- **JSON Export/Import** - Export episode lists to JSON and import them back
+- **Metadata Extraction** - Automatically extracts title, season, and series from URLs
+
+### ⌨️ Keyboard Shortcuts
+- **Ctrl+A** - Select all episodes in table
+- **Delete** - Delete selected episodes
+- **Ctrl+Click** - Toggle individual episode selection
+- **Ctrl+Shift+Click** - Select range of episodes
+
+### 🎨 Visual Enhancements
+- **Status Bar** - Fixed status bar at bottom of window showing URL count and last crawl time
+- **Table Styling** - Obsidian-inspired design with selection highlighting
+- **Column Resize Handles** - Visual indicators between columns for resizing
+- **More Menu Separators** - Fixed horizontal rule separators in More menu
+- **Toast Notifications** - Context-aware feedback for all operations
+
+### 🔧 Settings Improvements
+- **Folder-based Paths** - YT-DLP and FFmpeg settings now use folder selection instead of executable paths
+  - Automatically appends executable names (yt-dlp.exe, ffmpeg.exe)
+  - Simplified configuration process
+- **Full YT-DLP Options** - Added support for:
+  - Video quality limits (4K, 2K, 1080p, 720p, etc.)
+  - Audio format conversion (MP3, M4A, Opus, etc.)
+  - Embed subtitles with language selection
+  - Embed thumbnails and metadata
+  - Playlist start/end indices
+- **Download Location** - Moved to General settings for easier access
+
+### 🐛 Bug Fixes
+- **DevTools Toggle** - Fixed DevTools toggle in More menu
+- **Table Alignment** - Fixed column header and row cell alignment
+- **Column Resizing** - Header and row columns now resize together
+- **Menu Separators** - Fixed More menu separators displaying as dots
+- **Changelog Panel** - Fixed positioning to appear below top toolbar instead of covering it
+
+### 🧪 Code Quality
+- **Unit Testing** - Added Jest testing framework with 36 passing tests
+- **Modular Architecture** - New UrlTableManager class for table operations
+- **LocalStorage Persistence** - Table data and column widths persist across sessions
+- **Type Safety** - Consistent handling of table operations and selections
+
+---
+
+## v1.3.3
 
 ### 💬 User Feedback
 - **Toast Notifications** - Brief success/error messages appear in bottom-right corner
