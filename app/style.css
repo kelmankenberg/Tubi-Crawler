@@ -530,6 +530,8 @@ textarea {
 
 .url-table-row > div {
   padding: 10px 12px;
+  box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 .url-table-row .thumbnail-col {
@@ -537,7 +539,6 @@ textarea {
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  padding: 10px 12px !important;
 }
 
 .url-table-row .thumbnail-col img {
@@ -557,8 +558,8 @@ textarea {
 }
 
 .url-table-row .title-col {
-  flex: 1;
-  min-width: 200px;
+  width: 300px;
+  flex-shrink: 0;
   font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;

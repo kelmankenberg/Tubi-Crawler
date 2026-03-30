@@ -110,15 +110,14 @@ class UrlTableManager {
     const diff = e.pageX - this.startX;
     const newWidth = Math.max(50, this.startWidth + diff);
 
-    // Apply width to current column
-    const currentCol = this.urlTableHeader.querySelector(`[data-col="${this.currentResizingCol}"]`);
-    if (currentCol) {
-      currentCol.style.width = newWidth + 'px';
-      currentCol.style.flex = 'none';
+    // Apply width to header column
+    const headerCol = this.urlTableHeader.querySelector(`[data-col="${this.currentResizingCol}"]`);
+    if (headerCol) {
+      headerCol.style.width = newWidth + 'px';
     }
 
-    // Apply width to row columns
-    const rowCols = document.querySelectorAll(`.url-table-row .${this.currentResizingCol}-col`);
+    // Apply width to ALL row columns with matching class
+    const rowCols = document.querySelectorAll(`.${this.currentResizingCol}-col`);
     rowCols.forEach(col => {
       col.style.width = newWidth + 'px';
       col.style.flex = 'none';
