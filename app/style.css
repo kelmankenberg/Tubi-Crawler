@@ -5,10 +5,12 @@ body {
   margin: 0;
   padding: 20px;
   padding-top: 0px;
+  padding-bottom: 32px;
   display: flex;
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .main-content {
@@ -401,13 +403,13 @@ textarea {
   border-radius: 8px;
   background-color: var(--background);
   overflow: hidden;
-  margin-bottom: 15px;
-  min-height: 200px;
-  max-height: 400px;
+  height: 100%;
+  margin-bottom: 20px;
 }
 
 .url-table-header {
   display: flex;
+  flex-shrink: 0;
   background-color: var(--toolbar-background);
   border-bottom: 1px solid var(--border-color);
   font-size: 12px;
@@ -415,7 +417,6 @@ textarea {
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  position: relative;
 }
 
 .url-table-col {
@@ -501,6 +502,7 @@ textarea {
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-gutter: stable;
+  min-height: 0;
 }
 
 .url-table-row {
@@ -659,22 +661,24 @@ textarea {
 .stats-bar {
   display: flex;
   gap: 20px;
-  padding: 10px 12px;
-  background: linear-gradient(180deg, var(--toolbar-background) 0%, rgba(0,0,0,0.02) 100%);
-  border: 1px solid var(--border-color);
-  border-top: none;
-  border-bottom-left-radius: 8px;
-  border-bottom-right-radius: 8px;
-  font-size: 13px;
-  color: var(--text-secondary, #999);
-  margin-bottom: 15px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  padding: 8px 16px;
+  background-color: var(--toolbar-background);
+  border-top: 1px solid var(--border-color);
+  font-size: 12px;
+  color: var(--text-muted);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  height: 32px;
+  box-sizing: border-box;
 }
 
 .stat-item {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
 }
 
 .stat-item strong {

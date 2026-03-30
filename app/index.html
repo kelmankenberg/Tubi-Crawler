@@ -107,6 +107,11 @@
           </svg>
         </button>
       </div>
+
+      <div id="statsBar" class="stats-bar">
+        <span class="stat-item">📊 URLs: <strong id="urlCount">0</strong></span>
+        <span class="stat-item">⏱️ Last Crawl: <strong id="lastCrawlTime">--</strong></span>
+      </div>
     </div>
     <div id="mainContent" class="main-content">
       <div class="input-group">
@@ -269,13 +274,13 @@
           Delete All
         </button>
       </div>
-      
-      <div id="statsBar" class="stats-bar">
-        <span class="stat-item">📊 URLs: <strong id="urlCount">0</strong></span>
-        <span class="stat-item">⏱️ Last Crawl: <strong id="lastCrawlTime">--</strong></span>
-      </div>
     </div>
-    <div id="settingsPage" class="settings-page" style="display: none;">
+    <div id="statsBar" class="stats-bar">
+      <span class="stat-item">📊 URLs: <strong id="urlCount">0</strong></span>
+      <span class="stat-item">⏱️ Last Crawl: <strong id="lastCrawlTime">--</strong></span>
+    </div>
+  </div>
+  <div id="settingsPage" class="settings-page" style="display: none;">
       <div class="settings-page-header">
         <button id="backFromSettingsBtn" class="back-btn" title="Back">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
