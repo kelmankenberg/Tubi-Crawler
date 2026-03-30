@@ -58,7 +58,9 @@ window.addEventListener('DOMContentLoaded', () => {
   const quickActions = document.getElementById('quickActions');
   const urlInput = document.getElementById('url');
   const log = document.getElementById('log');
-  const outputUrls = document.getElementById('outputUrls');
+  
+  // Initialize URL Table Manager (replaces outputUrls textarea)
+  const urlTableManager = new UrlTableManager();
 
   // Load and display app version
   window.electron.invoke('get-app-version').then((version) => {
@@ -116,13 +118,9 @@ window.addEventListener('DOMContentLoaded', () => {
     return isValid;
   }
 
-  // Function to update stats display
+  // Function to update stats display (now handled by UrlTableManager)
   function updateStats() {
-    const urlText = outputUrls.value.trim();
-    const urlCount = urlText ? urlText.split(/\n+/).length : 0;
-    if (urlCountEl) {
-      urlCountEl.textContent = urlCount;
-    }
+    // UrlTableManager handles this automatically
   }
 
   // Function to update crawl time display
@@ -137,6 +135,36 @@ window.addEventListener('DOMContentLoaded', () => {
         lastCrawlTimeEl.textContent = `${seconds}s`;
       }
     }
+  }
+
+  // Helper functions to extract metadata from URLs
+  function extractTitleFromUrl(url) {
+    // Extract title from URL path
+    const match = url.match(/\/(?:s\d+-e\d+|season-\d+|episode-\d+)-(.+?)(?:\?|$)/i);
+    if (match) {
+      return decodeURIComponent(match[1]).replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    }
+    // Fallback: use last part of URL
+    const parts = url.split('/');
+    return decodeURIComponent(parts[parts.length - 1]).replace(/-/g, ' ');
+  }
+
+  function extractSeriesFromUrl(url) {
+    // Extract series ID or name from URL
+    const match = url.match(/\/(?:tv-shows|series)\/(\d+)/i);
+    if (match) {
+      return `Series ${match[1]}`;
+    }
+    return 'Unknown Series';
+  }
+
+  function extractSeasonFromUrl(url) {
+    // Extract season number from URL
+    const match = url.match(/s(\d+)(?:-e|_|\s)/i);
+    if (match) {
+      return parseInt(match[1], 10);
+    }
+    return 1;
   }
 
   // Get references to the window control buttons
@@ -308,29 +336,26 @@ window.addEventListener('DOMContentLoaded', () => {
   // YT-DLP menu item event listeners
   downloadSelectedBtn.addEventListener('click', () => {
     console.log('Download Selected clicked');
-    const selectedUrls = outputUrls.value.substring(outputUrls.selectionStart, outputUrls.selectionEnd).trim();
+    const selectedUrls = urlTableManager.getSelectedUrls();
     console.log('Selected URLs:', selectedUrls);
-    if (selectedUrls) {
-      console.log('Calling executeYtDlpCommand with:', selectedUrls.split(/\n+/));
-      executeYtDlpCommand(selectedUrls.split(/\n+/));
+    if (selectedUrls.length > 0) {
+      executeYtDlpCommand(selectedUrls);
     } else {
       clearLog();
-      appendLog('No URLs selected for download.', 'warning');
+      appendLog('No episodes selected for download. Click on episodes to select them.', 'warning');
     }
     ytDlpMenu.classList.remove('show');
   });
 
   downloadAllBtn.addEventListener('click', () => {
     console.log('Download All clicked');
-    const allUrls = outputUrls.value.trim();
+    const allUrls = urlTableManager.getAllUrls();
     console.log('All URLs:', allUrls);
-    if (allUrls) {
-      console.log('Calling executeYtDlpCommand with:', allUrls.split(/\n+/));
-      executeYtDlpCommand(allUrls.split(/\n+/));
-    }
-    else {
+    if (allUrls.length > 0) {
+      executeYtDlpCommand(allUrls);
+    } else {
       clearLog();
-      appendLog('No URLs to download.', 'warning');
+      appendLog('No episodes to download.', 'warning');
     }
     ytDlpMenu.classList.remove('show');
   });
@@ -396,33 +421,12 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // Listen for app before-quit to ensure content is saved
   window.electron.on('app-before-quit', () => {
-    if (outputUrls.value) {
-      localStorage.setItem('savedContent', outputUrls.value);
-    }
+    // UrlTableManager handles auto-save to localStorage
   });
 
-  // Load content from localStorage on startup
-  if (localStorage.getItem('savedContent')) {
-    outputUrls.value = localStorage.getItem('savedContent');
-    updateStats();
-  }
-
-  // Save content to localStorage whenever it changes
-  outputUrls.addEventListener('input', () => {
-    if (outputUrls.value) {
-      localStorage.setItem('savedContent', outputUrls.value);
-    } else {
-      localStorage.removeItem('savedContent');
-    }
-    updateStats();
-  });
-
-  // Save content before app closes
-  window.addEventListener('beforeunload', () => {
-    if (outputUrls.value) {
-      localStorage.setItem('savedContent', outputUrls.value);
-    }
-  });
+  // Load content from localStorage on startup (handled by UrlTableManager)
+  // Save content to localStorage whenever it changes (handled by UrlTableManager)
+  // Save content before app closes (handled by UrlTableManager)
 
   urlInput.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') {
@@ -466,19 +470,23 @@ window.addEventListener('DOMContentLoaded', () => {
 
     try {
       const urls = await window.electron.invoke('crawl', url);
-      // Add newline before first URL if output is not empty, then join URLs with newlines
-      if (outputUrls.value.trim() !== '') {
-        outputUrls.value += '\n' + urls.join('\n');
-      } else {
-        outputUrls.value = urls.join('\n');
-      }
-      appendLog('Crawling complete. URLs appended to the text control.', 'success');
+      // Convert URLs to row objects and add to table
+      const newRows = urls.map(url => ({
+        url: url,
+        title: extractTitleFromUrl(url),
+        duration: '--:--',
+        thumbnail: null,
+        series: extractSeriesFromUrl(url),
+        season: extractSeasonFromUrl(url)
+      }));
+      const addedCount = urlTableManager.addRows(newRows);
+      appendLog(`Crawling complete. ${addedCount} episode(s) added to the table.`, 'success');
 
       // Update statistics
       const crawlTime = Math.round((Date.now() - lastCrawlStartTime) / 1000);
       const stats = getStats();
-      stats.totalUrls += urls.length;
-      stats.uniqueUrls = new Set(outputUrls.value.trim().split(/\n+/).filter(u => u.length > 0)).size;
+      stats.totalUrls += addedCount;
+      stats.uniqueUrls += addedCount;
       stats.totalCrawlTime += crawlTime;
       stats.seriesCrawled += 1;
       saveStats(stats);
@@ -533,9 +541,7 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   clearCrawlBtn.addEventListener('click', () => {
-    outputUrls.value = '';
-    localStorage.removeItem('savedContent');
-    updateStats();
+    urlTableManager.deleteAll();
     showToast('✓ Cleared, ready to crawl', 'info');
     crawlBtn.click();
   });
@@ -560,6 +566,92 @@ window.addEventListener('DOMContentLoaded', () => {
     updateRecentUrlsList();
     showToast('✓ History cleared', 'info');
     recentUrlsMenu.classList.remove('show');
+  });
+
+  // Context menu handlers
+  const ctxDownloadSelection = document.getElementById('ctxDownloadSelection');
+  const ctxExportSelection = document.getElementById('ctxExportSelection');
+  const ctxExportAll = document.getElementById('ctxExportAll');
+  const ctxDeleteSelection = document.getElementById('ctxDeleteSelection');
+  const ctxDeleteAll = document.getElementById('ctxDeleteAll');
+
+  ctxDownloadSelection.addEventListener('click', () => {
+    const selectedUrls = urlTableManager.getSelectedUrls();
+    if (selectedUrls.length > 0) {
+      executeYtDlpCommand(selectedUrls);
+    }
+    urlTableManager.hideContextMenu();
+  });
+
+  ctxExportSelection.addEventListener('click', async () => {
+    try {
+      const downloadPath = localStorage.getItem('download-path');
+      if (!downloadPath) {
+        showToast('Please set a download location in settings first', 'warning');
+        urlTableManager.hideContextMenu();
+        return;
+      }
+      
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+      const filePath = require('path').join(downloadPath, `episodes-export-${timestamp}.json`);
+      
+      const result = await window.electron.invoke('save-file-dialog', {
+        defaultPath: filePath,
+        filters: [{ name: 'JSON Files', extensions: ['json'] }]
+      });
+      
+      if (result && !result.canceled) {
+        await urlTableManager.exportSelectedToJson(result.filePath);
+        showToast(`✓ Exported ${urlTableManager.selectedRowIds.size} episode(s)`, 'success');
+      }
+    } catch (error) {
+      showToast(`Export failed: ${error.message}`, 'error');
+    }
+    urlTableManager.hideContextMenu();
+  });
+
+  ctxExportAll.addEventListener('click', async () => {
+    try {
+      const downloadPath = localStorage.getItem('download-path');
+      if (!downloadPath) {
+        showToast('Please set a download location in settings first', 'warning');
+        urlTableManager.hideContextMenu();
+        return;
+      }
+      
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+      const filePath = require('path').join(downloadPath, `episodes-export-${timestamp}.json`);
+      
+      const result = await window.electron.invoke('save-file-dialog', {
+        defaultPath: filePath,
+        filters: [{ name: 'JSON Files', extensions: ['json'] }]
+      });
+      
+      if (result && !result.canceled) {
+        await urlTableManager.exportToJson(result.filePath);
+        showToast(`✓ Exported ${urlTableManager.rows.length} episode(s)`, 'success');
+      }
+    } catch (error) {
+      showToast(`Export failed: ${error.message}`, 'error');
+    }
+    urlTableManager.hideContextMenu();
+  });
+
+  ctxDeleteSelection.addEventListener('click', () => {
+    const count = urlTableManager.selectedRowIds.size;
+    if (count > 0) {
+      urlTableManager.deleteSelected();
+      showToast(`✓ Deleted ${count} episode(s)`, 'success');
+    }
+    urlTableManager.hideContextMenu();
+  });
+
+  ctxDeleteAll.addEventListener('click', () => {
+    if (urlTableManager.rows.length > 0) {
+      urlTableManager.deleteAll();
+      showToast('✓ Deleted all episodes', 'success');
+    }
+    urlTableManager.hideContextMenu();
   });
 
   // Helper function to add log lines with status indicators
@@ -609,23 +701,34 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // Toolbar button event listeners
   openBtn.addEventListener('click', async () => {
-    const content = await window.electron.invoke('open-file');
-    if (content !== null) {
-      outputUrls.value = content;
-      localStorage.setItem('savedContent', content);
-      addStatusLog('File opened successfully.', 'success');
-      showToast('✓ File opened', 'success');
-      updateStats();
+    try {
+      const result = await window.electron.invoke('open-file-dialog', {
+        filters: [{ name: 'JSON Files', extensions: ['json'] }]
+      });
+      
+      if (result && !result.canceled && result.filePaths.length > 0) {
+        const addedCount = await urlTableManager.importFromJson(result.filePaths[0]);
+        addStatusLog(`Imported ${addedCount} episode(s) from file.`, 'success');
+        showToast(`✓ Imported ${addedCount} episode(s)`, 'success');
+      }
+    } catch (error) {
+      addStatusLog(`Failed to open file: ${error.message}`, 'error');
+      showToast('Failed to open file', 'error');
     }
   });
 
   copyBtn.addEventListener('click', async () => {
     try {
-      await navigator.clipboard.writeText(outputUrls.value);
-      addStatusLog('Content copied to clipboard!', 'success');
-      showToast('✓ Copied to clipboard', 'success');
+      const urls = urlTableManager.getSelectedUrls();
+      if (urls.length === 0) {
+        showToast('No episodes selected', 'warning');
+        return;
+      }
+      await navigator.clipboard.writeText(urls.join('\n'));
+      addStatusLog(`Copied ${urls.length} URL(s) to clipboard!`, 'success');
+      showToast(`✓ Copied ${urls.length} URL(s)`, 'success');
     } catch (err) {
-      addStatusLog('Failed to copy content.', 'error');
+      addStatusLog('Failed to copy URLs.', 'error');
       showToast('Failed to copy to clipboard', 'error');
       console.error('Failed to copy: ', err);
     }
@@ -634,49 +737,71 @@ window.addEventListener('DOMContentLoaded', () => {
   pasteBtn.addEventListener('click', async () => {
     try {
       const text = await navigator.clipboard.readText();
-      const start = outputUrls.selectionStart;
-      const end = outputUrls.selectionEnd;
-      outputUrls.value = outputUrls.value.substring(0, start) + text + outputUrls.value.substring(end);
-      outputUrls.selectionStart = outputUrls.selectionEnd = start + text.length;
-      addStatusLog('Content pasted from clipboard!', 'success');
-      showToast('✓ Pasted from clipboard', 'success');
-      updateStats();
+      const urls = text.trim().split(/\n+/).filter(u => u.length > 0);
+      if (urls.length === 0) {
+        showToast('No URLs found in clipboard', 'warning');
+        return;
+      }
+      
+      const newRows = urls.map(url => ({
+        url: url,
+        title: extractTitleFromUrl(url),
+        duration: '--:--',
+        thumbnail: null,
+        series: extractSeriesFromUrl(url),
+        season: extractSeasonFromUrl(url)
+      }));
+      
+      const addedCount = urlTableManager.addRows(newRows);
+      addStatusLog(`Added ${addedCount} URL(s) from clipboard!`, 'success');
+      showToast(`✓ Added ${addedCount} URL(s)`, 'success');
     } catch (err) {
-      addStatusLog('Failed to paste content.', 'error');
+      addStatusLog('Failed to paste URLs.', 'error');
       showToast('Failed to paste from clipboard', 'error');
       console.error('Failed to paste: ', err);
     }
   });
 
   deleteBtn.addEventListener('click', () => {
-    outputUrls.value = '';
-    localStorage.removeItem('savedContent');
-    addStatusLog('Content cleared.', 'success');
-    showToast('✓ Content cleared', 'success');
-    updateStats();
+    if (urlTableManager.selectedRowIds.size > 0) {
+      const count = urlTableManager.selectedRowIds.size;
+      urlTableManager.deleteSelected();
+      addStatusLog(`Deleted ${count} episode(s).`, 'success');
+      showToast(`✓ Deleted ${count} episode(s)`, 'success');
+    } else {
+      showToast('No episodes selected', 'warning');
+    }
   });
 
   saveAsBtn.addEventListener('click', async () => {
-    const content = outputUrls.value;
-    if (!content) {
-      addStatusLog('No content to save.', 'warning');
-      showToast('No content to save', 'warning');
+    const allUrls = urlTableManager.getAllUrls();
+    if (allUrls.length === 0) {
+      addStatusLog('No episodes to save.', 'warning');
+      showToast('No episodes to save', 'warning');
       return;
     }
-    addStatusLog('Saving content...', 'info');
+    
     try {
-      const result = await window.electron.invoke('save-file', content);
-      if (result.filePath) {
-        addStatusLog(`Content saved to: ${result.filePath}`, 'success');
-        showToast('✓ File saved successfully', 'success');
-      } else {
-        addStatusLog('Save operation cancelled or failed.', 'warning');
-        showToast('Save operation cancelled', 'warning');
+      const downloadPath = localStorage.getItem('download-path');
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+      const defaultPath = downloadPath 
+        ? require('path').join(downloadPath, `episodes-${timestamp}.json`)
+        : `episodes-${timestamp}.json`;
+      
+      const result = await window.electron.invoke('save-file-dialog', {
+        defaultPath: defaultPath,
+        filters: [{ name: 'JSON Files', extensions: ['json'] }]
+      });
+      
+      if (result && !result.canceled) {
+        await urlTableManager.exportToJson(result.filePath);
+        addStatusLog(`Saved ${allUrls.length} episode(s) to: ${result.filePath}`, 'success');
+        showToast(`✓ Saved ${allUrls.length} episode(s)`, 'success');
       }
     } catch (error) {
-      addStatusLog(`Error saving file: ${error.message}`, 'error');
-      showToast('Failed to save file', 'error');
-      console.error('Error saving file:', error);
+      addStatusLog(`Error saving: ${error.message}`, 'error');
+      showToast('Failed to save', 'error');
+      console.error('Error saving:', error);
     }
   });
 

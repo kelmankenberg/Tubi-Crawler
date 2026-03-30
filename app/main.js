@@ -401,6 +401,15 @@ ipcMain.handle('save-file', async (event, content) => {
   return { filePath: null };
 });
 
+ipcMain.handle('open-file-dialog', async (event, options = {}) => {
+  const window = BrowserWindow.getFocusedWindow();
+  const result = await dialog.showOpenDialog(window, {
+    properties: ['openFile'],
+    filters: options.filters || [{ name: 'All Files', extensions: ['*'] }]
+  });
+  return result;
+});
+
 ipcMain.handle('open-file', async () => {
   const window = BrowserWindow.getFocusedWindow();
   const { filePaths } = await dialog.showOpenDialog(window, {
@@ -445,6 +454,15 @@ ipcMain.handle('open-directory-dialog', async () => {
   const window = BrowserWindow.getFocusedWindow();
   const result = await dialog.showOpenDialog(window, {
     properties: ['openDirectory']
+  });
+  return result;
+});
+
+ipcMain.handle('save-file-dialog', async (event, options = {}) => {
+  const window = BrowserWindow.getFocusedWindow();
+  const result = await dialog.showSaveDialog(window, {
+    defaultPath: options.defaultPath,
+    filters: options.filters || [{ name: 'All Files', extensions: ['*'] }]
   });
   return result;
 });
