@@ -1169,34 +1169,71 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Theme buttons and logic (now inside DOMContentLoaded)
+  // Theme buttons - Settings page
   const lightThemeBtn = document.getElementById('lightThemeBtn');
   const darkThemeBtn = document.getElementById('darkThemeBtn');
   const systemThemeBtn = document.getElementById('systemThemeBtn');
 
-  lightThemeBtn.addEventListener('click', () => {
-    document.body.setAttribute('data-theme', 'light');
-    updateThemeButtons(lightThemeBtn);
-  });
-
-  darkThemeBtn.addEventListener('click', () => {
-    document.body.setAttribute('data-theme', 'dark');
-    updateThemeButtons(darkThemeBtn);
-  });
-
-  systemThemeBtn.addEventListener('click', () => {
-  window.electron.send('get-system-theme');
-    updateThemeButtons(systemThemeBtn);
-  });
-
-  // Set initial theme
-  window.electron.on('system-theme', (event, theme) => {
+  function setTheme(theme, isSystemTheme = false) {
     document.body.setAttribute('data-theme', theme);
-    if (theme === 'dark') {
-      updateThemeButtons(darkThemeBtn);
-    } else {
-      updateThemeButtons(lightThemeBtn);
+    const modeToSave = isSystemTheme ? 'system' : theme;
+    localStorage.setItem('app-theme', modeToSave);
+
+    // Update settings page buttons
+    if (lightThemeBtn) lightThemeBtn.classList.toggle('active', theme === 'light' && !isSystemTheme);
+    if (darkThemeBtn) darkThemeBtn.classList.toggle('active', theme === 'dark' && !isSystemTheme);
+    if (systemThemeBtn) systemThemeBtn.classList.toggle('active', isSystemTheme);
+
+    // Update more menu buttons
+    document.querySelectorAll('.more-menu-theme-btn').forEach(btn => {
+      if (btn.dataset.theme === 'system') {
+        btn.classList.toggle('active', isSystemTheme);
+      } else {
+        btn.classList.toggle('active', btn.dataset.theme === theme && !isSystemTheme);
+      }
+    });
+  }
+
+  // Settings page theme buttons
+  if (lightThemeBtn) {
+    lightThemeBtn.addEventListener('click', () => setTheme('light'));
+  }
+  if (darkThemeBtn) {
+    darkThemeBtn.addEventListener('click', () => setTheme('dark'));
+  }
+  if (systemThemeBtn) {
+    systemThemeBtn.addEventListener('click', () => {
+      localStorage.setItem('app-theme', 'system');
+      window.electron.send('get-system-theme');
+    });
+  }
+
+  // More menu theme buttons
+  document.querySelectorAll('.more-menu-theme-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const theme = btn.dataset.theme;
+      if (theme === 'system') {
+        localStorage.setItem('app-theme', 'system');
+        window.electron.send('get-system-theme');
+      } else {
+        setTheme(theme);
+      }
+    });
+  });
+
+  // Load saved theme or use system theme
+  const savedTheme = localStorage.getItem('app-theme') || 'system';
+  if (savedTheme === 'system') {
+    window.electron.send('get-system-theme');
+  } else {
+    setTheme(savedTheme);
+  }
+
+  // Set initial theme from system
+  window.electron.on('system-theme', (event, theme) => {
+    const savedTheme = localStorage.getItem('app-theme') || 'system';
+    if (savedTheme === 'system') {
+      setTheme(theme, true);
     }
   });
-  window.electron.send('get-system-theme');
 });

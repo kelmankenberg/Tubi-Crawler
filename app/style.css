@@ -570,7 +570,6 @@ hr {
 .settings-nav .nav-item.active {
   background-color: var(--button-background);
   color: var(--button-foreground);
-  font-weight: bold;
 }
 
 .settings-content {
