@@ -28,6 +28,12 @@
   --vscode-dark-log-background: #252526;
   --vscode-dark-log-foreground: #cccccc;
   --vscode-dark-border-color: #444444;
+
+  /* Obsidian-style modifier colors */
+  --text-muted: #888888;
+  --text-on-accent: #ffffff;
+  --interactive-accent: #7b68ee;
+  --interactive-accent-hover: #6a5acd;
 }
 
 body[data-theme='light'] {
@@ -45,6 +51,13 @@ body[data-theme='light'] {
   --log-background: var(--vscode-light-log-background);
   --log-foreground: var(--vscode-light-log-foreground);
   --border-color: var(--vscode-light-border-color);
+
+  /* Obsidian-style light theme modifiers */
+  --background-modifier-hover: #f0f0f0;
+  --background-modifier-active: #e8e8e8;
+  --background-modifier-form: #fafafa;
+  --background-modifier-focus: rgba(123, 104, 238, 0.2);
+  --text-muted: #666666;
 }
 
 body[data-theme='dark'] {
@@ -62,4 +75,11 @@ body[data-theme='dark'] {
   --log-background: var(--vscode-dark-log-background);
   --log-foreground: var(--vscode-dark-log-foreground);
   --border-color: var(--vscode-dark-border-color);
+
+  /* Obsidian-style dark theme modifiers */
+  --background-modifier-hover: #2a2a2a;
+  --background-modifier-active: #323232;
+  --background-modifier-form: #252525;
+  --background-modifier-focus: rgba(123, 104, 238, 0.3);
+  --text-muted: #999999;
 }
