@@ -79,11 +79,66 @@ class UrlTableManager {
     const resizeHandles = document.querySelectorAll('.col-resize-handle');
     resizeHandles.forEach(handle => {
       handle.addEventListener('mousedown', this.handleResizeStart);
+      handle.addEventListener('dblclick', this.handleResizeDoubleClick.bind(this));
     });
 
     // Global mouse move/up for resizing
     document.addEventListener('mousemove', this.handleResizeMove);
     document.addEventListener('mouseup', this.handleResizeEnd);
+  }
+
+  handleResizeDoubleClick(e) {
+    const col = e.target.dataset.col;
+    if (!col) return;
+
+    // Measure the widest content in this column
+    let maxWidth = 0;
+    const padding = 24; // 12px padding on each side
+
+    // Measure header cell
+    const headerCol = this.urlTableHeader.querySelector(`[data-col="${col}"]`);
+    if (headerCol) {
+      const headerText = headerCol.childNodes[0];
+      if (headerText && headerText.nodeType === Node.TEXT_NODE) {
+        const textWidth = this.measureTextWidth(headerText.textContent.trim(), headerCol);
+        maxWidth = Math.max(maxWidth, textWidth + padding);
+      }
+    }
+
+    // Measure all row cells
+    const rowCols = document.querySelectorAll(`.${col}-col`);
+    rowCols.forEach(rowCol => {
+      if (rowCol.textContent) {
+        const textWidth = this.measureTextWidth(rowCol.textContent, rowCol);
+        maxWidth = Math.max(maxWidth, textWidth + padding);
+      }
+    });
+
+    // Apply the calculated width (with min/max limits)
+    const newWidth = Math.min(Math.max(maxWidth, 50), 600);
+
+    // Apply to header
+    if (headerCol) {
+      headerCol.style.width = newWidth + 'px';
+    }
+
+    // Apply to all row columns
+    rowCols.forEach(rowCol => {
+      rowCol.style.width = newWidth + 'px';
+      rowCol.style.flex = 'none';
+    });
+
+    // Save the width
+    this.columnWidths[col] = newWidth;
+    localStorage.setItem('urlTableColumnWidths', JSON.stringify(this.columnWidths));
+  }
+
+  measureTextWidth(text, element) {
+    const canvas = this.measureCanvas || (this.measureCanvas = document.createElement('canvas'));
+    const context = canvas.getContext('2d');
+    const style = window.getComputedStyle(element);
+    context.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+    return context.measureText(text).width;
   }
 
   handleResizeStart(e) {
