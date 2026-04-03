@@ -1,6 +1,16 @@
 # Changelog
 
-## v1.3.4 (Current)
+## v1.3.41 (Current)
+
+### 🐛 Bug Fixes
+- **Episode Number Display** - Crawl now renders `S##E##` with correct episode number instead of defaulting to `E00`.
+- **Data auth/fallback** - Content-CDN extraction now waits for headers and does URL/title fallback where API episode number is absent.
+- **Table row refresh** - Existing rows are updated on new crawl results to avoid stale `E00` values.
+- **Unknown value rendering** - Unknown season/episode now shown as `S--E--` instead of `S01E00`.
+
+---
+
+## v1.3.4 (Previous)
 
 ### 🎨 Major Features
 - **Interactive URL Table** - Replaced textarea with structured table display for episode management

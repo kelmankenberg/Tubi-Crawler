@@ -458,8 +458,16 @@ textarea {
 .url-table-col.url-col {
   width: 200px;
   flex-shrink: 0;
-  font-size: 10px;
+  font-size: 12px;
   opacity: 0.5;
+}
+
+/* Header label should match other header styles */
+.url-table-header .url-table-col.url-col {
+  font-size: 12px;
+  opacity: 1;
+  font-weight: 600;
+  color: var(--text-muted);
 }
 
 /* Column Resize Handle */
@@ -583,8 +591,8 @@ textarea {
 .url-table-row .url-col {
   width: 150px;
   flex-shrink: 0;
-  font-size: 10px;
-  opacity: 0.5;
+  font-size: 12px;
+  opacity: 0.75;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

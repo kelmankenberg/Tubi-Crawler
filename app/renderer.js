@@ -164,7 +164,16 @@ window.addEventListener('DOMContentLoaded', () => {
     if (match) {
       return parseInt(match[1], 10);
     }
-    return 1;
+    return null;
+  }
+
+  function extractEpisodeFromUrl(url) {
+    // Extract episode number from URL if pattern contains sNN-eNN or -eNN
+    const match = url.match(/(?:s\d+-e|-e|episode-)(\d+)/i);
+    if (match) {
+      return parseInt(match[1], 10);
+    }
+    return null;
   }
 
   // Get references to the window control buttons
@@ -469,17 +478,40 @@ window.addEventListener('DOMContentLoaded', () => {
     appendLog(`Crawling ${url}...`, 'info');
 
     try {
-      const urls = await window.electron.invoke('crawl', url);
-      // Convert URLs to row objects and add to table
-      const newRows = urls.map(url => ({
-        url: url,
-        title: extractTitleFromUrl(url),
-        duration: '--:--',
-        thumbnail: null,
-        series: extractSeriesFromUrl(url),
-        season: extractSeasonFromUrl(url)
-      }));
+      const results = await window.electron.invoke('crawl', url);
+      console.log('Crawl results:', results.slice(0, 2));
+      // Clear old rows to avoid stale data from previous crawls
+      urlTableManager.deleteAll();
+      // Convert results to row objects and add to table
+      const newRows = (results || []).map(item => {
+        if (typeof item === 'string') {
+          const url = item;
+          return {
+            url,
+            title: extractTitleFromUrl(url),
+            duration: '--:--',
+            thumbnail: null,
+            series: extractSeriesFromUrl(url),
+            season: extractSeasonFromUrl(url),
+            episodeNumber: extractEpisodeFromUrl(url)
+          };
+        }
+
+        const rowUrl = item.url || '';
+        const candidateEpisode = item.episodeNumber || item.episode_number || extractEpisodeFromUrl(rowUrl) || extractEpisodeFromUrl(item.title) || null;
+        return {
+          url: rowUrl,
+          title: item.title || extractTitleFromUrl(rowUrl),
+          duration: item.duration || '--:--',
+          thumbnail: item.thumbnail || null,
+          series: item.series || extractSeriesFromUrl(rowUrl),
+          season: item.season || extractSeasonFromUrl(rowUrl),
+          episodeNumber: candidateEpisode
+        };
+      });
+      console.log('New rows:', newRows.slice(0, 2));
       const addedCount = urlTableManager.addRows(newRows);
+      console.log('Sample row added:', newRows[0]);
       appendLog(`Crawling complete. ${addedCount} episode(s) added to the table.`, 'success');
 
       // Update statistics

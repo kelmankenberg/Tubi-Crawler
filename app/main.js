@@ -152,10 +152,225 @@ ipcMain.handle('crawl', async (event, url) => {
   // Timeout constants
   const BROWSER_TIMEOUT = 60000;     // 60 seconds
   const GOTO_TIMEOUT = 30000;        // 30 seconds
+
+  // Content CDN helper values captured from page network requests
+  let contentCdnToken = null;
+  let contentCdnCapability = null;
+  let contentCdnSampleUrl = null;
   const PAGE_LOAD_TIMEOUT = 30000;   // 30 seconds
   const SCROLL_WAIT = 500;           // 500ms between scrolls (reduced from 2000ms)
   const SCROLL_MAX_ATTEMPTS = 20;    // Hard limit on scroll attempts
   const SCROLL_TIMEOUT = 30000;      // Total timeout for scrolling
+
+  function parseDurationValue(value) {
+    if (value == null) return null;
+
+    if (typeof value === 'number' && !Number.isNaN(value)) {
+      return Math.round(value);
+    }
+
+    if (typeof value !== 'string') return null;
+
+    const trimmed = value.trim();
+    if (trimmed === '') return null;
+
+    // If value is numeric text (seconds)
+    if (/^\d+$/.test(trimmed)) {
+      return parseInt(trimmed, 10);
+    }
+
+    // HH:MM:SS or MM:SS
+    const parts = trimmed.split(':').map(part => parseInt(part, 10));
+    if (parts.every(p => !Number.isNaN(p))) {
+      if (parts.length === 3) {
+        return parts[0] * 3600 + parts[1] * 60 + parts[2];
+      }
+      if (parts.length === 2) {
+        return parts[0] * 60 + parts[1];
+      }
+    }
+
+    // human format examples like "1h 23m" or "42m"
+    const match = trimmed.match(/(?:(\d+)\s*h(?:ours?)?)?\s*(?:(\d+)\s*m(?:inutes?)?)?\s*(?:(\d+)\s*s(?:econds?)?)?/i);
+    if (match) {
+      const h = Number(match[1] || 0);
+      const m = Number(match[2] || 0);
+      const s = Number(match[3] || 0);
+      if (h || m || s) {
+        return h * 3600 + m * 60 + s;
+      }
+    }
+
+    return null;
+  }
+
+  function formatDuration(seconds) {
+    const sec = Number(seconds);
+    if (!Number.isFinite(sec) || Number.isNaN(sec) || sec <= 0) {
+      return null;
+    }
+    const totalSeconds = Math.round(sec);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const secs = totalSeconds % 60;
+
+    if (hours > 0) {
+      return `${hours}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+    return `${minutes}:${String(secs).padStart(2, '0')}`;
+  }
+
+  function extractEpisodeNumberFromTitle(title) {
+    if (!title || typeof title !== 'string') return null;
+    // Try to extract from format like "S01:E21 - Title" or "S01E21 - Title"
+    const match = title.match(/(?:S\d+)?[:\s]*E(\d+)/i);
+    if (match && match[1]) {
+      return parseInt(match[1], 10);
+    }
+    return null;
+  }
+
+  async function fetchEpisodeDetails(page, episodeId) {
+    if (!episodeId) return null;
+
+    try {
+      const apiPath = `/oz/videos/${episodeId}`;
+      const data = await page.evaluate(async (apiPath) => {
+        try {
+          const res = await fetch(apiPath, { credentials: 'same-origin' });
+          if (!res.ok) return null;
+          return await res.json();
+        } catch (err) {
+          return null;
+        }
+      }, apiPath);
+      return data;
+    } catch (error) {
+      console.warn('Failed fetching episode details for id', episodeId, error && error.message ? error.message : error);
+      return null;
+    }
+  }
+
+  async function fetchEpisodesFromContentCdn(seriesId) {
+    if (!seriesId) return [];
+
+    try {
+      console.log('fetchEpisodesFromContentCdn called with seriesId:', seriesId);
+      console.log('Available headers - Token:', !!contentCdnToken, 'Capability:', !!contentCdnCapability);
+
+      // If we don't have auth headers, try to get them by making a test request to the series page
+      if (!contentCdnToken || !contentCdnCapability) {
+        console.log('No auth headers captured, trying to fetch series data to get headers...');
+        try {
+          const seriesUrl = `https://content-cdn.production-public.tubi.io/api/v2/content?app_id=tubitv&platform=web&content_id=${seriesId}`;
+          const seriesResp = await fetch(seriesUrl, {
+            headers: {
+              'accept': 'application/json, text/plain, */*',
+              'accept-version': '~5.0.0',
+              'referer': 'https://tubitv.com/',
+              'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'
+            }
+          });
+          console.log('Series request status:', seriesResp.status);
+          if (seriesResp.status === 401) {
+            console.log('Series request requires auth, cannot proceed without headers');
+            return [];
+          }
+          // If it succeeds, we might not need auth for episodes either
+        } catch (e) {
+          console.log('Failed to test series request:', e.message);
+        }
+      }
+
+      // Construct a clean base URL for episode fetching
+      const baseUrl = new URL('https://content-cdn.production-public.tubi.io/api/v2/content');
+      baseUrl.searchParams.set('app_id', 'tubitv');
+      baseUrl.searchParams.set('platform', 'web');
+      baseUrl.searchParams.set('content_id', String(seriesId));
+
+      // Use captured headers if available, otherwise use defaults
+      const headers = {
+        'accept': 'application/json, text/plain, */*',
+        'accept-version': '~5.0.0',
+        'referer': 'https://tubitv.com/',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'
+      };
+      if (contentCdnToken) headers.authorization = contentCdnToken;
+      if (contentCdnCapability) headers['x-capability'] = contentCdnCapability;
+
+      const episodes = [];
+      const pageSize = 100;
+      const maxSeasons = 10;
+      const maxPagesPerSeason = 10;
+
+      for (let season = 1; season <= maxSeasons; season++) {
+        let seasonHasEpisodes = false;
+
+        for (let pageInSeason = 1; pageInSeason <= maxPagesPerSeason; pageInSeason++) {
+          const requestUrl = new URL(baseUrl.toString());
+          requestUrl.searchParams.set('pagination[season]', String(season));
+          requestUrl.searchParams.set('pagination[page_in_season]', String(pageInSeason));
+          requestUrl.searchParams.set('pagination[page_size_in_season]', String(pageSize));
+
+          const result = await page.evaluate(async (fetchUrl, headers) => {
+            try {
+              const resp = await fetch(fetchUrl, { headers });
+              if (!resp.ok) return { status: resp.status };
+              return { status: 200, data: await resp.json() };
+            } catch (err) {
+              return { status: 0 };
+            }
+          }, requestUrl.toString(), headers);
+
+          if (!result || result.status !== 200 || !result.data || !Array.isArray(result.data.children)) {
+            break;
+          }
+
+          const seasonBlock = result.data.children.find(child => String(child.id) === String(season) || child.type === 'a');
+          if (!seasonBlock || !Array.isArray(seasonBlock.children) || seasonBlock.children.length === 0) {
+            if (pageInSeason === 1) {
+              // If first page of this season yields no episodes, we assume no further seasons.
+              seasonHasEpisodes = false;
+            }
+            break;
+          }
+
+          seasonHasEpisodes = true;
+
+          for (const ep of seasonBlock.children) {
+            if (!ep || !ep.id) continue;
+            const rawDuration = ep.duration ?? ep.valid_duration ?? ep.runtime ?? ep.length ?? ep.video_length;
+            const durationSeconds = parseDurationValue(rawDuration);
+            const duration = durationSeconds ? formatDuration(durationSeconds) : null;
+
+            episodes.push({
+              id: String(ep.id),
+              url: `https://tubitv.com/watch/${ep.id}`,
+              title: ep.title || null,
+              season: season,
+              episodeNumber: ep.display_episode_number || ep.episode_number || extractEpisodeNumberFromTitle(ep.title) || null,
+              duration,
+              rawDuration: durationSeconds || null,
+              thumbnail: ep.posterarts || (ep.images && ep.images.posterarts) || null
+            });
+          }
+
+          if (seasonBlock.children.length < pageSize) {
+            break; // no further pages in this season
+          }
+        }
+
+        if (!seasonHasEpisodes) {
+          break; // no more seasons
+        }
+      }
+
+      return episodes;
+    } catch (err) {
+      console.warn('fetchEpisodesFromContentCdn failed for seriesId', seriesId, err && err.message ? err.message : err);
+      return [];
+    }
+  }
 
   let browser;
   try {
@@ -163,6 +378,27 @@ ipcMain.handle('crawl', async (event, url) => {
 
     browser = await puppeteer.launch();
     const page = await browser.newPage();
+
+    // Capture content-cdn request headers (authorization, x-capability, device_id, etc.) for improved cooldown metadata extraction
+    page.on('request', (req) => {
+      const reqUrl = req.url();
+      if (reqUrl.includes('content-cdn.production-public.tubi.io/api/v2/content')) {
+        console.log('Content-CDN request detected in app:', reqUrl.substring(0, 100) + '...');
+        if (!contentCdnSampleUrl) {
+          contentCdnSampleUrl = reqUrl;
+          console.log('Captured content-cdn URL in app');
+        }
+        const headers = req.headers();
+        if (headers.authorization && !contentCdnToken) {
+          contentCdnToken = headers.authorization;
+          console.log('Captured auth token in app');
+        }
+        if (headers['x-capability'] && !contentCdnCapability) {
+          contentCdnCapability = headers['x-capability'];
+          console.log('Captured x-capability in app');
+        }
+      }
+    });
 
     // Set default timeouts for page operations
     page.setDefaultTimeout(PAGE_LOAD_TIMEOUT);
@@ -172,6 +408,11 @@ ipcMain.handle('crawl', async (event, url) => {
       waitUntil: 'networkidle2',
       timeout: GOTO_TIMEOUT
     });
+
+    // Wait for content-cdn requests to be captured
+    console.log('Waiting for content-cdn requests to be captured...');
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    console.log('Headers after page load - URL:', !!contentCdnSampleUrl, 'Token:', !!contentCdnToken, 'Capability:', !!contentCdnCapability);
 
     // Scroll down to load all lazy-loaded content with optimized timing
     let previousHeight = 0;
@@ -201,6 +442,7 @@ ipcMain.handle('crawl', async (event, url) => {
       try {
         // Try to infer series id from the page URL first
         let seriesId = (page.url().match(/tv-shows\/(\d+)/) || page.url().match(/series\/(\d+)/))?.[1] || null;
+        console.log('Extracted seriesId from URL:', seriesId);
 
         if (!seriesId) {
           // Fallback: try to find a canonical/meta URL or script blob containing the id
@@ -219,41 +461,149 @@ ipcMain.handle('crawl', async (event, url) => {
             }
             return null;
           });
+          console.log('Extracted seriesId from page evaluation:', seriesId);
         }
 
         if (!seriesId) return [];
 
         const apiPath = `/uapi/series/${seriesId}/episodes`;
+        console.log('Trying uapi path:', apiPath);
         // Use page.fetch via browser context so cookies/headers are preserved
         const apiData = await page.evaluate(async (apiPath) => {
           try {
             const resp = await fetch(apiPath, { credentials: 'same-origin' });
+            console.log('UAPI response status:', resp.status);
             if (!resp.ok) return null;
             return await resp.json();
           } catch (e) {
+            console.log('UAPI fetch error:', e.message);
             return null;
           }
         }, apiPath);
 
-        if (!apiData) return [];
+        if (!apiData) {
+          console.log('No API data from uapi, trying content-cdn fallback');
+          console.log('Content-CDN headers available - URL:', !!contentCdnSampleUrl, 'Token:', !!contentCdnToken, 'Capability:', !!contentCdnCapability);
+          const contentCdnEpisodes = await fetchEpisodesFromContentCdn(seriesId);
+          if (contentCdnEpisodes.length > 0) {
+            console.log(`Found ${contentCdnEpisodes.length} episodes via content-cdn fallback`);
+            return contentCdnEpisodes.map(ep => ({
+              url: ep.url,
+              title: ep.title,
+              season: ep.season,
+              episodeNumber: ep.episodeNumber,
+              duration: ep.duration,
+              thumbnail: ep.thumbnail
+            }));
+          }
+          return [];
+        }
 
         // API may return an array or an object with an `episodes`/`items` property
         let items = Array.isArray(apiData) ? apiData : (apiData.episodes || apiData.items || []);
         if (Array.isArray(items) && items.length > 0) {
-          const episodeUrls = items.map(it => {
-            if (!it) return null;
-            if (it.path) return `https://tubitv.com${it.path}`;
-            if (it.id) return `https://tubitv.com/watch/${it.id}`;
-            // sometimes API objects include a `url` or `link`
-            if (it.url) return it.url.startsWith('http') ? it.url : `https://tubitv.com${it.url}`;
-            return null;
-          }).filter(u => !!u);
-          
-          if (episodeUrls.length > 0) {
-            console.log(`Found ${episodeUrls.length} episodes via API`);
-            return episodeUrls;
+          const episodes = [];
+
+          for (const it of items) {
+            if (!it) continue;
+
+            let url = null;
+            if (it.path) {
+              url = it.path.startsWith('http') ? it.path : `https://tubitv.com${it.path}`;
+            } else if (it.id) {
+              url = `https://tubitv.com/watch/${it.id}`;
+            } else if (it.url) {
+              url = it.url.startsWith('http') ? it.url : `https://tubitv.com${it.url}`;
+            } else if (it.link) {
+              url = it.link.startsWith('http') ? it.link : `https://tubitv.com${it.link}`;
+            }
+
+            if (!url) continue;
+
+            const episode = {
+              url,
+              title: it.title || null,
+              season: it.season_number || it.season || null,
+              episodeNumber: it.episode_number || it.episode || extractEpisodeNumberFromTitle(it.title) || null,
+              duration: null,
+              thumbnail: it.thumbnail || it.image || it.thumb || null,
+              id: it.id || null
+            };
+
+            const rawDuration = it.duration || it.runtime || it.length || it.duration_seconds || it.runtime_seconds || it.duration_ms || it.length_seconds;
+            const durationSeconds = parseDurationValue(rawDuration);
+            if (durationSeconds) {
+              episode.duration = formatDuration(durationSeconds);
+            }
+
+            episodes.push(episode);
+          }
+
+          if (episodes.length > 0) {
+            // Try to enrich durations and episode numbers from content-cdn first if possible
+            const contentCdnEpisodes = await fetchEpisodesFromContentCdn(seriesId);
+            const contentCdnMap = new Map(contentCdnEpisodes.map(ep => [ep.id, ep]));
+            for (const ep of episodes) {
+              if (ep.id && contentCdnMap.has(ep.id)) {
+                const cdnData = contentCdnMap.get(ep.id);
+                if (!ep.duration) {
+                  ep.duration = cdnData.duration;
+                }
+                if (!ep.episodeNumber && cdnData.episodeNumber) {
+                  ep.episodeNumber = cdnData.episodeNumber;
+                }
+              }
+            }
+
+            // Fill missing duration by fetching individual video API metadata if available
+            for (const ep of episodes) {
+              if (!ep.duration && ep.id) {
+                const details = await fetchEpisodeDetails(page, ep.id);
+                if (details) {
+                  const rawDetailDuration = details.duration || details.runtime || details.video_length || details.length || details.duration_seconds || details.runtime_seconds;
+                  const detailSeconds = parseDurationValue(rawDetailDuration);
+                  if (detailSeconds) {
+                    ep.duration = formatDuration(detailSeconds);
+                  }
+                }
+              }
+            }
+
+            // Clean the final results to return normalized metadata objects
+            const finalResults = episodes.map(ep => ({
+              url: ep.url,
+              title: ep.title,
+              season: ep.season,
+              episodeNumber: ep.episodeNumber,
+              duration: ep.duration,
+              thumbnail: ep.thumbnail
+            }));
+
+            console.log(`Found ${finalResults.length} episodes via API`);
+            if (finalResults.length > 0) {
+              console.log('Sample episode:', { title: finalResults[0].title, episodeNumber: finalResults[0].episodeNumber });
+            }
+            return finalResults;
           }
         }
+
+        // If uapi extraction didn't return any episodes or didn't contain enough detail, try content-cdn endpoint as a backup.
+        const contentCdnEpisodes = await fetchEpisodesFromContentCdn(seriesId);
+        if (contentCdnEpisodes.length > 0) {
+          console.log(`Found ${contentCdnEpisodes.length} episodes via content-cdn fallback`);
+          if (contentCdnEpisodes.length > 0) {
+            console.log('Sample from CDN:', { title: contentCdnEpisodes[0].title, episodeNumber: contentCdnEpisodes[0].episodeNumber });
+          }
+          return contentCdnEpisodes.map(ep => ({
+            url: ep.url,
+            title: ep.title,
+            season: ep.season,
+            episodeNumber: ep.episodeNumber,
+            duration: ep.duration,
+            thumbnail: ep.thumbnail
+          }));
+        }
+
         return [];
       } catch (e) {
         console.warn('API extraction failed:', e && e.message ? e.message : e);
@@ -337,7 +687,7 @@ ipcMain.handle('crawl', async (event, url) => {
 
         if (domUrls.length > 0) {
           console.log(`Found ${domUrls.length} episodes via DOM extraction`);
-          return domUrls;
+          return domUrls.map(u => ({ url: u }));
         }
         return [];
       } catch (e) {
@@ -347,18 +697,22 @@ ipcMain.handle('crawl', async (event, url) => {
     }
 
     // Extract episodes: API first (faster), then DOM (fallback)
-    let episodeUrls = [];
+    let episodes = [];
     
     // Try 1: API extraction (fastest, most reliable)
-    episodeUrls = await tryApiExtraction(page);
-    if (episodeUrls && episodeUrls.length > 0) {
-      return episodeUrls;
+    console.log('Attempting API extraction...');
+    episodes = await tryApiExtraction(page);
+    console.log(`API extraction returned ${episodes.length} episodes`);
+    if (episodes && episodes.length > 0) {
+      return episodes;
     }
 
     // Try 2: DOM extraction (fallback)
-    episodeUrls = await tryDomExtraction(page);
-    if (episodeUrls && episodeUrls.length > 0) {
-      return episodeUrls;
+    console.log('API extraction failed, trying DOM extraction...');
+    episodes = await tryDomExtraction(page);
+    console.log(`DOM extraction returned ${episodes.length} episodes`);
+    if (episodes && episodes.length > 0) {
+      return episodes;
     }
 
     // As a final measure, collect any remaining tv-shows anchors on the page
@@ -370,7 +724,8 @@ ipcMain.handle('crawl', async (event, url) => {
       }).filter(Boolean);
     });
 
-    const all = Array.from(new Set([...(episodeUrls || []), ...otherUrls]));
+    const allUrlStrings = Array.from(new Set([...(episodes || []).map(e => (typeof e === 'string' ? e : e.url)), ...otherUrls]));
+    const all = allUrlStrings.map(u => ({ url: u }));
     return all;
 
   } catch (error) {

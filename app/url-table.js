@@ -12,7 +12,7 @@ class UrlTableManager {
     this.urlTableHeader = document.querySelector('.url-table-header');
 
     // Data storage
-    this.rows = []; // Array of { id, url, title, duration, thumbnail, series, season }
+    this.rows = []; // Array of { id, url, title, duration, thumbnail, series, season, episodeNumber }
     this.selectedRowIds = new Set();
 
     // Selection state
@@ -179,6 +179,30 @@ class UrlTableManager {
     });
   }
 
+  getMinimumColumnWidth(col) {
+    // Ensure width is never narrower than the widest cell in the column or header text
+    const padding = 24; // 12px left+right
+    let maxWidth = 0;
+
+    const headerCol = this.urlTableHeader.querySelector(`[data-col="${col}"]`);
+    if (headerCol) {
+      const headerText = headerCol.textContent.trim();
+      const headerWidth = this.measureTextWidth(headerText, headerCol) + padding;
+      maxWidth = Math.max(maxWidth, headerWidth);
+    }
+
+    const rowCols = document.querySelectorAll(`.${col}-col`);
+    rowCols.forEach(rowCol => {
+      const text = rowCol.textContent.trim();
+      if (text) {
+        const textWidth = this.measureTextWidth(text, rowCol) + padding;
+        maxWidth = Math.max(maxWidth, textWidth);
+      }
+    });
+
+    return Math.max(60, maxWidth); // minimum enforce 60px
+  }
+
   handleResizeEnd(e) {
     if (!this.isResizing) return;
 
@@ -188,11 +212,23 @@ class UrlTableManager {
     // Remove resizing class from all handles
     document.querySelectorAll('.col-resize-handle').forEach(h => h.classList.remove('resizing'));
 
-    // Save column width
+    // Save column width with minimum enforcement
     if (this.currentResizingCol) {
       const headerCol = this.urlTableHeader.querySelector(`[data-col="${this.currentResizingCol}"]`);
       if (headerCol) {
-        this.columnWidths[this.currentResizingCol] = headerCol.offsetWidth;
+        const rawWidth = headerCol.offsetWidth;
+        const minWidth = this.getMinimumColumnWidth(this.currentResizingCol);
+        const finalWidth = Math.max(rawWidth, minWidth);
+
+        headerCol.style.width = `${finalWidth}px`;
+
+        const rowCols = document.querySelectorAll(`.${this.currentResizingCol}-col`);
+        rowCols.forEach(col => {
+          col.style.width = `${finalWidth}px`;
+          col.style.flex = 'none';
+        });
+
+        this.columnWidths[this.currentResizingCol] = finalWidth;
         localStorage.setItem('urlTableColumnWidths', JSON.stringify(this.columnWidths));
       }
     }
@@ -206,15 +242,24 @@ class UrlTableManager {
     for (const [col, width] of Object.entries(this.columnWidths)) {
       const headerCol = this.urlTableHeader.querySelector(`[data-col="${col}"]`);
       if (headerCol && !headerCol.classList.contains('thumbnail-col')) {
-        headerCol.style.width = width + 'px';
-      }
+        // enforce min width from current data and header text
+        const minWidth = this.getMinimumColumnWidth(col);
+        const finalWidth = Math.max(width, minWidth);
+        headerCol.style.width = finalWidth + 'px';
 
-      // Apply to row columns
-      const rowCols = document.querySelectorAll(`.url-table-row .${col}-col`);
-      rowCols.forEach(col => {
-        col.style.width = width + 'px';
-      });
+        // Apply to row columns
+        const rowCols = document.querySelectorAll(`.url-table-row .${col}-col`);
+        rowCols.forEach(rowCol => {
+          rowCol.style.width = finalWidth + 'px';
+          rowCol.style.flex = 'none';
+        });
+
+        // Persist adjusted width
+        this.columnWidths[col] = finalWidth;
+      }
     }
+
+    localStorage.setItem('urlTableColumnWidths', JSON.stringify(this.columnWidths));
   }
   
   handleKeyDown(e) {
@@ -273,24 +318,45 @@ class UrlTableManager {
   
   // Data operations
   addRows(newRows) {
-    const existingUrls = new Set(this.rows.map(r => r.url));
     let addedCount = 0;
-    
+
     for (const row of newRows) {
-      if (!existingUrls.has(row.url)) {
-        this.rows.push({
+      const existingRow = this.rows.find(r => r.url === row.url);
+      const cleanedSeason = row.season ? Number(row.season) : 1;
+      const cleanedEpisode = row.episodeNumber || row.episode_number || null;
+
+      if (existingRow) {
+        existingRow.title = row.title || existingRow.title || 'Unknown';
+        existingRow.duration = row.duration || existingRow.duration || '--:--';
+        existingRow.thumbnail = row.thumbnail || existingRow.thumbnail || null;
+        existingRow.series = row.series || existingRow.series || 'Unknown Series';
+        existingRow.season = cleanedSeason || existingRow.season || 1;
+        existingRow.episodeNumber = cleanedEpisode || existingRow.episodeNumber || (() => {
+          const match = (existingRow.title || '').match(/(?:S\d+)?[:\s]*E(\d+)/i);
+          return match ? Number(match[1]) : 0;
+        })();
+        console.log('Updated existing row:', { url: existingRow.url, episodeNumber: existingRow.episodeNumber });
+      } else {
+        const newRow = {
           id: this.generateId(),
           url: row.url,
           title: row.title || 'Unknown',
           duration: row.duration || '--:--',
           thumbnail: row.thumbnail || null,
           series: row.series || 'Unknown Series',
-          season: row.season || 1
-        });
+          season: cleanedSeason || 1,
+          episodeNumber: cleanedEpisode || (() => {
+            const match = (row.title || '').match(/(?:S\d+)?[:\s]*E(\d+)/i);
+            return match ? Number(match[1]) : 0;
+          })()
+        };
+
+        console.log('Adding row to table:', { title: newRow.title, episodeNumber: newRow.episodeNumber });
+        this.rows.push(newRow);
         addedCount++;
       }
     }
-    
+
     this.render();
     this.saveToStorage();
     return addedCount;
@@ -486,11 +552,16 @@ class UrlTableManager {
       rowEl.className = 'url-table-row' + (this.selectedRowIds.has(row.id) ? ' selected' : '');
       rowEl.dataset.id = row.id;
 
+      const seasonNum = Number.isFinite(Number(row.season)) ? Number(row.season) : null;
+      const episodeNum = Number.isFinite(Number(row.episodeNumber)) ? Number(row.episodeNumber) : null;
+      const seasonLabel = seasonNum !== null ? String(seasonNum).padStart(2, '0') : '--';
+      const episodeLabel = episodeNum !== null ? String(episodeNum).padStart(2, '0') : '--';
+
       rowEl.innerHTML = `
         <div class="thumbnail-col">
           ${row.thumbnail ? `<img src="${row.thumbnail}" alt="" onerror="this.style.display='none'">` : ''}
         </div>
-        <div class="season-col">S${row.season.toString().padStart(2, '0')}</div>
+        <div class="season-col">S${seasonLabel}E${episodeLabel}</div>
         <div class="title-col" title="${this.escapeHtml(row.title)}">${this.escapeHtml(row.title)}</div>
         <div class="duration-col">${row.duration}</div>
         <div class="url-col" title="${this.escapeHtml(row.url)}">${this.escapeHtml(row.url)}</div>
