@@ -4,11 +4,12 @@
  */
 
 class UrlTableManager {
-  constructor() {
+  constructor(urlInputContextMenu) {
     this.urlTable = document.getElementById('urlTable');
     this.urlTableEmpty = document.getElementById('urlTableEmpty');
     this.urlCountEl = document.getElementById('urlCount');
     this.contextMenu = document.getElementById('urlTableContextMenu');
+    this.urlInputContextMenu = urlInputContextMenu;
     this.urlTableHeader = document.querySelector('.url-table-header');
 
     // Data storage
@@ -307,6 +308,11 @@ class UrlTableManager {
     exportText.textContent = `Export Selection${count > 1 ? ` (${count})` : ''}`;
     deleteText.textContent = `Delete Selection${count > 1 ? ` (${count})` : ''}`;
     
+    // Hide URL input context menu
+    if (this.urlInputContextMenu) {
+      this.urlInputContextMenu.classList.remove('show');
+    }
+    
     this.contextMenu.style.left = `${x}px`;
     this.contextMenu.style.top = `${y}px`;
     this.contextMenu.classList.add('show');
@@ -454,14 +460,11 @@ class UrlTableManager {
       }))
     };
     
-    return new Promise((resolve, reject) => {
-      const fs = require('fs');
-      try {
-        fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-        resolve(true);
-      } catch (error) {
-        reject(error);
+    return window.electron.invoke('write-json-file', { filePath, data }).then(result => {
+      if (!result.success) {
+        throw new Error(result.error);
       }
+      return true;
     });
   }
   
@@ -480,32 +483,26 @@ class UrlTableManager {
       }))
     };
     
-    return new Promise((resolve, reject) => {
-      const fs = require('fs');
-      try {
-        fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-        resolve(true);
-      } catch (error) {
-        reject(error);
+    return window.electron.invoke('write-json-file', { filePath, data }).then(result => {
+      if (!result.success) {
+        throw new Error(result.error);
       }
+      return true;
     });
   }
   
   importFromJson(filePath) {
-    return new Promise((resolve, reject) => {
-      const fs = require('fs');
-      try {
-        const content = fs.readFileSync(filePath, 'utf8');
-        const data = JSON.parse(content);
-        
+    return window.electron.invoke('read-json-file', filePath).then(result => {
+      if (result.success) {
+        const data = result.data;
         if (data.urls && Array.isArray(data.urls)) {
           const addedCount = this.addRows(data.urls);
-          resolve(addedCount);
+          return addedCount;
         } else {
-          reject(new Error('Invalid JSON format'));
+          throw new Error('Invalid JSON format');
         }
-      } catch (error) {
-        reject(error);
+      } else {
+        throw new Error(result.error);
       }
     });
   }

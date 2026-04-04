@@ -39,6 +39,7 @@ function createWindow() {
     height: height,
     x: x,
     y: y,
+    icon: path.join(__dirname, '..', 'images', 'tubi-crawler-transparent.png'),
     frame: false, // Remove default title bar
     autoHideMenuBar: true, // Hide menu bar
     titleBarStyle: 'hidden', // For macOS, makes title bar hidden but still draggable
@@ -859,6 +860,27 @@ ipcMain.handle('toggle-dev-tools', (event) => {
   }
 });
 
+ipcMain.handle('write-json-file', async (event, { filePath, data }) => {
+  try {
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to write JSON file:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('read-json-file', async (event, filePath) => {
+  try {
+    const content = fs.readFileSync(filePath, 'utf8');
+    const data = JSON.parse(content);
+    return { success: true, data };
+  } catch (error) {
+    console.error('Failed to read JSON file:', error);
+    return { success: false, error: error.message };
+  }
+});
+
 ipcMain.handle('run-yt-dlp', async (event, options) => {
   const {
     urls,
@@ -874,7 +896,8 @@ ipcMain.handle('run-yt-dlp', async (event, options) => {
     playlistStart,
     playlistEnd,
     ffmpegPath: ffmpegFolderPath,
-    ytDlpPath: ytDlpFolderPath
+    ytDlpPath: ytDlpFolderPath,
+    keepTerminalOpen
   } = options;
 
   // Convert folder paths to full executable paths
@@ -962,7 +985,8 @@ ipcMain.handle('run-yt-dlp', async (event, options) => {
     const ytDlpCommand = `${ytDlpPath} ${args.map(arg => arg.includes(' ') || arg.includes('[') || arg.includes(']') ? `"${arg}"` : arg).join(' ')}`;
     // Escape % as %% for batch files
     // Use cd /d to change drive and directory, then run yt-dlp
-    const batchContent = `@echo off\necho Starting YT-DLP...\ncd /d "${downloadPath}"\necho.\n${ytDlpCommand}\necho.\npause`.replace(/%/g, '%%');
+    const pauseCommand = keepTerminalOpen ? '\necho.\npause' : '';
+    const batchContent = `@echo off\necho Starting YT-DLP...\ncd /d "${downloadPath}"\necho.\n${ytDlpCommand}${pauseCommand}`.replace(/%/g, '%%');
 
     // Write batch file to temp directory
     const tempBatchPath = path.join(require('os').tmpdir(), 'yt-dlp-download.bat');
@@ -993,22 +1017,43 @@ ipcMain.handle('run-yt-dlp', async (event, options) => {
     }
   } else if (process.platform === 'linux') {
     const command = 'gnome-terminal';
-    const commandArgs = ['--', ytDlpPath].concat(args);
+    let commandArgs;
+    
+    if (keepTerminalOpen) {
+      // Keep terminal open by running yt-dlp in bash and then starting an interactive shell
+      const ytDlpCommand = `${ytDlpPath} ${args.map(arg => {
+        // Escape single quotes by replacing ' with '\''
+        return `'${arg.replace(/'/g, "'\\''")}'`;
+      }).join(' ')}`;
+      
+      commandArgs = ['--', 'bash', '-c', `${ytDlpCommand}; exec bash`];
+    } else {
+      commandArgs = ['--', ytDlpPath].concat(args);
+    }
+    
+    console.log('Linux command:', command, commandArgs);
     
     try {
       const child = spawn(command, commandArgs, {
         detached: true,
         stdio: 'ignore'
       });
+      
       child.unref();
       return { success: true };
     } catch (error) {
-      console.error('Failed to spawn yt-dlp:', error);
+      console.error('Failed to spawn terminal:', error);
       return { success: false, error: error.message };
     }
   } else if (process.platform === 'darwin') {
     // On macOS, open Terminal.app
-    const script = `tell application "Terminal" to do script "${ytDlpPath} ${args.join(' ')}"`;
+    let script;
+    if (keepTerminalOpen) {
+      // Keep terminal open after command finishes
+      script = `tell application "Terminal" to do script "${ytDlpPath} ${args.join(' ')}; echo \\"Press Enter to close...\\"; read"`;
+    } else {
+      script = `tell application "Terminal" to do script "${ytDlpPath} ${args.join(' ')}"`;
+    }
     
     try {
       const child = spawn('osascript', ['-e', script], {

@@ -58,9 +58,10 @@ window.addEventListener('DOMContentLoaded', () => {
   const quickActions = document.getElementById('quickActions');
   const urlInput = document.getElementById('url');
   const log = document.getElementById('log');
+  const urlInputContextMenu = document.getElementById('urlInputContextMenu');
   
   // Initialize URL Table Manager (replaces outputUrls textarea)
-  const urlTableManager = new UrlTableManager();
+  const urlTableManager = new UrlTableManager(urlInputContextMenu);
 
   // Load and display app version
   window.electron.invoke('get-app-version').then((version) => {
@@ -299,10 +300,12 @@ window.addEventListener('DOMContentLoaded', () => {
     const playlistStart = playlistStartInput.value;
     const playlistEnd = playlistEndInput.value;
     const ffmpegPath = ffmpegPathInput.value;
+    const keepTerminalOpen = keepTerminalOpenCheckbox.checked;
 
     console.log('YT-DLP path:', ytDlpPath);
     console.log('Download path:', downloadPath);
     console.log('FFmpeg path:', ffmpegPath);
+    console.log('Keep terminal open:', keepTerminalOpen);
 
     if (!downloadPath) {
       clearLog();
@@ -328,7 +331,8 @@ window.addEventListener('DOMContentLoaded', () => {
         playlistStart: playlistStart,
         playlistEnd: playlistEnd,
         ffmpegPath: ffmpegPath,
-        ytDlpPath: ytDlpPath
+        ytDlpPath: ytDlpPath,
+        keepTerminalOpen: keepTerminalOpen
       });
       console.log('run-yt-dlp result:', result);
       if (result.success) {
@@ -408,6 +412,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const formatStringInput = document.getElementById('format-string');
   const mergeOutputFormatSelect = document.getElementById('merge-output-format');
   const preferredBrowserSelect = document.getElementById('preferred-browser');
+  const keepTerminalOpenCheckbox = document.getElementById('keep-terminal-open');
   const videoQualitySelect = document.getElementById('video-quality');
   const audioFormatSelect = document.getElementById('audio-format');
   const embedSubsCheckbox = document.getElementById('embed-subs');
@@ -457,7 +462,74 @@ window.addEventListener('DOMContentLoaded', () => {
     urlInput.addEventListener('mouseup', (e) => {
       e.preventDefault();
     });
+
+    // Context menu for URL input
+    urlInput.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      showUrlInputContextMenu(e.clientX, e.clientY);
+    });
   }
+
+  // Function to show URL input context menu
+  function showUrlInputContextMenu(x, y) {
+    urlTableManager.hideContextMenu(); // Hide table context menu
+    urlInputContextMenu.style.left = `${x}px`;
+    urlInputContextMenu.style.top = `${y}px`;
+    urlInputContextMenu.classList.add('show');
+  }
+
+  // Function to hide URL input context menu
+  function hideUrlInputContextMenu() {
+    urlInputContextMenu.classList.remove('show');
+  }
+
+  // Hide context menu when clicking elsewhere
+  document.addEventListener('click', hideUrlInputContextMenu);
+
+  // Context menu item handlers
+  document.getElementById('ctxCopyUrl').addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(urlInput.value);
+      showToast('📋 URL copied to clipboard', 'info');
+      hideUrlInputContextMenu();
+    } catch (err) {
+      // Fallback to execCommand
+      urlInput.select();
+      document.execCommand('copy');
+      showToast('📋 URL copied to clipboard', 'info');
+      hideUrlInputContextMenu();
+    }
+  });
+
+  document.getElementById('ctxPasteUrl').addEventListener('click', async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      urlInput.value = text.trim();
+      validateUrl(urlInput.value);
+      showToast('📋 URL pasted from clipboard', 'info');
+      hideUrlInputContextMenu();
+    } catch (err) {
+      appendLog('Failed to read clipboard', 'error');
+      showToast('Failed to read clipboard', 'error');
+      hideUrlInputContextMenu();
+    }
+  });
+
+  document.getElementById('ctxPasteAndCrawl').addEventListener('click', async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      urlInput.value = text.trim();
+      validateUrl(urlInput.value);
+      showToast('📋 URL pasted from clipboard', 'info');
+      hideUrlInputContextMenu();
+      // Auto-crawl after a short delay
+      setTimeout(() => crawlBtn.click(), 200);
+    } catch (err) {
+      appendLog('Failed to read clipboard', 'error');
+      showToast('Failed to read clipboard', 'error');
+      hideUrlInputContextMenu();
+    }
+  });
 
   crawlBtn.addEventListener('click', async () => {
     const url = urlInput.value;
@@ -601,11 +673,18 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   // Context menu handlers
+  const ctxSelectAll = document.getElementById('ctxSelectAll');
   const ctxDownloadSelection = document.getElementById('ctxDownloadSelection');
   const ctxExportSelection = document.getElementById('ctxExportSelection');
   const ctxExportAll = document.getElementById('ctxExportAll');
   const ctxDeleteSelection = document.getElementById('ctxDeleteSelection');
   const ctxDeleteAll = document.getElementById('ctxDeleteAll');
+
+  ctxSelectAll.addEventListener('click', () => {
+    urlTableManager.selectAll();
+    showToast('✓ All rows selected', 'info');
+    urlTableManager.hideContextMenu();
+  });
 
   ctxDownloadSelection.addEventListener('click', () => {
     const selectedUrls = urlTableManager.getSelectedUrls();
@@ -625,7 +704,7 @@ window.addEventListener('DOMContentLoaded', () => {
       }
       
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
-      const filePath = require('path').join(downloadPath, `episodes-export-${timestamp}.json`);
+      const filePath = `${downloadPath}/episodes-export-${timestamp}.json`;
       
       const result = await window.electron.invoke('save-file-dialog', {
         defaultPath: filePath,
@@ -652,7 +731,7 @@ window.addEventListener('DOMContentLoaded', () => {
       }
       
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
-      const filePath = require('path').join(downloadPath, `episodes-export-${timestamp}.json`);
+      const filePath = `${downloadPath}/episodes-export-${timestamp}.json`;
       
       const result = await window.electron.invoke('save-file-dialog', {
         defaultPath: filePath,
@@ -817,7 +896,7 @@ window.addEventListener('DOMContentLoaded', () => {
       const downloadPath = localStorage.getItem('download-path');
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
       const defaultPath = downloadPath 
-        ? require('path').join(downloadPath, `episodes-${timestamp}.json`)
+        ? `${downloadPath}/episodes-${timestamp}.json`
         : `episodes-${timestamp}.json`;
       
       const result = await window.electron.invoke('save-file-dialog', {
@@ -954,6 +1033,15 @@ window.addEventListener('DOMContentLoaded', () => {
   } else {
     // Set default value if not found in localStorage
     preferredBrowserSelect.value = "external";
+  }
+
+  // Keep terminal open setting
+  keepTerminalOpenCheckbox.addEventListener('change', () => {
+    localStorage.setItem('keep-terminal-open', keepTerminalOpenCheckbox.checked);
+  });
+  // Load saved keep terminal open setting on startup
+  if (localStorage.getItem('keep-terminal-open') === 'true') {
+    keepTerminalOpenCheckbox.checked = true;
   }
 
   // YT-DLP additional settings event listeners

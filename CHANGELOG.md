@@ -1,6 +1,22 @@
 # Changelog
 
-## v1.3.41 (Current)
+## v1.3.42 (Current)
+
+### 🐛 Critical Bug Fixes
+- **JSON Export/Import** - Fixed "require is not defined" error when saving/loading episode lists
+  - Moved file operations from renderer to main process via IPC handlers
+  - Added `write-json-file` and `read-json-file` IPC endpoints
+  - Removed all `require()` calls from renderer process files
+
+
+### 🖥️ Terminal Improvements
+- **Download Terminal Persistence** - Fixed "Keep terminal open after download" setting on Linux
+  - Uses `gnome-terminal --wait` instead of bash command execution
+  - Ensures terminal remains open after yt-dlp completes when enabled
+
+---
+
+## v1.3.41 (Previous)
 
 ### 🐛 Bug Fixes
 - **Episode Number Display** - Crawl now renders `S##E##` with correct episode number instead of defaulting to `E00`.
