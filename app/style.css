@@ -44,6 +44,19 @@ body {
   -webkit-app-region: no-drag; /* Make h1 not draggable */
 }
 
+.toolbar-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  -webkit-app-region: no-drag;
+}
+
+.app-icon {
+  width: 32px;
+  height: 32px;
+  display: block;
+}
+
 .top-toolbar-right {
   display: flex;
   gap: 5px; /* Space between control buttons */
