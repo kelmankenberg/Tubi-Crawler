@@ -1,6 +1,15 @@
 # Changelog
 
-## v1.3.42 (Current)
+## v1.3.5 (Current)
+
+### 🐛 Installation Fixes
+- **Electron Startup** - Allowed Electron's install script under npm 11 so its application binary is downloaded correctly.
+- **Puppeteer Crawling** - Allowed Puppeteer's install script so the required Chrome browser is installed for crawling.
+- **Corrupt Cache Recovery** - Documented reinstalling Chrome through `npx puppeteer browsers install chrome` when Puppeteer's cache contains an incomplete download.
+
+---
+
+## v1.3.42 (Previous)
 
 ### 🐛 Critical Bug Fixes
 - **JSON Export/Import** - Fixed "require is not defined" error when saving/loading episode lists
