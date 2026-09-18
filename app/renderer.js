@@ -433,10 +433,22 @@ window.addEventListener('DOMContentLoaded', () => {
   window.electron.on('window-maximized', () => updateMaximizeRestoreIcon(true));
   window.electron.on('window-unmaximized', () => updateMaximizeRestoreIcon(false));
 
+  // Listen for URLs added from the internal browser's "Add to Queue" button
+  window.electron.on('add-url-to-queue', (event, url) => {
+    if (!url) return;
+    const addedCount = urlTableManager.addRows([{ url }]);
+    if (addedCount > 0) {
+      showToast('✓ Added URL to queue', 'success');
+    } else {
+      showToast('URL already in queue', 'info');
+    }
+  });
+
   // Listen for app before-quit to ensure content is saved
   window.electron.on('app-before-quit', () => {
     // UrlTableManager handles auto-save to localStorage
   });
+
 
   // Load content from localStorage on startup (handled by UrlTableManager)
   // Save content to localStorage whenever it changes (handled by UrlTableManager)

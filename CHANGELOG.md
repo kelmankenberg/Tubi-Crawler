@@ -1,6 +1,16 @@
 # Changelog
 
-## v1.3.5 (Current)
+## v1.4.0 (Current)
+
+### ✨ New Features
+- **Add to Queue** - Internal browser toolbar now has an "Add to Queue" button that sends the current address bar URL to the main window's download queue table.
+
+### 🐛 Bug Fixes
+- **Missing App Icon** - Added the app icon assets (titlebar, taskbar, and installer icons) that were missing from the repository, and wired them into the Electron window and `electron-builder` config.
+
+---
+
+## v1.3.5 (Previous)
 
 ### 🐛 Installation Fixes
 - **Electron Startup** - Allowed Electron's install script under npm 11 so its application binary is downloaded correctly.

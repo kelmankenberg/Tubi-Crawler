@@ -78,6 +78,7 @@
             <input id="addressBar" type="text" value="https://www.tubitv.com/" />
             <button id="goBtn">Go</button>
             <button id="copyBtn">Copy</button>
+            <button id="addQueueBtn">Add to Queue</button>
         </div>
 
         <script>
@@ -87,6 +88,7 @@
             const refreshBtn = document.getElementById('refreshBtn');
             const goBtn = document.getElementById('goBtn');
             const copyBtn = document.getElementById('copyBtn');
+            const addQueueBtn = document.getElementById('addQueueBtn');
             const addressBar = document.getElementById('addressBar');
 
             backBtn.addEventListener('click', () => window.internalBrowser.sendCommand('back'));
@@ -98,6 +100,18 @@
                 window.internalBrowser.sendCommand('go', { url });
             });
             copyBtn.addEventListener('click', () => window.internalBrowser.sendCommand('copy-url'));
+
+            addQueueBtn.addEventListener('click', () => {
+                window.internalBrowser.sendCommand('add-to-queue');
+                // Brief visual feedback since this window has no toast system
+                const originalText = addQueueBtn.textContent;
+                addQueueBtn.textContent = 'Added!';
+                addQueueBtn.disabled = true;
+                setTimeout(() => {
+                    addQueueBtn.textContent = originalText;
+                    addQueueBtn.disabled = false;
+                }, 1000);
+            });
 
             addressBar.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') goBtn.click();

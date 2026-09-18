@@ -1083,11 +1083,13 @@ ipcMain.handle('open-external-browser', async (event, url) => {
 });
 
 const browserViews = new Map(); // Map windowId -> BrowserView
+const browserOwners = new Map(); // Map windowId -> the main window that opened it
 
 ipcMain.handle('open-internal-browser', async (event, options = {}) => {
   // Always open Tubi's main site regardless of the caller-provided URL.
   const target = 'https://www.tubitv.com/';
   const theme = options.theme || 'light';
+  const ownerWindow = BrowserWindow.fromWebContents(event.sender);
   console.log('Main process opening internal browser for:', target, 'theme:', theme);
   try {
     const newWindow = new BrowserWindow({
@@ -1134,6 +1136,7 @@ ipcMain.handle('open-internal-browser', async (event, options = {}) => {
 
     // Store mapping so IPC handlers can find the view for this window
     browserViews.set(newWindow.id, view);
+    if (ownerWindow) browserOwners.set(newWindow.id, ownerWindow);
 
     // Forward URL updates from the view to the renderer (toolbar)
     const sendUrlUpdate = () => {
@@ -1164,6 +1167,7 @@ ipcMain.handle('open-internal-browser', async (event, options = {}) => {
         try { view.webContents.destroy(); } catch (e) {}
         browserViews.delete(newWindow.id);
       }
+      browserOwners.delete(newWindow.id);
     });
 
     return { success: true };
@@ -1214,6 +1218,17 @@ ipcMain.on('internal-browser-command', (event, cmd, payload) => {
         clipboard.writeText(url);
       } catch (err) {
         console.error('Failed to copy URL:', err);
+      }
+      break;
+    case 'add-to-queue':
+      try {
+        const url = view.webContents.getURL();
+        const owner = browserOwners.get(senderWindow.id);
+        if (owner && !owner.isDestroyed()) {
+          owner.webContents.send('add-url-to-queue', url);
+        }
+      } catch (err) {
+        console.error('Failed to add URL to queue:', err);
       }
       break;
     case 'get-url':
