@@ -379,3 +379,136 @@ describe('YT-DLP Settings', () => {
     });
   });
 });
+
+describe('YT-DLP terminal launching', () => {
+  const fs = require('fs');
+  const path = require('path');
+  const vm = require('vm');
+  const { EventEmitter } = require('events');
+  const source = fs.readFileSync(path.join(__dirname, '../app/main.js'), 'utf8');
+  const handlerSource = source.slice(
+    source.indexOf("ipcMain.handle('run-yt-dlp',"),
+    source.indexOf("ipcMain.handle('open-external-browser',")
+  );
+
+  function createHandler(platform = 'linux', failures = {}) {
+    let handler;
+    const children = [];
+    const spawn = jest.fn((command) => {
+      const child = new EventEmitter();
+      child.unref = jest.fn();
+      children.push(child);
+      process.nextTick(() => {
+        if (failures[command]) {
+          child.emit('error', Object.assign(new Error(`${command}: ${failures[command]}`), {
+            code: failures[command]
+          }));
+        } else {
+          child.emit('spawn');
+        }
+      });
+      return child;
+    });
+    const fileSystem = { writeFileSync: jest.fn() };
+    vm.runInNewContext(handlerSource, {
+      ipcMain: { handle: (_channel, callback) => { handler = callback; } },
+      process: { platform },
+      path: platform === 'win32' ? path.win32 : path.posix,
+      console: { log: jest.fn(), error: jest.fn() },
+      fs: fileSystem,
+      require,
+      spawn
+    });
+    return { handler, spawn, children, fileSystem };
+  }
+
+  const options = {
+    urls: ['https://tubitv.com/tv-shows/123/example'],
+    downloadPath: '/tmp/downloads'
+  };
+
+  test('prefers gnome-terminal and waits for a successful spawn', async () => {
+    const { handler, spawn, children } = createHandler();
+    const result = handler(null, options);
+    expect(children[0].unref).not.toHaveBeenCalled();
+    await expect(result).resolves.toEqual({ success: true });
+    expect(spawn).toHaveBeenCalledTimes(1);
+    expect(spawn).toHaveBeenCalledWith('gnome-terminal', [
+      '--', 'yt-dlp', '-o', '/tmp/downloads/%(title)s.%(ext)s', ...options.urls
+    ], { detached: true, stdio: 'ignore' });
+    expect(children[0].unref).toHaveBeenCalledTimes(1);
+  });
+
+  test('falls back to foot only when gnome-terminal is missing', async () => {
+    const { handler, spawn, children } = createHandler('linux', { 'gnome-terminal': 'ENOENT' });
+    await expect(handler(null, options)).resolves.toEqual({ success: true });
+    expect(spawn.mock.calls.map(call => call[0])).toEqual(['gnome-terminal', 'foot']);
+    expect(spawn.mock.calls[1][1]).toEqual([
+      'yt-dlp', '-o', '/tmp/downloads/%(title)s.%(ext)s', ...options.urls
+    ]);
+    expect(children[0].unref).not.toHaveBeenCalled();
+    expect(children[1].unref).toHaveBeenCalledTimes(1);
+  });
+
+  test('reports an actionable error when neither terminal is installed', async () => {
+    const { handler } = createHandler('linux', { 'gnome-terminal': 'ENOENT', foot: 'ENOENT' });
+    await expect(handler(null, options)).resolves.toEqual({
+      success: false,
+      error: expect.stringContaining('Install gnome-terminal or foot')
+    });
+  });
+
+  test('reports other launch errors without trying another terminal', async () => {
+    const { handler, spawn } = createHandler('linux', { 'gnome-terminal': 'EACCES' });
+    await expect(handler(null, options)).resolves.toEqual({
+      success: false,
+      error: 'gnome-terminal: EACCES'
+    });
+    expect(spawn).toHaveBeenCalledTimes(1);
+  });
+
+  test.each([{}, { 'gnome-terminal': 'ENOENT' }])('preserves keep-open arguments with failures %j', async (failures) => {
+    const { handler, spawn } = createHandler('linux', failures);
+    const specialOptions = {
+      ...options,
+      ytDlpPath: "/opt/tools with 'quotes'",
+      keepTerminalOpen: true,
+      urls: ["https://example.com/episode?title=it's&next=$(ignored)"]
+    };
+    await expect(handler(null, specialOptions)).resolves.toEqual({ success: true });
+    const terminalArgs = spawn.mock.calls[spawn.mock.calls.length - 1][1];
+    const bashArgs = terminalArgs[0] === '--' ? terminalArgs.slice(1) : terminalArgs;
+    expect(bashArgs).toEqual([
+      'bash', '-c', '"$@"; exec bash', 'yt-dlp-download',
+      "/opt/tools with 'quotes'/yt-dlp", '-o', '/tmp/downloads/%(title)s.%(ext)s', ...specialOptions.urls
+    ]);
+  });
+
+  test('uses native executable names for configured Linux folders', async () => {
+    const { handler, spawn } = createHandler();
+    await handler(null, { ...options, ytDlpPath: '/usr/bin', ffmpegPath: '/usr/bin' });
+    expect(spawn.mock.calls[0][1]).toEqual([
+      '--', '/usr/bin/yt-dlp', '--ffmpeg-location', '/usr/bin/ffmpeg',
+      '-o', '/tmp/downloads/%(title)s.%(ext)s', ...options.urls
+    ]);
+  });
+
+  test('preserves the Windows terminal and executable names', async () => {
+    const { handler, spawn, fileSystem } = createHandler('win32');
+    await expect(handler(null, {
+      ...options, downloadPath: 'C:\\Videos', ytDlpPath: 'C:\\Tools', ffmpegPath: 'C:\\Tools'
+    })).resolves.toEqual({ success: true });
+    expect(spawn.mock.calls[0][0]).toBe('cmd.exe');
+    const batchContent = fileSystem.writeFileSync.mock.calls[0][1];
+    expect(batchContent).toContain('C:\\Tools\\yt-dlp.exe');
+    expect(batchContent).toContain('--ffmpeg-location C:\\Tools\\ffmpeg.exe');
+  });
+
+  test('preserves the macOS terminal command', async () => {
+    const { handler, spawn } = createHandler('darwin');
+    await expect(handler(null, options)).resolves.toEqual({ success: true });
+    expect(spawn).toHaveBeenCalledWith('osascript', [
+      '-e', 'tell application "Terminal" to do script "yt-dlp -o /tmp/downloads/%(title)s.%(ext)s https://tubitv.com/tv-shows/123/example"'
+    ], { detached: true, stdio: 'ignore' });
+  });
+});

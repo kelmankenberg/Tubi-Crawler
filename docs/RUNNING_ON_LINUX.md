@@ -106,7 +106,9 @@ This will produce artifacts in `dist/` (configure `electron-builder` targets to 
 
 ## Platform Differences & Gotchas
 
-- `process.platform` checks: Your app already handles `win32` and `linux` branches; test the Linux branches to ensure they call available terminals (e.g., `gnome-terminal` may not be available on all systems).
+- Download terminals: On Linux, the app prefers `gnome-terminal` and falls back to `foot` when GNOME Terminal is not installed. This supports Omarchy's Foot terminal without changing existing GNOME setups. If neither terminal is installed, the app reports an error.
+- Download tools: Install `yt-dlp` and `ffmpeg` separately; `npm install` does not install them. Leave their folder settings blank to use executables on `PATH`, or select their containing folder (typically `/usr/bin`). Linux uses `yt-dlp` and `ffmpeg`, not Windows `.exe` files. Set a download location before downloading.
+- Download status: A successful launch means the external terminal started, not that a download completed. Check that terminal for yt-dlp progress and errors. Enable the keep-terminal-open setting to leave a shell open afterward.
 - Path handling: Use Node's `path` utilities (already used in the repo). Avoid hard-coded Windows paths when possible.
 - Native modules: If you use native Node modules they must be rebuilt for Linux — running `npm ci` inside WSL or CI avoids platform mismatch.
 - GUI availability: WSLg on Windows 11 provides a smooth GUI experience. On Windows 10 you'll need an X server for desktop windows.

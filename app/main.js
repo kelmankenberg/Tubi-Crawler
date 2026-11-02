@@ -901,8 +901,9 @@ ipcMain.handle('run-yt-dlp', async (event, options) => {
   } = options;
 
   // Convert folder paths to full executable paths
-  const ytDlpPath = ytDlpFolderPath ? path.join(ytDlpFolderPath, 'yt-dlp.exe') : 'yt-dlp';
-  const ffmpegPath = ffmpegFolderPath ? path.join(ffmpegFolderPath, 'ffmpeg.exe') : null;
+  const executableSuffix = process.platform === 'linux' ? '' : '.exe';
+  const ytDlpPath = ytDlpFolderPath ? path.join(ytDlpFolderPath, `yt-dlp${executableSuffix}`) : 'yt-dlp';
+  const ffmpegPath = ffmpegFolderPath ? path.join(ffmpegFolderPath, `ffmpeg${executableSuffix}`) : null;
 
   console.log('Received options:', { downloadPath, ffmpegPath, ytDlpPath });
   console.log('YT-DLP folder path:', ytDlpFolderPath);
@@ -1016,35 +1017,44 @@ ipcMain.handle('run-yt-dlp', async (event, options) => {
       return { success: false, error: error.message };
     }
   } else if (process.platform === 'linux') {
-    const command = 'gnome-terminal';
-    let commandArgs;
-    
-    if (keepTerminalOpen) {
-      // Keep terminal open by running yt-dlp in bash and then starting an interactive shell
-      const ytDlpCommand = `${ytDlpPath} ${args.map(arg => {
-        // Escape single quotes by replacing ' with '\''
-        return `'${arg.replace(/'/g, "'\\''")}'`;
-      }).join(' ')}`;
-      
-      commandArgs = ['--', 'bash', '-c', `${ytDlpCommand}; exec bash`];
-    } else {
-      commandArgs = ['--', ytDlpPath].concat(args);
+    const terminalArgs = keepTerminalOpen
+      ? ['bash', '-c', '"$@"; exec bash', 'yt-dlp-download', ytDlpPath, ...args]
+      : [ytDlpPath, ...args];
+    const terminals = [
+      { command: 'gnome-terminal', args: ['--', ...terminalArgs] },
+      { command: 'foot', args: terminalArgs }
+    ];
+
+    for (const terminal of terminals) {
+      console.log('Linux command:', terminal.command, terminal.args);
+
+      try {
+        const error = await new Promise((resolve) => {
+          const child = spawn(terminal.command, terminal.args, {
+            detached: true,
+            stdio: 'ignore'
+          });
+
+          child.once('error', resolve);
+          child.once('spawn', () => {
+            child.unref();
+            resolve(null);
+          });
+        });
+
+        if (!error) {
+          return { success: true };
+        }
+        if (error.code !== 'ENOENT') {
+          return { success: false, error: error.message };
+        }
+      } catch (error) {
+        console.error('Failed to spawn terminal:', error);
+        return { success: false, error: error.message };
+      }
     }
-    
-    console.log('Linux command:', command, commandArgs);
-    
-    try {
-      const child = spawn(command, commandArgs, {
-        detached: true,
-        stdio: 'ignore'
-      });
-      
-      child.unref();
-      return { success: true };
-    } catch (error) {
-      console.error('Failed to spawn terminal:', error);
-      return { success: false, error: error.message };
-    }
+
+    return { success: false, error: 'No supported terminal found. Install gnome-terminal or foot to display downloads.' };
   } else if (process.platform === 'darwin') {
     // On macOS, open Terminal.app
     let script;
